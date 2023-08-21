@@ -16,29 +16,24 @@ repository will be given to you elsewhere and will be referred to in this
 document as "CLASS\_REPO\_PATH" and "PRIVATE\_REPO\_NAME", respectively.
 Additionally, "USERNAME" refers to your GitHub username.
 
-These instructions have first you create your mirrored repository _on a CS lab
-machine_ and optionally create clones of that repository on other machines
-(e.g., a laptop).
+These instructions have first you create your mirrored repository on your
+primary development system and then optionally create clones of that repository
+on other systems.
 
 
 # Preparation
 
-Either log on to a BYU CS lab workstation directly or log on remotely via SSH
-using the following command:
-
-```
-ssh username@schizo.cs.byu.edu
-```
-(Replace "username" with your actual CS username)
+Log on to your primary development system, either directly or remotely via SSH.
 
 
 # Register an SSH Key for Use with GitHub
 
 These steps are necessary for you to use SSH to fetch and push your updates
-from and to GitHub.  They should be performed on the machine on which you will
-be doing your work.  If you already have an SSH key registered with GitHub from
-the machine on which you will be doing your work, then you do not need to do
-this again.
+from and to GitHub.  They should be performed on the primary development system
+-- and later on any other systems on which you create clones.
+
+If you already have an SSH key registered with GitHub on your system, then you
+do not need to do this again.
 
  1. Find out if you already have an SSH key to use by running the following:
 
@@ -57,7 +52,8 @@ this again.
     ls: cannot access '/home/user/.ssh/id_*': No such file or directory
     ```
 
-    If you have keys then you can now to step 3.  Otherwise, continue to step 2.
+    If you have keys, then you can now go to step 3.  Otherwise, continue to
+    step 2.
 
  2. Run the following from the command line to create an SSH public/private key
     pair:
