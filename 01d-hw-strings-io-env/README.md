@@ -39,15 +39,18 @@ assignment:
 # Instructions
 
 For each of the sections that follow, follow the instructions, and answer the
-questions.  For most questions, you will want to re-compile and re-run the
+questions.  The point is to learn concepts by seeing them in action along the
+way.  For most questions, you will want to re-compile and re-run the
 program _after each question_:
 
 ```bash
-$ gcc -o learn_c learn_c.c
+$ gcc -Wall -Wno-unused-variable -o learn_c learn_c.c
 $ ./learn_c test.txt
 ```
 
-The point is to learn concepts by seeing them in action along the way.
+The `-o` option designates the name of the binary file resulting from
+compilation.  The combined options `-Wall -Wno-unused-variable` mean to show
+all compilation warnings, _except_ unused variables.
 
 Note that several exercises will have you modify the command line that you use
 to get different results.
@@ -133,8 +136,11 @@ For more information, see the man pages for `charsets` and `ascii`.
 What do `printf()` and `fprintf()` do?  There are three things different than
 calling `write()`.
  - First, `printf()` and `fprintf()` operate on file streams (`FILE *`), which
-   include user-level buffering.  That simply means that they don't `write()`
-   until it's efficient to do so.
+   include user-level buffering.  That simply means that they "save up"
+   `write()` calls and send the pending bytes only when it's most efficient to
+   do so.  This is like going to the grocery store only when you need a whole
+   week's worth of groceries instead of going there when you just need a single
+   food item.
  - Second, instead of explicitly setting the number of bytes to send,
    `printf()` and `fprintf()` know when to stop sending bytes when they detect
    a null byte value (integer value 0), which you will see in a later exercise.
@@ -181,28 +187,54 @@ at follow, the most important things are:
  - `printf()` and friends can be used to format text for it to be presented.
 
 
-# Part 1
+# Part 1 - Arrays, Strings, Pointers, and Memory Allocation
 
- 1. Find the number of bytes/characters allocated on the stack for `s1`
-    using the `sizeof()` operator (not `strlen()`!).  Note that `sizeof()` is a
-    _compile-time_ operator; that means that the size (i.e., the number of
-    bytes allocated) is determined at compile time, before the code ever runs.
-    In this case, `sizeof()` accurately reflects the number of bytes allocated
-    for (i.e., the "size" of) `s1` because `s1` is explicitly assigned a value
-    using a string literal.  The same would not be true for something
-    dynamically allocated (i.e., at _run time_) with `malloc()`; it simply
-    couldn't be known ahead of time.
+In this section, you will perform some hands-on exercises to better understand
+allocation of memory for arrays, strings, and pointers, both on the stack and
+on the heap.  You will also learn about the compile-time operator `sizeof()`
+and observe the effects of `malloc()` and `free()` using `valgrind`.
+
+ 1. `s1` is allocated on the stack.  Find the number of bytes/characters
+    allocated on the stack for `s1` using the `sizeof()` operator (not
+    `strlen()`!).  Note that `sizeof()` is a _compile-time_ operator; that
+    means that the size (i.e., the number of bytes allocated) is determined at
+    compile time, before the code ever runs.  In this case, `sizeof()`
+    accurately reflects the number of bytes allocated for (i.e., the "size" of)
+    `s1`, only because `s1` is explicitly assigned a value using a string
+    literal.  (See questions 6 and 7 for counter examples, in which pointers
+    are used.)
 
     Save the value as `s1_len`, and then print `s1_len` on a line by itself,
     using `printf()`.
 
     *How does the number of bytes allocated for `s1` compare to the number of
-    visible characters in `s1`?*
+    visible characters pointed to by `s1`?*
 
- 2. Find the number of bytes/characters allocated on the stack for `s2` using
-    the same methodology as you used for question 1.  Note that although
-    an initial value is not explicitly assigned to `s2`, as it is with `s1`,
-    the size of the array is explicitly given, so `sizeof()` can again be used.
+ 2. `memprint()` is a function defined right in `learn_c.c`.  It simply prints
+    the contents of an array of type `char []`, byte-by-byte, to standard
+    output using the designated format.
+
+    Call `memprint()` on `s1` three times, passing `s1_len` as `len` each time.
+    The first time, show each byte/character value as hexadecimal (i.e., format
+    `"%02x"`).  The second time, show each byte/character value as decimal
+    (i.e., format `"%d"`).  Finally, show each byte/character value as its
+    corresponding ASCII character (i.e., format `"%c"`).
+
+    *What is the (integer) value of the "extra" byte allocated for `s1`?*
+    (That byte value is the very definition of what makes `s1` a "string" in
+    C.)
+
+ 3. *What is the ASCII character associated with the hexadecimal value 0x23?*
+    (Hint: See the man page for `ascii`.)
+
+ 4. *What is the hexadecimal value of the ASCII character `z` (lower case)?*
+    (Hint: See the man page for `ascii`.)
+
+ 5. `s2` is also allocated on the stack.  Find the number of bytes/characters
+    allocated on the stack for `s2` using the same methodology as you used for
+    question 1.  Note that although an initial value is not explicitly assigned
+    to `s2`, as it is with `s1`, the size of the array is explicitly given, so
+    `sizeof()` can again be used.
 
     Save that value as `s2_len`, and then print `s2_len` on a line by itself,
     using `printf()`.
@@ -210,149 +242,203 @@ at follow, the most important things are:
     *How does the number of bytes allocated for `s2` compare to the declared
     number of bytes for `s2`?*
 
- 3. `memprint()` is a function included right in `learn_c.c`.  It simply prints
-    the contents of an array of type `char []`, byte-by-byte, to standard
-    output using the designated format.
+ 6. `s3` is a pointer, and the bytes associated with its value (i.e., the
+    bytes that contain the address it refers to) are also allocated on the
+    stack.  Because it is assigned the address of `s1`, it also happens to
+    refer to bytes on the stack (i.e., because it now refers to the same bytes
+    as `s1`).  However, even though the size of the array it refers to in this
+    example is known, in a real scenario, it might point to anything, and there
+    is no way at compile-time for that to be known.
 
-    Call `memprint()` on `s1` three times using `s1_len`, first showing
-    each byte/character value as hexadecimal (i.e., format `"%02x"`), then
-    showing each byte/character value as decimal (i.e., format `"%d"`), then
-    showing each byte/character value as its ASCII representation (i.e., format
-    `"%c"`).  What you are seeing is the representation of the contents of
-    `s1`, both as the 8-bit decimal and hexadecimal integer values for each
-    byte and as their ASCII equivalent.
+    Save the value returned from `sizeof()` as `s3_len`, and then print
+    `s3_len` on a line by itself, using `printf()`.
 
-    a. *What is the value of the "extra" byte allocated for `s1`?*  (That byte
-       value is the very definition of what makes `s1` a "string" in C.)
+    *How does the number of bytes pointed to by `s3` compare to the output of
+    `sizeof()`?  Briefly explain your answer.* (Hint: Memory addresses on an
+    x86-64 system are 64 bits long.)
 
-    b. *What is the ASCII character associated with the hexadecimal value
-       0x23?* (Hint: See the man page for `ascii`.)
+ 7. `s4` is a pointer, and the bytes associated with its value (i.e., the
+    bytes that contain the address it refers to) is also allocated on the
+    stack.  Because it is assigned the return value of `malloc()`, it refers to
+    bytes allocated on the heap.  Even though the values in this example are
+    hard-coded, in a real scenario, the number value might be arbitrary (e.g.,
+    could be the value of a variable); in either case, the bytes are not
+    allocated until run-time.  Use the `sizeof()` operator against `s4`.
 
-    c. *What is the hexadecimal value of the ASCII character `z` (lower
-       case)?* (Hint: See the man page for `ascii`.)
+    Save the value returned from `sizeof()` as `s4_len`, and then print
+    `s4_len` on a line by itself, using `printf()`.
+
+    *How does the number of bytes pointed to by `s4` compare to the output of
+    `sizeof()`?  Briefly explain your answer.* (Hint: Memory addresses on an
+    x86-64 system are 64 bits long.)
+
+ 8. Run the program with `valgrind`:
+
+    ```
+    $ valgrind ./learn_c test.txt
+    ```
+
+    *How many bytes are "in use" at exit?  In other words, how many have been
+    allocated on the heap with `malloc()` but not `free()`d?*
+
+ 9. Immediately after printing out the return value of `sizeof()` for `s4`, use
+    `free()` to de-allocate the memory associated with `s4`.  Run the following
+    again:
+
+    ```
+    $ valgrind ./learn_c test.txt
+    ```
+
+    *How many bytes are "in use" at exit?  In other words, how many have been
+    allocated on the heap with `malloc()` but not `free()`d?*
+
+You should now have an understanding of how bytes are allocated -- both on the
+stack and on the heap, and for strings as well as arrays of arbitrary byte
+value.
 
 
-# Part 2
+# Part 2 - Arrays, Strings, Pointers, and Shared Content
 
- 4. Print out the address of (i.e., using the `&` operator) of each of the
-    variables `s1`, `s2`, and `s3`, as a long unsigned integer in decimal
-    format (i.e., format `"%lu"`), each on a line by itself.
+In this section, you will perform some hands-on exercises to better understand
+how arrays, strings, and pointers are used by the compiler to reference the
+content they refer to, whether on the stack or on the heap.
 
-    The C compiler will complain that you are passing `char *` where a
-    `long unsigned int` was expected.  Usually, that means that you are doing
-    something wrong!  For this exercise, you can tell the compiler to simply
-    treat the value like a `long unsigned int` by explicitly type-casting it
-    as such.  To do so, preface it with `(long unsigned int)`.  Please note
-    that this does not change anything with regard to the value of the pointer;
-    it merely tells the compiler that you are using it differently.
+ 10. Print out the address of (i.e., using the `&` operator) of each of the
+     variables `s1`, `s2`, and `s3`, as a long unsigned integer in decimal
+     format (i.e., format `"%lu"`), each on a line by itself.
 
-    Note that this exercise has nothing to do with the actual _value_ of the
-    variables, which will be compared in a subsequent question.  Rather, this
-    only has to do with the memory addresses of the variables themselves.
+     The C compiler will complain that you are passing `char *` where a
+     `long unsigned int` was expected.  Usually that means that you are doing
+     something wrong!  For this exercise, you can tell the compiler to simply
+     treat the value like a `long unsigned int` by explicitly type-casting it
+     as such.  To do so, preface it with `(long unsigned int)`.  Please note
+     that this does not change anything with regard to the _value_ of the
+     pointer; it merely tells the compiler that you are using it differently.
 
-    *Do any of the variables have the same address on the stack?  If so,
-    which and why?*
+     Note that this exercise has nothing to do with the actual _value_ of the
+     variables, which will be compared in a subsequent question.  Rather, this
+     only has to do with the memory addresses of the variables themselves.
 
- 5. Print out the address _referred to_ (i.e., its pointer value) by each of
-    the variables `s1`, `s2`, and `s3` as a long unsigned integer in decimal
-    format (i.e., format `"%lu"`), each on a line by itself.  Since all these
-    variables refer to arrays/strings, you can also think of each referred-to
-    addresses as that of the _first byte/character_ in each array/string
-    referred to.
+     *Do any of the variables have the same address on the stack?  If so, which
+     and why?*
 
-    See the comment on type casting from question 4.
+ 11. Print out the address _referred to_ by (i.e., the pointer _value_ of) each
+     of the variables `s1`, `s2`, and `s3` as a long unsigned integer in
+     decimal format (i.e., format `"%lu"`), each on a line by itself.  Since
+     all these variables refer to arrays/strings, you can also think of each
+     referred-to address as the address of the _first byte/character_ in each
+     array/string referred to.
 
-    Note that while `s1`, `s2`, and `s3` are _declared_ differently, they
-    effectively act the same, in that:
+     See the comment on type casting from question 10.
 
-    - When represented as a (long unsigned)  _integer_ value (i.e., format
-      `"%lu"`), `printf()` uses the referred-to address (i.e., the _pointer
-      value_) as a replacement.
-    - When represented as a _string_ value (i.e., format `"%s"`), `printf()`
-      uses the values _at_ the referred-to address (i.e., the string contents)
-      as a replacement.
+     Note that while `s1`, `s2`, and `s3` are _declared_ differently, they
+     effectively act the same, in that:
 
-    However, one difference between `char[]` and `char *` is that for `char[]`,
-    the address of the variable is _also_ the address _referred to_ by the
-    variable.  That means that there is no changing the _referred-to address_
-    (or _pointer value__) of a variable declared `char[]`.
+     - When represented as a (long unsigned)  _integer_ value (i.e., format
+       `"%lu"`), `printf()` uses the referred-to address (i.e., the _pointer
+       value_) as a replacement.
+     - When represented as a _string_ value (i.e., format `"%s"`), `printf()`
+       uses the values _at_ the referred-to address (i.e., the string contents)
+       as a replacement.
 
-    a. *For any of the variables, is the referred-to address (i.e., the pointer
-       value) the same as the _address_ of the variable itself (i.e., the
-       answer to question 4)?  If so, which and why?*  Hint: See explanatory
-       text in this question.
+     However, one difference between `char[]` and `char *` is that for
+     `char[]`, the address of the variable is _also_ the address _referred to_
+     by the variable.  That means that there is no changing the _referred-to
+     address_ (or _pointer value__) of a variable declared `char[]`.
 
-    b. *Do any of the variables reference the same content?  That is, are any
-       of the addresses / pointer values the same between `s1`, `s2`, and/or
-       `s3`?  If so, which and why?*
+     *For any of the variables, is the referred-to address (i.e., the pointer
+     value) the same as the _address_ of the variable itself (i.e., the output
+     associated with question 10)?  If so, which and why?*  Hint: See
+     explanatory text in this question.
 
- 6. Use `printf()` to print out the contents of each of the array/string
-    variables `s1`, `s2`, and `s3`, i.e., using the `"%s"` format, each on a
-    line by itself.
+ 12. *Do any of the variables reference the same content?  That is, are any of
+     the addresses / pointer values the same between `s1`, `s2`, and/or `s3`?
+     If so, which and why?*
 
-    *Which pairs of arrays/strings have the same content and why?*
+ 13. Use `printf()` to print out the contents of each of the array/string
+     variables `s1`, `s2`, and `s3`, i.e., using the `"%s"` format, each on a
+     line by itself.
 
- 7. Compare the following pairs of pointer values using the equality operator,
-    `==`: `s1` and `s2`; `s1` and `s3`; `s2` and `s3`.  In each case, print
-    "s1 == s2" (replacing the variable names, as appropriate) on its own line
-    if the values are equal and "s1 != s2" otherwise.
+     *Which arrays/strings have equal content and why?*
 
-    *Which pairs of arrays/strings have the same pointer values and why?*
+ 14. Compare the following pairs of pointer values using the equality operator,
+     `==`: `s1` and `s2`; `s1` and `s3`; `s2` and `s3`.  In each case, print
+     "s1 == s2" (replacing the variable names, as appropriate) on its own line
+     if the values are equal.
 
- 8. Compare the values of the strings referenced by the following pairs of
-    pointers, using the `strcmp()` function: `s1` and `s2`; `s1` and
-    `s3`; `s2` and `s3`.  In each case, print "s1 == s2" (replacing the
-    variable names, as appropriate) on its own line if the values are equal and
-    "s1 != s2" otherwise.
+     The C compiler will warn that you are comparing two pointer values and
+     that the more deliberate way to do this is to point compare the addresses
+     of the _first byte/character_ in each array/string referred to.  This is
+     true!  And if that warning is heeded (and the code is changed), then it
+     will be clearer to you and anyone else looking at the code it is not
+     _content_ being compared but rather addresses. And that is the entire
+     point of this exercise.  Thus, `s1 == s2` is equivalent to
+     `&s1[0] == &s2[0]`, but the latter is more explicit.
 
-    *Which pairs of arrays/strings have the same content and why?*
-    (Hint: Answer the same as for question 6).
+     *Which arrays/strings have the same pointer values (i.e., refer to the
+     same memory locations) and why?*
 
- 9. Note the existing code immediately before question 9. Now repeat the
-    instructions for question 6.
+ 15. Compare the values of the strings referenced by the following pairs of
+     pointers, using the `strcmp()` function: `s1` and `s2`; `s1` and
+     `s3`; `s2` and `s3`.  In each case, print "s1 == s2" (replacing the
+     variable names, as appropriate) on its own line if the values are equal.
 
-    *For which arrays/strings has the content changed from question 6,
-    and why?*
+     *Based on the output, which of arrays/strings have equal content (i.e.,
+     the values of the bytes they point to are the same) and why?* (Hint: Your
+     answer should be consistent with the answer for question 13).
 
- 10. Repeat the instructions for question 7.
+ 16. Note the existing code placed at the start of question 16. Now repeat the
+     instructions for question 13.
 
-     *Has the equivalence of pointer values changed from question 7?  Why or
+     *For which arrays/strings has the content changed from question 13,
+     and why?*
+
+ 17. Repeat the instructions for question 14.
+
+     *Has the equivalence of pointer values changed from question 14?  Why or
      why not?*
 
- 11. Repeat the instructions for question 8.
+ 18. Repeat the instructions for question 15.
 
-     *Has the equivalence of content changed from Question 8?  Why or why not?*
+     *Has the equivalence of content changed from question 15?  Why or why
+     not?*
+
+You should now have an understanding of how memory is referenced and compared
+by the compiler when arrays and pointers are used.
 
 
-# Part 3
+# Part 3 - Equivalence of Byte Values Using Different Representations
 
- 12. Compare the values of the bytes referenced by the following pairs of
+ 19. Compare the values of the bytes referenced by the following pairs of
      pointers, using the `memcmp()` function (not `strcmp()`!):
      `s1` and `s2`; `s1` and `s3`; `s2` and `s3`.  In each case, print
      "s1 == s2" (replacing the variable names, as appropriate) on its own line if
-     the values are equal and "s1 != s2" otherwise.
+     the values are equal.
 
-     *Which pairs of arrays/strings have the same content and why?*
-     (Hint: See both the Intro and question 3).
+     *Which arrays/strings have the same content and why?* (Hint: See both the
+     Intro and questions 2 through 4).
 
 
-# Part 4
+# Part 4 - String Comparison
 
- 13. Compare the values of the bytes referenced by pointers `s1` and `s2`,
+In this section, you will perform some hands-on exercises to better understand
+how to compare and copy both strings and arrays of arbitrary values in C.
+
+ 20. Compare the values of the bytes referenced by pointers `s1` and `s2`,
      using the `memcmp()` function (not `strcmp()`!).  Print "s1 == s2" on its
-     own line if the values are equal and "s1 != s2" otherwise.
+     own line if the values are equal.
 
      *Does `memcmp()` indicate that the arrays have the same content?  Why
      or why not?*
 
- 14. Compare the values of the bytes referenced by pointers `s1` and `s2`,
+ 21. Compare the values of the bytes referenced by pointers `s1` and `s2`,
      using the `strcmp()` function (not `memcmp()`!).  Print "s1 == s2" on its
-     own line if the values are equal and "s1 != s2" otherwise.
+     own line if the values are equal.
 
      *Does `strcmp()` indicate that the arrays have the same content?  Why
      or why not?*
 
- 15. Use `memset()` to initialize every byte value in `s3` to `'z'` (or,
+ 22. Use `memset()` to initialize every byte value in `s3` to `'z'` (or,
      equivalently, `0x7a`).  Then call `memprint()` on `s3` to show the
      hexadecimal value of each byte/character (i.e., format `"%02x"`).
 
@@ -362,33 +448,44 @@ at follow, the most important things are:
      *Does the output show any characters other than (ASCII) `z`?* (Hint: It
      shouldn't.)
 
- 16. Use the `strcpy()` function (not `memcpy()`!) to copy the contents of `s1`
+ 23. Use the `strcpy()` function (not `memcpy()`!) to copy the contents of `s1`
      to `s3`.  Then call `memprint()` on `s3` to show each byte/character value
      in the array as hexadecimal (i.e., format `"%02x"`).
 
      *Which bytes/characters were copied over from `s1`?*
 
- 17. Use the `sprintf()` function to replace the contents of `s4`.  Use the
+ 24. Use the `sprintf()` function to replace the contents of `s4`.  Use the
      format string `"%s %d\n"` and the values of `s1` and `myval`. Then call
      `memprint()` on `s4` to show each byte/character value in the array as
      hexadecimal (i.e., format `"%02x"`).
 
-     The C compiler will complain that the number of characters that will be
-     used to represent the integer (i.e., `%d`) could possibly exceed the size
-     of the buffer.   This is true.  A signed 32-bit integer could be as low as
-     -2147483648 (11 digits) or it could be 0 (1 digit). In the former case, it
-     would overflow the buffer we have allocated.  For the purposes of this
-     assignment, please ignore the warning.  We have hard-coded the value of
-     `myval`, so we know the number of characters the will be needed to
-     represent `myval` in replacing `%d`.  In a real program, however, please
-     use more care.
-
      *In which places of the array was a null value placed?*
 
+ 25. *Which variables could be _appropriately_ used in place of `VAR` in the
+     following code:*
 
-# Part 5
+     ```c
+     memprint(VAR, "%02x", 8);
+     ```
 
- 18. Read the man page for `stdin` (which also shows the information for
+     Remember that `memprint()` prints arbitrary byte values, so it doesn't
+     care _what_ the values are.  But it does care whether or not it can _find_
+     the values (i.e., with a valid address).  So the addresses should
+     explicitly refer to memory that has been populated with values to be read
+     or memory that can be written to.  You are encouraged to experiment
+     with this by actually calling `memprint()`.
+
+     Hint: Note the compiler warnings.  Also, see explanatory text in
+     question 11.
+
+
+# Part 5 - Input/Output
+
+In this section, you will perform some hands-on exercises to better understand
+file descriptors, reading and writing to files, including standar input,
+standard output, and standard error.
+
+ 26. Read the man page for `stdin` (which also shows the information for
      `stdout` and `stderr`).  Now use the `fileno()` and `printf()` functions
      to find and print out the file descriptor values for the `stdin`,
      `stdout`, and `stderr` file streams, each on a line by itself.  For
@@ -396,7 +493,7 @@ at follow, the most important things are:
 
      *What are the file descriptor values for stdin, stdout, and stderr?*
 
- 19. Use `memset()` to initialize every byte value in `buf` to `'z'` (or,
+ 27. Use `memset()` to initialize every byte value in `buf` to `'z'` (or,
      equivalently, `0x7a`).  Then assign the byte at index 24 to `'\0'` (or,
      equivalently, 0).  Finally, call `memprint()` on `buf` to show the
      hexadecimal value of each byte/character (i.e., format `"%02x"`).
@@ -404,7 +501,7 @@ at follow, the most important things are:
      *Does the output show any characters other than (ASCII) `z` and null?
      (Hint: It shouldn't.)*
 
- 20. Print out the contents of `buf` to standard output in two ways:
+ 28. Print out the contents of `buf` to standard output in two ways:
 
      1. call `printf()` using the `"%s"` format string;
      2. call `write()`, specifying the integer file descriptor value for
@@ -412,51 +509,60 @@ at follow, the most important things are:
         (Hint: see the
         [introduction section](#introduction---characters-encoding-and-presentation)).
 
-     After each, print a newline character, so each printout is on its own line.
+     After each, print a newline character (`"\n"`), so each printout is on its
+     own line.
 
      *Is there a difference between what was printed by `printf()` and what was
      printed by `write()`?  Why or why not?*  (Hint: See the `s` Conversion
      Specifier in the man page for `printf(3)`.)
 
- 21. Print out the contents of `buf` to standard error (not standard out!) in
+ 29. Print out the contents of `buf` to standard error (not standard out!) in
      two (new) ways:
 
      1. call `fprintf()`;
      2. call `write()`, specifying the integer file descriptor value for
         standard error; in this case, use `BUFSIZE` as the byte count.
 
-     After each, print a newline character, so each printout is on its own line.
+     After each, print a newline character, so each printout is on its own
+     line.
 
-     *What happens when you append `> /dev/null` to the end of the command
-     line?*
+     Run the command with `> /dev/null` appended to the end of the command
+     line.
 
- 22. Using the `open()` system call (not `fopen()`), open the file specified by
+     *What happens to the output when you run with `> /dev/null` appended?
+
+ 30. Run the command with `2> /dev/null` appended to the end of the command
+     line.
+
+     *What happens to the output when you run with `2> /dev/null` appended?
+
+ 31. Using the `open()` system call (not `fopen()`), open the file specified by
      the filename variable passing `O_RDONLY` as the only flag (i.e., open the
      file for reading only).  Save the return value as an integer variable,
      `fd1`.  Now copy that value to another integer variable, `fd2`.  Print out
      the values of `fd1` and `fd2`, each on its own line.
 
      *What is the significance of the value of `fd1`, i.e., the return value of
-     `open()`?*
-     (Hint: See the first two paragraphs of the DESCRIPTION for `open(2)`.)
+     `open()`?* (Hint: See the first two paragraphs of the DESCRIPTION for
+     `open(2)`.)
 
- 23. Use the `read()` system call to read up to 4 bytes from `fd1`, placing the
+ 32. Use the `read()` system call to read up to 4 bytes from `fd1`, placing the
      bytes read into `buf`.  Save the return value as `nread`.  Add the value
      of `nread` to `totread`.  Then print the values of `nread` and `totread`,
      each on their own line (they should currently be the same).  Finally, call
      `memprint()` on `buf` using `BUFSIZE` showing each byte/character value as
      hexadecimal (i.e., format `"%02x"`).
 
-     a. *Did the return value from `read()` match the count value passed in?
-        Why or why not?* (Hint: See the RETURN VALUE section in the man page
-        for `read(2)`.)
+ 33. *Did the return value from `read()` match the count value passed in?  Why
+     or why not?* (Hint: See the RETURN VALUE section in the man page for
+     `read(2)`.)
 
-     b. *Was a null character included in the bytes read or immediately
-        following them?  Why or why not?*  (Hint: To answer the "why" question,
-        use the `hexdump` command-line utility to inspect the contents of
-        `test.txt`.)
+ 34. *Was a null character included in the bytes read or immediately following
+     them?  Why or why not?*  (Hint: To answer the "why" question, use the
+     `cat` and `hexdump` command-line utilities to inspect the contents of
+     `test.txt`.)
 
- 24. Use the `read()` system call to read up to 4 bytes from `fd2` (not
+ 35. Use the `read()` system call to read up to 4 bytes from `fd2` (not
      `fd1`!).  Instead of using `buf` as the starting point at which the read
      data should be copied, use the offset into `buf` corresponding to the
      total bytes read (i.e., `buf + totread` or `&buf[totread]`). Save the
@@ -465,67 +571,66 @@ at follow, the most important things are:
      Finally, call `memprint()` on `buf` using `BUFSIZE` showing each
      byte/character value as hexadecimal (i.e., format `"%02x"`).
 
-     a. *Did this new call to `read()` start reading from beginning of the file
-        or continue where it left off after the last call?  Why?*
-        (Hint: See the RETURN VALUE section in the man page for `read(2)`.)
+     *Did this new call to `read()` start reading from beginning of the file or
+     continue where it left off after the last call?  Why?* (Hint: See the
+     RETURN VALUE section in the man page for `read(2)`.)
 
-     b. You have now used two variables, in two different calls, to read
-        from the file.  *Based on your answer to a, does the _address_ of
-        the variable referencing a file descriptor matter, or only its
-        _value_?*
+ 36. You have now used two variables, in two different calls, to read from the
+     file.  *Based on your answer to question 35, does the _address_ of the
+     variable referencing a file descriptor matter, or only its _value_?*
 
-     c. *How many total bytes have been read?*
+ 37. *How many total bytes have been read?*
 
- 25. Repeat the instructions for question 24, but this time read up to 50
-     bytes, instead of 4.
+ 38. Repeat the instructions for question 35, but this time read up to
+     `BUFSIZE - totread` bytes, instead of 4.
 
-     a. *Did the return value from read() match the count value passed in?  Why
-        or why not?*
-        (Hint: See the RETURN VALUE section in the man page for `read(2)`.)
+     *Did the return value from read() match the count value passed in?  Why or
+     why not?* (Hint: See the RETURN VALUE section in the man page for
+     `read(2)`.)
 
-     b. *How many total bytes have been read?*
+ 39. *How many total bytes have been read?*
 
-     c. *How many total bytes are in the file?*
-        (Hint: Use the `stat` command-line utility to see the size of the file,
-        in bytes.)
+ 40. *How many total bytes are in the file?* (Hint: Use the `stat` command-line
+     utility to see the size of the file, in bytes.)
 
- 26. Repeat the instructions for question 25.
+ 41. *What would happen if `BUFSIZE` had been specified, instead of `BUFSIZE -
+     totread` and there were still `BUFSIZE` bytes available to read?*
+
+ 42. Repeat the instructions for question 38.
 
      *What is the significance of the return value of `read()`?*
      (Hint: See the RETURN VALUE section in the man page for `read(2)`.)
 
- 27. Using the `fopen()` function (not `open()`!), open the file specified by
-     the filename variable passing `"r"` as the mode (equivalent to `O_RDONLY`
-     with `open()`). Save the return value as a file stream (`FILE *`).  Now
-     use the `fileno()` and  `printf()` functions to find and print out the
-     file descriptor values for the newly returned file stream.  Finally, close
-     the file stream using `fclose()`.
+ 43. Use `printf()` to print the contents of `buf` to standard output using the
+     `"%s\n"` format string.
 
-     a. *What is the file descriptor value for the new file stream?*
+     *How does the output compare to the actual contents of the file?  Briefly
+     explain your response.*
 
-     b. *What is the significance of the file descriptor value of the new file
-        stream?*
-        (Hint: See the first two paragraphs of the DESCRIPTION in the man page
-        for `open(2)`.)
+     Hint: See questions 28, 34, and 38.
 
- 28. Call `close()` on `fd1`, and use `printf()` to print the return value on a
-     line by itself.  Then call close on `fd2`, and use `printf()` to print the
+ 44. Assign the value at index `totread` to the null character (`'\0'` or 0).
+     Then repeat the instructions for question 43.
+
+     *How does the output differ from the output printed in question 38?*
+
+ 45. Call `close()` on `fd1`, and use `printf()` to print the return value on a
+     line by itself.
+
+     *What is the return value of `close()`?  What does this mean?* (Hint: See
+     the RETURN VALUE section in the man page for `close(2)`.)
+
+ 46. Call `close()` on `fd2` (not `fd1`!) , and use `printf()` to print the
      return value on a line by itself.
 
-     a. *What is the return value of the first instance of `close()`?  What does
-        this mean?*
-        (Hint: See the RETURN VALUE section in the man page for `close(2)`.  See
-        also question 24b.)
-
-     b. *What is the return value of the second instance of `close()`?  What does
-        this mean, and what is the likely cause?*
-        (Hint: See the RETURN VALUE section in the man page for `close(2)`. See
-        also question 24b.)
+     *What is the return value of this second instance of `close()`?  What does
+     this mean, and what is the likely cause?* (Hint: See the RETURN VALUE
+     section in the man page for `close(2)`. See also question 36.)
 
 
 # Part 6
 
- 29. Use `getenv()` to assign the pointer `s1` to the string corresponding to
+ 47. Use `getenv()` to assign the pointer `s1` to the string corresponding to
      the environment variable `CS324_VAR`.  If such a value exists, then print:
      `"The value is: _____\n"` (replace `_____` with the actual value);
      otherwise, print `"CS324_VAR not found\n"`.
