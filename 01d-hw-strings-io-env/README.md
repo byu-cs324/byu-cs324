@@ -319,7 +319,7 @@ content they refer to, whether on the stack or on the heap.
      variables, which will be compared in a subsequent question.  Rather, this
      only has to do with the memory addresses of the variables themselves.
 
-     *Do any of the variables have the same address on the stack?  If so, which
+     *Which of the variables have the same address on the stack?  If so, which
      and why?*
 
  11. Print out the address _referred to_ by (i.e., the pointer _value_ of) each
