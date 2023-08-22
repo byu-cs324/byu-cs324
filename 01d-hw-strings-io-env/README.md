@@ -666,7 +666,7 @@ environment variable and then practice getting and setting it.
      $ CS324_VAR=foo ./learn_c test.txt
      ```
 
-     *What is the difference between running the commands?*
+     *What is the difference between running the commands?  Briefly explain.*
 
  49. Run the following two commands:
 
@@ -675,4 +675,5 @@ environment variable and then practice getting and setting it.
      $ ./learn_c test.txt
      ```
 
-     *How does this differ from running the commands in question 48?*
+     *How does this differ from running the commands in question 48?  Briefly
+     explain.*
