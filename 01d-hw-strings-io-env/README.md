@@ -482,8 +482,9 @@ how to compare and copy both strings and arrays of arbitrary values in C.
 # Part 5 - Input/Output
 
 In this section, you will perform some hands-on exercises to better understand
-file descriptors, reading and writing to files, including standar input,
-standard output, and standard error.
+file descriptors and reading and writing to files, including standard input,
+standard output, and standard error.  Additionally, you will learn about
+user-level buffering with file streams (`FILE *`).
 
  26. Read the man page for `stdin` (which also shows the information for
      `stdout` and `stderr`).  Now use the `fileno()` and `printf()` functions
@@ -627,19 +628,51 @@ standard output, and standard error.
      this mean, and what is the likely cause?* (Hint: See the RETURN VALUE
      section in the man page for `close(2)`. See also question 36.)
 
+ 47. Use `fprintf()` to print the following, in order:
 
-# Part 6
+     a. `"abc"` (no newline) to standard output
+     b. `"def"` (no newline) to standard error
+     c. `"ghi\n"` to standard output
 
- 47. Use `getenv()` to assign the pointer `s1` to the string corresponding to
+     Then use `write()` to print the same three strings to the same locations,
+     again.
+
+     *What differences do you observe in the output of the strings using
+     `fprintf()` vs. using `write()` and why?*  (Hint: See
+     [intro](#printf-and-friends) and the "NOTES" section of the man page for
+     `stdout`.)
+
+ 48. Repeat the instructions from question 47.  However, this time, use the
+     `fflush()` function to flush standard output immediately after printing
+     `"abc"`.
+
+     *What differences do you observe in the output of the strings using
+     `fprintf()` vs. using `write()` and why?*
+
+# Part 6 - Getting and Setting Environment Variables
+
+In this section, you will write code that looks for the presence of an
+environment variable and then practice getting and setting it.
+
+ 49. Use `getenv()` to assign the pointer `s1` to the string corresponding to
      the environment variable `CS324_VAR`.  If such a value exists, then print:
-     `"The value is: _____\n"` (replace `_____` with the actual value);
+     `"CS324_VAR is _____\n"` (replace `_____` with the actual value);
      otherwise, print `"CS324_VAR not found\n"`.
 
-     Run your code with and without the `CS324_VAR` environment variable set
-     and with different values.
+     Run the following two commands:
 
-     *What command line did you use to assign the environment variable
-     `CS324_VAR` the value of "awesome" (without quotes) such that it could be
-     retrieved by your program when it is run?* (Hint: `FOO=var ./cmd` sets the
-     value of the environment variable `FOO` to `var` for the single running
-     instance of `cmd`.)
+     ```bash
+     $ ./learn_c test.txt
+     $ CS324_VAR=foo ./learn_c test.txt
+     ```
+
+     *What is the difference between running the commands?*
+
+ 50. Run the following two commands:
+
+     ```bash
+     $ export CS324_VAR=foo
+     $ ./learn_c test.txt
+     ```
+
+     *How does this differ from running the commands in question 49?*
