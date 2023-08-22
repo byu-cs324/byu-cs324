@@ -346,14 +346,14 @@ content they refer to, whether on the stack or on the heap.
      by the variable.  That means that there is no changing the _referred-to
      address_ (or _pointer value__) of a variable declared `char[]`.
 
-     *For any of the variables, is the referred-to address (i.e., the pointer
+     *For which of the variables is the referred-to address (i.e., the pointer
      value) the same as the _address_ of the variable itself (i.e., the output
-     associated with question 10)?  If so, which and why?*  Hint: See
+     associated with question 10)?  Briefly explain.*  Hint: See
      explanatory text in this question.
 
- 12. *Do any of the variables reference the same content?  That is, are any of
-     the addresses / pointer values the same between `s1`, `s2`, and/or `s3`?
-     If so, which and why?*
+ 12. *Which of the variables reference the same content?  That is, which of the
+     addresses / pointer values are the same between `s1`, `s2`, and/or `s3`?
+     Briefly explain.*
 
  13. Use `printf()` to print out the contents of each of the array/string
      variables `s1`, `s2`, and `s3`, i.e., using the `"%s"` format, each on a
