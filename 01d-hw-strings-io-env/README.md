@@ -554,16 +554,16 @@ user-level buffering with file streams (`FILE *`).
      `memprint()` on `buf` using `BUFSIZE` showing each byte/character value as
      hexadecimal (i.e., format `"%02x"`).
 
- 33. *Did the return value from `read()` match the count value passed in?  Why
+     *Did the return value from `read()` match the count value passed in?  Why
      or why not?* (Hint: See the RETURN VALUE section in the man page for
      `read(2)`.)
 
- 34. *Was a null character included in the bytes read or immediately following
+ 33. *Was a null character included in the bytes read or immediately following
      them?  Why or why not?*  (Hint: To answer the "why" question, use the
      `cat` and `hexdump` command-line utilities to inspect the contents of
      `test.txt`.)
 
- 35. Use the `read()` system call to read up to 4 bytes from `fd2` (not
+ 34. Use the `read()` system call to read up to 4 bytes from `fd2` (not
      `fd1`!).  Instead of using `buf` as the starting point at which the read
      data should be copied, use the offset into `buf` corresponding to the
      total bytes read (i.e., `buf + totread` or `&buf[totread]`). Save the
@@ -576,59 +576,59 @@ user-level buffering with file streams (`FILE *`).
      continue where it left off after the last call?  Why?* (Hint: See the
      RETURN VALUE section in the man page for `read(2)`.)
 
- 36. You have now used two variables, in two different calls, to read from the
-     file.  *Based on your answer to question 35, does the _address_ of the
+ 35. You have now used two variables, in two different calls, to read from the
+     file.  *Based on your answer to question 34, does the _address_ of the
      variable referencing a file descriptor matter, or only its _value_?*
 
- 37. *How many total bytes have been read?*
+ 36. *How many total bytes have been read?*
 
- 38. Repeat the instructions for question 35, but this time read up to
+ 37. Repeat the instructions for question 34, but this time read up to
      `BUFSIZE - totread` bytes, instead of 4.
 
      *Did the return value from read() match the count value passed in?  Why or
      why not?* (Hint: See the RETURN VALUE section in the man page for
      `read(2)`.)
 
- 39. *How many total bytes have been read?*
+ 38. *How many total bytes have been read?*
 
- 40. *How many total bytes are in the file?* (Hint: Use the `stat` command-line
+ 39. *How many total bytes are in the file?* (Hint: Use the `stat` command-line
      utility to see the size of the file, in bytes.)
 
- 41. *What would happen if `BUFSIZE` had been specified, instead of `BUFSIZE -
+ 40. *What would happen if `BUFSIZE` had been specified, instead of `BUFSIZE -
      totread` and there were still `BUFSIZE` bytes available to read?*
 
- 42. Repeat the instructions for question 38.
+ 41. Repeat the instructions for question 37.
 
      *What is the significance of the return value of `read()`?*
      (Hint: See the RETURN VALUE section in the man page for `read(2)`.)
 
- 43. Use `printf()` to print the contents of `buf` to standard output using the
+ 42. Use `printf()` to print the contents of `buf` to standard output using the
      `"%s\n"` format string.
 
      *How does the output compare to the actual contents of the file?  Briefly
      explain your response.*
 
-     Hint: See questions 28, 34, and 38.
+     Hint: See questions 28, 33, and 37.
 
- 44. Assign the value at index `totread` to the null character (`'\0'` or 0).
-     Then repeat the instructions for question 43.
+ 43. Assign the value at index `totread` to the null character (`'\0'` or 0).
+     Then repeat the instructions for question 42.
 
-     *How does the output differ from the output printed in question 38?*
+     *How does the output differ from the output printed in question 37?*
 
- 45. Call `close()` on `fd1`, and use `printf()` to print the return value on a
+ 44. Call `close()` on `fd1`, and use `printf()` to print the return value on a
      line by itself.
 
      *What is the return value of `close()`?  What does this mean?* (Hint: See
      the RETURN VALUE section in the man page for `close(2)`.)
 
- 46. Call `close()` on `fd2` (not `fd1`!) , and use `printf()` to print the
+ 45. Call `close()` on `fd2` (not `fd1`!) , and use `printf()` to print the
      return value on a line by itself.
 
      *What is the return value of this second instance of `close()`?  What does
      this mean, and what is the likely cause?* (Hint: See the RETURN VALUE
-     section in the man page for `close(2)`. See also question 36.)
+     section in the man page for `close(2)`. See also question 35.)
 
- 47. Use `fprintf()` to print the following, in order:
+ 46. Use `fprintf()` to print the following, in order:
 
      a. `"abc"` (no newline) to standard output
      b. `"def"` (no newline) to standard error
@@ -642,7 +642,7 @@ user-level buffering with file streams (`FILE *`).
      [intro](#printf-and-friends) and the "NOTES" section of the man page for
      `stdout`.)
 
- 48. Repeat the instructions from question 47.  However, this time, use the
+ 47. Repeat the instructions from question 46.  However, this time, use the
      `fflush()` function to flush standard output immediately after printing
      `"abc"`.
 
@@ -654,7 +654,7 @@ user-level buffering with file streams (`FILE *`).
 In this section, you will write code that looks for the presence of an
 environment variable and then practice getting and setting it.
 
- 49. Use `getenv()` to assign the pointer `s1` to the string corresponding to
+ 48. Use `getenv()` to assign the pointer `s1` to the string corresponding to
      the environment variable `CS324_VAR`.  If such a value exists, then print:
      `"CS324_VAR is _____\n"` (replace `_____` with the actual value);
      otherwise, print `"CS324_VAR not found\n"`.
@@ -668,11 +668,11 @@ environment variable and then practice getting and setting it.
 
      *What is the difference between running the commands?*
 
- 50. Run the following two commands:
+ 49. Run the following two commands:
 
      ```bash
      $ export CS324_VAR=foo
      $ ./learn_c test.txt
      ```
 
-     *How does this differ from running the commands in question 49?*
+     *How does this differ from running the commands in question 48?*
