@@ -348,8 +348,8 @@ content they refer to, whether on the stack or on the heap.
 
      *For which of the variables is the referred-to address (i.e., the pointer
      value) the same as the _address_ of the variable itself (i.e., the output
-     associated with question 10)?  Briefly explain.*  Hint: See
-     explanatory text in this question.
+     associated with question 10)?  Briefly explain.*  (Hint: See explanatory
+     text in this question.)
 
  12. *Which of the variables reference the same content?  That is, which of the
      addresses / pointer values are the same between `s1`, `s2`, and/or `s3`?
@@ -606,9 +606,7 @@ user-level buffering with file streams (`FILE *`).
      `"%s\n"` format string.
 
      *How does the output compare to the actual contents of the file?  Briefly
-     explain your response.*
-
-     Hint: See questions 28, 33, and 37.
+     explain your response.* (Hint: See questions 28, 33, and 37.)
 
  43. Assign the value at index `totread` to the null character (`'\0'` or 0).
      Then repeat the instructions for question 42.
@@ -631,7 +629,9 @@ user-level buffering with file streams (`FILE *`).
  46. Use `fprintf()` to print the following, in order:
 
      a. `"abc"` (no newline) to standard output
+
      b. `"def"` (no newline) to standard error
+
      c. `"ghi\n"` to standard output
 
      Then use `write()` to print the same three strings to the same locations,
