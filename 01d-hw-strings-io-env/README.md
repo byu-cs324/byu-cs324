@@ -530,12 +530,12 @@ user-level buffering with file streams (`FILE *`).
      Run the command with `> /dev/null` appended to the end of the command
      line.
 
-     *What happens to the output when you run with `> /dev/null` appended?
+     *What happens to the output when you run with `> /dev/null` appended?*
 
  30. Run the command with `2> /dev/null` appended to the end of the command
      line.
 
-     *What happens to the output when you run with `2> /dev/null` appended?
+     *What happens to the output when you run with `2> /dev/null` appended?*
 
  31. Using the `open()` system call (not `fopen()`), open the file specified by
      the filename variable passing `O_RDONLY` as the only flag (i.e., open the
