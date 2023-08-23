@@ -611,7 +611,8 @@ user-level buffering with file streams (`FILE *`).
  43. Assign the value at index `totread` to the null character (`'\0'` or 0).
      Then repeat the instructions for question 42.
 
-     *How does the output differ from the output printed in question 37?*
+     *How does the output compare to the actual contents of the file?  Briefly
+     explain your response.* (Hint: See questions 28, 33, and 37.)
 
  44. Call `close()` on `fd1`, and use `printf()` to print the return value on a
      line by itself.
@@ -675,5 +676,5 @@ environment variable and then practice getting and setting it.
      $ ./learn_c test.txt
      ```
 
-     *How does this differ from running the commands in question 48?  Briefly
-     explain.*
+     *How does this differ from running the first of the commands in question
+     48?  Briefly explain.*
