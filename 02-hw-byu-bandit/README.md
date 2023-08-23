@@ -53,10 +53,11 @@ grep bar somefile.txt | awk '{ print $8 }' | base64 -d
 ```
 
 Note that three commands were used in the example pipeline above: `grep`,
-`awk`, and `base64`.  The output (stdout) of `grep` was connected to the input
-(stdin) of the `awk` command, and the output (stdout) of `awk` was connected to
-the stdin of the `base64` command.  There was no further command in the
-pipeline, so `base64`'s output simply goes to the console.
+`awk`, and `base64`.  The standard output of `grep` was connected to the
+standard input of the `awk` command (via a pipe), and the standard output of
+`awk` was connected to the standard input of the `base64` command (via a pipe).
+There was no further command in the pipeline, so `base64`'s standard output
+simply goes to the console.
 
 When learning the password for Level 8 (i.e., as the `bandit7` user), the
 suspend/resume does not need to be done as part of the "one-liner".  Those
@@ -160,22 +161,58 @@ grep bar somefile.txt | awk '{ print $8 }' | base64 -d
 
  - Use the man pages to learn about a command, as they are the primary
    documentation!  You can also find helpful examples on the Web.
- - Where a pipelined command begins with a command that can receive input from
-   stdin, and the initial input is a file, one way of doing it is to use `<` to
-   open the file and send it to the stdin of the first command.
  - To suspend the pipeline currently running in the foreground, use `ctrl`+`z`.
    Use `fg` to resume.  For more information, See the sections on
    `REDIRECTION`, `Pipelines` (under `SHELL GRAMMAR`), and `JOB CONTROL` in the
    `bash` man page.
- - You can duplicate stderr output on stdout by using `2>&1`.
- - You can redirect stderr output to `/dev/null` by adding `2> /dev/null` to
-   the end of a command.
- - The `awk` command is pretty extensive and indeed includes a whole language.
-   However, one of the common uses is to print a single space-delimited field
-   from every line.  For example, a simple `awk` script to print out just the
-   second (space-delimited) field of text from every line, the following
-   command would work:
+ - Where a pipelined command begins with a command that can receive input from
+   standard input, and the initial input is a file, one way of doing it is to
+   use `<` to open the file and send it to the standard input of the first
+   command.  For example:
+   ```bash
+   cat < file.txt
+   cat < file.txt | grep f
    ```
+ - You can redirect standard output or standard error to `/dev/null` (or any
+   file) by adding `> /dev/null` or `2> /dev/null`, respectively, to the end of
+   a command.  What this says is that before the command is run, `/dev/null` is
+   opened for writing and then file descriptor 1 (standard output, implied) or
+   file descriptor 2 (standard error), respectively, should point to whatever
+   file descriptor resulting from the newly-opened `/dev/null` file points to.
+   (Also, `/dev/null` isn't actually a file but is really just a file-like
+   device to "write" things that won't be kept.)  For example:
+   ```bash
+   echo foo > /dev/null
+   echo foo 2> /dev/null
+   echo foo 2> /dev/null | grep f
+   ```
+ - You can the duplicate standard error of a command onto its standard output
+   by using `2>&1`.  What this is saying is that file descriptor 2 (standard
+   error) should point to whatever file descriptor 1 (standard output) points
+   to.  Something like this is useful for sending both standard output _and_
+   standard error to the next command in a pipeline, rather than only the
+   standard output.  With a pipelined command, redirecting standard output of
+   the command to the pipe always happens before any file descriptor
+   duplication.  For example:
+   ```bash
+   echo foo 2>&1
+   echo foo 2>&1 | grep f
+   ```
+ - You combine redirection and duplication to send output from both standard
+   output and standard error to the same file.  For example:
+   ```bash
+   echo foo > /dev/null 2>&1
+   ```
+   Note that the order here is that the standard output of `echo` is redirected
+   to `/dev/null`, and then the standard error of `echo` is duplicated onto
+   standard output.  If the order were reversed, you would get different results.
+   Think about why that might be.
+ - The `awk` command is pretty extensive and indeed includes a whole language.
+   However, one of the common uses is to print one or more fields from every a
+   space-delimited line of input.  For example, a simple `awk` script to print
+   out just the second field of text from every line, the following command
+   would work:
+   ```bash
    awk '{ print $2 }'
    ```
  - `dig` and `curl` and are commands used to issue a request to a Domain Name
@@ -183,7 +220,10 @@ grep bar somefile.txt | awk '{ print $8 }' | base64 -d
    respectively.  You can try them out with different domain names, types, or
    URLs, to see how they work, but you shouldn't need to do anything fancy with
    them for this assignment.  You will find the `+short` option useful for
-   `dig`.
+   `dig`.  For example:
+   ```bash
+   dig +short example.com A
+   ```
 
 
 # Submission
