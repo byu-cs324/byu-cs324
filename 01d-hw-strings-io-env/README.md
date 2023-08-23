@@ -30,7 +30,6 @@ assignment:
  - `stderr`
  - `fileno()`
  - `open()`
- - `fopen()`
  - `read()`
  - `close()`
  - `getenv()`
@@ -38,22 +37,37 @@ assignment:
 
 # Instructions
 
-For each of the sections that follow, follow the instructions, and answer the
-questions.  The point is to learn concepts by seeing them in action along the
-way.  For most questions, you will want to re-compile and re-run the
-program _after each question_:
+This file contains questions divided into seven parts, beginning with an
+[introduction](#introduction---characters-encoding-and-presentation)
+and followed by parts
+[1](#part-1---arrays-strings-pointers-and-memory-allocation) through
+[6](#part-6---getting-and-setting-environment-variables).
+The instructions in each part provide exercises for learning about memory
+allocation, strings, I/O, and environment variables in C.  The file `learn_c.c`
+contains a function corresponding each part, in which you will do the specified
+work.
+
+Follow the instructions for and answer each question.  For most questions, you
+will re-compile and re-run the program using the following commands:
 
 ```bash
 $ gcc -Wall -Wno-unused-variable -o learn_c learn_c.c
 $ ./learn_c test.txt
 ```
 
-The `-o` option designates the name of the binary file resulting from
-compilation.  The combined options `-Wall -Wno-unused-variable` mean to show
-all compilation warnings, _except_ unused variables.
+`gcc` is the GNU compiler collection, the C compiler that will be used.  The
+`-o` option designates the name of the binary file resulting from compilation.
+The combined options `-Wall -Wno-unused-variable` mean to show all compilation
+warnings, _except_ warnings associated with unused variables.
 
 Note that several exercises will have you modify the command line that you use
 to get different results.
+
+All of the exercises and questions are supposed to be taken at face value.
+They might seem a little too straight-forward, but the point is to teach you
+the concepts in a simple, hands-on way.  Important concepts include where a
+variable lives and the content it refers to, either directly (e.g., an integer)
+or indirectly (a pointer).
 
 
 # Introduction - Characters, Encoding, and Presentation
@@ -416,7 +430,7 @@ by the compiler when arrays and pointers are used.
      the values are equal.
 
      *Which arrays/strings have the same content and why?* (Hint: See both the
-     Intro and questions 2 through 4).
+     [introduction section](#ascii) and questions 2 through 4.)
 
 
 # Part 4 - String Comparison
@@ -649,6 +663,7 @@ user-level buffering with file streams (`FILE *`).
 
      *What differences do you observe in the output of the strings using
      `fprintf()` vs. using `write()` and why?*
+
 
 # Part 6 - Getting and Setting Environment Variables
 
