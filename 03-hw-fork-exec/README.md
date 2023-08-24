@@ -80,6 +80,16 @@ this, you will want to read all of problems 4 through 11 before you start.
     *Show the two `ps` commands you used, each followed by its respective
     output.*
 
+    Note: to copy the command and output from only a single tmux pane, do the
+    following:
+
+    - Select the pane from which you want to copy.
+    - Push `ctrl`+`b` then `z` to "zoom" into (i.e., show only) the selected
+      pane.
+    - Hold down `shift` and select with your mouse the area you want to copy.
+    - Copy (`ctrl`+`c` or `ctrl`+`shift`+`c`) the hightlighted text.
+    - Push `ctrl`+`b` then `z` to "un-zoom" the selected pane.
+
  5. *What is different between the output of the two `ps` commands?  Briefly
     explain.*
 
