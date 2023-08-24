@@ -54,7 +54,7 @@ want to consider these questions as you go through that part.
 
 In the next few steps, you will be using the `ps` command to examine how the
 process(es) associated with the `fork` program change over time. Because of
-this, you will want to read all of problems 10 through 17 before you start.
+this, you will want to read all of problems 4 through 11 before you start.
 
  4. In the left pane of your tmux window, run the `fork` program.  In the
     right pane, run the `ps` command _twice_, according to the following
@@ -254,7 +254,7 @@ might want to revisit these questions after you go through that part.
 
 In the next steps, you will be using the `ps` command to examine how a process
 associated with the `exec` program changes over time. Because of this, you will
-want to read all of problems 3 through 6 before you start.
+want to read all of problems 20 through 23 before you start.
 
  20. In the left ("command execution") pane of your tmux window, run the `exec`
      program, passing `/bin/cat` as the first command-line argument. *Show your
