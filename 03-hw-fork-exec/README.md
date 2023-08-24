@@ -41,7 +41,7 @@ Open `fork.c`, and look at what it does.  Then answer the following questions.
 Note that you will be _testing_ the behavior of `fork.c` in Part 2, so you will
 want to consider these questions as you go through that part.
 
- 1. *Briefly describe its behavior.*
+ 1. *Briefly describe the behavior of `fork.c`.*
 
  2. *Which sections (i.e., of "A", "B", "C", and "D") are run by the parent
     process?*
