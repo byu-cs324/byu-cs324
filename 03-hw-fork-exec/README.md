@@ -189,8 +189,8 @@ the same system-wide file description can write to the same open file.
 
  14. *Based on both the contents of `fork-output.txt` and what was written to
      the terminal, which file descriptor(s) were inherited by the child
-     process?  (Hint: See "Note the following further points" in the man page
-     for `fork()`.)*
+     process?*  (Hint: See "Note the following further points" in the man page
+     for `fork()`.)
 
  15. Consider the timing of the `fprintf()` calls made 1) before the `fork()`,
      2) in section B, and 3) in section C.  In each call a process wrote to
@@ -259,13 +259,14 @@ between different processes.
      Re-`make` and run the newly recompiled `fork`.  *Show the output of your
      program.*
 
- 19. *Why is it important for `pipe()` to come before `fork()`?*  (Hint: See
-     "Note the following further points" in the man page for `fork()`)
+ 19. *Is the ordering of `pipe()` and `fork()` important?  Why or why not?*
+     (Hint: See "Note the following further points" in the man page for
+     `fork()`)
 
  20. The way that you have set things up, one process is writing to the pipe,
-     and another is reading from the pipe.  Can the communication also go in
+     and another is reading from the pipe.  *Can the communication also go in
      reverse order, such that two processes were reading and writing to one
-     another over the same pipe?  (Hint: see the man page for `pipe(7)`.)
+     another over the same pipe?*  (Hint: see the man page for `pipe(7)`.)
 
  21. Modify `fork.c` according to the following:
 
@@ -296,8 +297,8 @@ between different processes.
      return?*  (Hint: See the man page for `pipe(7)`.)
 
  25. *What was the effect of the call referred to in the previous question, as
-     evidenced by the number of bytes returned?  (Hint: See the man pages for
-     `pipe(7)`.and `pipe(0)`)
+     evidenced by the number of bytes returned?*  (Hint: See the man pages for
+     `pipe(7)`.and `pipe(2)`)
 
 
 # Part 5: `execve()` Overview
