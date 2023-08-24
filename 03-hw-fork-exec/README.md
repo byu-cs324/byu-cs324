@@ -1,7 +1,7 @@
 # `fork` and `exec`
 
 The purpose of this assignment is to give you hands-on experience with
-`fork()`, `exec()`, and `pipe()` system calls, by walking you through various
+`fork()`, `execve()`, and `pipe()` system calls, by walking you through various
 iterative exercises and examining the resulting output.  Read the entire
 assignment before beginning!
 
@@ -21,7 +21,7 @@ assignment before beginning!
     - `dup2()`
 
  2. Run `make` to build two executables: `fork` and `exec`.  These are programs
-    that illustrate the system calls `fork()` and `exec()`.
+    that illustrate the system calls `fork()` and `execve()`.
 
  3. Start a tmux session.  Create two panes, such that the window looks like
     this:
@@ -155,16 +155,18 @@ the same system-wide file description can write to the same open file.
      - Comment out _all_ `printf()` calls that print "...done sleeping".
      - Before the call to `fork()`, open the file `fork-output.txt` for writing
        (see the man page for `fopen`).
-     - Write "BEFORE FORK\n" to the file before the call to `fork()`.  Call
-       `fflush()` on the file stream immediately after writing.
+     - Write "BEFORE FORK (%d)\n" to the file before the call to `fork()`,
+       replacing "%d" with the file descriptor of the newly opened file (see
+       the man page for `fileno()`).
+     - Call `fflush()` on the file stream immediately after writing.
 
-       Note that any data buffered in a file stream will be copied to the
-       newly-created process created by `fork()` and that any such data would
-       be printed twice--once each process flushes the buffer associated with
-       its own copy of that file stream.  Calling `fflush()` makes sure the
-       buffer is completely flushed before `fork()` to avoid this potentially
-       confusing scenario.
-     - In section B, the following, in order:
+       Note that any data buffered in a file stream is part of the user-space
+       memory that is copied to the newly-created process created by `fork()`.
+       Thus, any such data would be printed twice--once each process flushes
+       the buffer associated with its own copy of that file stream.  Calling
+       `fflush()` makes sure the buffer is completely flushed before `fork()`
+       to avoid this potentially confusing scenario.
+     - In section B, do the following, in order:
        - Sleep for 5 seconds
        - write "SECTION B (%d)\n" to the file, replacing "%d" with the
          file descriptor of the newly opened file (see the man page for
@@ -187,27 +189,34 @@ the same system-wide file description can write to the same open file.
 
  14. *Based on both the contents of `fork-output.txt` and what was written to
      the terminal, which file descriptor(s) were inherited by the child
-     process?  (Hint: See also the "Note the following further points" in the
-     man page for `fork()`.)*
+     process?  (Hint: See "Note the following further points" in the man page
+     for `fork()`.)*
 
- 15. Consider the timing of the two `fprintf()` calls made in section B and C,
-     which caused processes to write to `fork-output.txt`.  The execution of
-     one call clearly occurred before the other.
+ 15. Consider the timing of the `fprintf()` calls made 1) before the `fork()`,
+     2) in section B, and 3) in section C.  In each call a process wrote to
+    `fork-output.txt`, and the writes were orchestrated such that they happened
+     in a specific order.
 
-     *Based on the content of `fork-output.txt`, did the later process start
-     writing to the file at the beginning, or continue where it left off after
-     the previous call?  Why?  (Hint: See the section titled "Open file
-     descriptions" in the man page for `open(2)`.)*
+     *Based on the content of `fork-output.txt`, did the second write pick up
+     where the first write left off, or did it start over at the beginning?
+     Why?*  (Hint: See "Note the following further points" in the man page
+     for `fork()` and the section titled "Open file descriptions" in the man
+     page for `open(2)`.)
 
- 16. Consider the timing of the `fclose()` call in relation to the later call
-     to `fprintf()` that  caused processes to write to `fork-output.txt`.  The
-     execution of `fclose()` clearly occurred before the second call to
-     `fprintf()`.
+ 16. *Based on the content of `fork-output.txt`, did the third write pick up
+     where the second write left off, or did it start over at the beginning?
+     Why?*  (Hint: See "Note the following further points" in the man page
+     for `fork()` and the section titled "Open file descriptions" in the man
+     page for `open(2)`.)
 
-     *Based on the content of `fork-output.txt`, was the later process able to
-     write to the file after it was closed?  Why or why not?  (Hint: See the
-     second paragraph in the "DESCRIPTION" section of the man page for
-     `close(2)`.)*
+ 17. Consider the timing of the `fclose()` call in relation to the third write
+     to `fork-output.txt`.  The execution of `fclose()` clearly occurred before
+     the third call.
+
+     *Based on the content of `fork-output.txt`, did this third write succeed?
+     Why or why not?*  (Hint: See "Note the following further points" in the
+     man page for `fork()` and the second paragraph in the "DESCRIPTION"
+     section of the man page for `close(2)`.)
 
 
 # Part 4: Pipes
@@ -215,7 +224,7 @@ the same system-wide file description can write to the same open file.
 In this section, you will learn how pipes are created and used to communicate
 between different processes.
 
- 17. Modify `fork.c` according to the following:
+ 18. Modify `fork.c` according to the following:
 
      - Prior to the call to `fork()`, open a pipe (see the man page for
        `pipe()`).
@@ -224,12 +233,13 @@ between different processes.
          (see the man pages for `pipe()` and `close()`).
        - Write "hello from Section B\n" to the file descriptor corresponding to
          the _write_ end of the pipe (see the man page for `write(2)`).  Note
-         that unlike `fputs()`, which takes a null-terminated string (`char *`)
+         that unlike `fprintf()`, which takes a null-terminated string (`char *`)
          as input and writes to a buffered file stream (`FILE *`), `write()`
          simply takes a file descriptor, a pointer to a memory location and a
          number of bytes.  Thus, you will need to specify the length of the
          string.  If the length is incorrect, the command will yield unexpected
          results.
+       - Call `close()` on the write end of the pipe.
      - In section C:
        - Close the file descriptor corresponding to the _write_ end of the
          pipe (see the man pages for `pipe()` and `close()`).
@@ -238,37 +248,80 @@ between different processes.
          Save the number of bytes read (return value of `read()`), and use that
          value to add a null character after them, so string operations can be
          performed on it (see the man page for `string`).
+       - Print the number of bytes received from calling `read()` on the pipe.
        - Print the string retrieved from `read()` to stdout.  Note that
          `printf()` and `fprintf()` require a null-terminated string, i.e., to
          know where the string ends.  If you have not properly added the null
-         character, the command will yield unexpected results.
+         character, the command will yield unexpected results.  See an example
+         of adding the null byte
+         [here](../01d-hw-strings-io-env#part-5---inputoutput).
 
      Re-`make` and run the newly recompiled `fork`.  *Show the output of your
      program.*
 
+ 19. *Why is it important for `pipe()` to come before `fork()`?*  (Hint: See
+     "Note the following further points" in the man page for `fork()`)
 
-# Part 5: `exec()` Overview
+ 20. The way that you have set things up, one process is writing to the pipe,
+     and another is reading from the pipe.  Can the communication also go in
+     reverse order, such that two processes were reading and writing to one
+     another over the same pipe?  (Hint: see the man page for `pipe(7)`.)
+
+ 21. Modify `fork.c` according to the following:
+
+     - In section B:
+       - Immediately before writing "hello..." to the write end of the pipe,
+         sleep for 10 seconds.
+       - Immediately before calling `close()` on the write end of the pipe,
+         sleep for 10 seconds.
+     - In section C:
+       - After reading from the pipe and printing the results, perform a second
+         read from the pipe, and again print the number of bytes read from the
+         pipe.
+
+     Re-`make` and run the newly recompiled `fork`.
+
+     *How many bytes were received as a result of the second read from the
+     pipe?*
+
+ 22. Consider the timing of both the first and the second calls to `read()` on
+     the pipe, in relation to calls made by the other process.  *What happens
+     when `read()` is called on an empty pipe (i.e., where no data has been
+     written to it)?*  (Hint: See the man page for `pipe(7)`.)
+
+ 23. *What call in the other process caused the first call to `read()` to
+     return?*  (Hint: See the man page for `pipe(7)`.)
+
+ 24. *What call in the other process caused the second call to `read()` to
+     return?*  (Hint: See the man page for `pipe(7)`.)
+
+ 25. *What was the effect of the call referred to in the previous question, as
+     evidenced by the number of bytes returned?  (Hint: See the man pages for
+     `pipe(7)`.and `pipe(0)`)
+
+
+# Part 5: `execve()` Overview
 
 Open `exec.c`, and look at what it does.  Then answer the following questions.
 Note that you will be _testing_ the behavior of `exec.c` in Part 6, so you
 might want to revisit these questions after you go through that part.
 
- 18. *Briefly describe the behavior of `exec.c`.*
+ 26. *Briefly describe the behavior of `exec.c`.*
 
- 19. *At what point will the final `printf()` statement get executed?*
+ 27. *At what point will the final `printf()` statement get executed?*
 
 
-# Part 6: `exec()` Experimentation
+# Part 6: `execve()` Experimentation
 
 In the next steps, you will be using the `ps` command to examine how a process
 associated with the `exec` program changes over time. Because of this, you will
 want to read all of problems 20 through 23 before you start.
 
- 20. In the left ("command execution") pane of your tmux window, run the `exec`
+ 28. In the left ("command execution") pane of your tmux window, run the `exec`
      program, passing `/bin/cat` as the first command-line argument. *Show your
      terminal commands and the output.*
 
- 21. In the right ("system analysis") pane of your tmux window, run the `ps`
+ 29. In the right ("system analysis") pane of your tmux window, run the `ps`
      command, first during the initial 30-second `sleep()` call, then again after
      the first 30 seconds is over, but before the end of the program.
 
@@ -286,26 +339,27 @@ want to read all of problems 20 through 23 before you start.
 
      *Show your terminal commands and the output.*
 
- 22. *Which fields (if any) have changed in the output of the two ps commands?
+ 30. *Which fields (if any) have changed in the output of the two ps commands?
      Briefly explain.*
 
      (You can use `ctrl`+`d` to signal end of file (EOF), so the program will
      run to completion)
 
- 23. Run the `exec` program again, but this time using a non-existent program
+ 31. Run the `exec` program again, but this time using a non-existent program
      (e.g., `/does-not-exist`) as an argument.  *Show the output, and briefly
      explain what happened.*
 
-Now would be a good time to review questions 1 and 2, both to confirm or update
-your answers and to check your understanding.
+Now would be a good time to review questions 26 and 27, both to confirm or
+update your answers and to check your understanding.
 
 
-# Part 7: Combining `fork()` and `exec()`
+# Part 7: Combining `fork()` and `execve()`
 
 In this section, you will learn hands-on how file descriptors are inherited by
-child processes and maintained after a call to `exec`.
+child processes after a call to `fork()` and maintained after a call to
+`execve()`.
 
- 24. Modify `fork.c` according to the following:
+ 32. Modify `fork.c` according to the following:
 
      - Copy the contents of the `main()` function in `exec.c` into `fork.c` in
        such a way that the _child_ process created with the call to `fork()`
@@ -335,7 +389,13 @@ child processes and maintained after a call to `exec`.
 In this section, you will learn hands-on how file descriptors can be duplicated
 using `dup2()`.
 
- 25. Modify `fork.c` according to the following:
+ 33. First make a copy of `fork-output.txt` with the following:
+
+     ```bash
+     $ cp fork-output.txt fork-output-old.txt
+     ```
+
+     Modify `fork.c` according to the following:
 
      - Immediately before calling `execve()`, duplicate the file descriptor
        associated with the file stream you opened in connection with
@@ -345,6 +405,17 @@ using `dup2()`.
        ordering of the arguments passed to `dup2()`, or this will not work
        properly.
 
+     Here is a brief explanation about `dup2()`.  The man page gives the
+     following synopsis:
+     ```
+     int dup2(int oldfd, int newfd);
+     ```
+     The man page explains that "the file descriptor `newfd` is adjusted so
+     that it now refers to the same open file description as `oldfd`."  In
+     other words when `dup2(4, 5)` is called, file descriptor 5 is closed and
+     re-opened to point to the same file description pointed to by file
+     descriptor 4.
+
      Re-make and execute the following to show that it works:
 
      ```
@@ -352,4 +423,7 @@ using `dup2()`.
      ```
 
      *Show the output from running the pipeline. Also show the contents of
+     `fork-output.txt`.*
+
+ 34. *What is now the difference between `fork-output-old.txt` and
      `fork-output.txt`.*
