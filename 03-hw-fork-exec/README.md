@@ -35,135 +35,82 @@ assignment before beginning!
     ```
 
 
-# Part 1: `exec()` Overview
+# Part 1: `fork()` Overview
 
-Open `exec.c`, and look at what it does.  Then answer the following questions.
-Note that you will be _testing_ the behavior of `exec.c` in Part 2, so you
-might want to revisit these questions after you go through that part.
+Open `fork.c`, and look at what it does.  Then answer the following questions.
+Note that you will be _testing_ the behavior of `fork.c` in Part 2, so you will
+want to consider these questions as you go through that part.
 
- 1. *Briefly describe the behavior of `exec.c`.*
+ 1. *Briefly describe its behavior.*
 
- 2. *At what point will the final `printf()` statement get executed?*
+ 2. *Which sections (i.e., of "A", "B", "C", and "D") are run by the parent
+    process?*
+
+ 3. *Which sections (i.e., of "A", "B", "C", and "D") are run by the child
+    process?*
 
 
-# Part 2: `exec()` Experimentation
+# Part 2: `fork()` Experimentation
 
-In the next steps, you will be using the `ps` command to examine how a process
-associated with the `exec` program changes over time. Because of this, you will
-want to read all of problems 3 through 6 before you start.
+In the next few steps, you will be using the `ps` command to examine how the
+process(es) associated with the `fork` program change over time. Because of
+this, you will want to read all of problems 10 through 17 before you start.
 
- 3. In the left ("command execution") pane of your tmux window, run the `exec`
-    program, passing `/bin/cat` as the first command-line argument. *Show your
-    terminal commands and the output.*
+ 4. In the left pane of your tmux window, run the `fork` program.  In the
+    right pane, run the `ps` command _twice_, according to the following
+    timing:
+    - during the 30 seconds of sleep immediately following the printing of
+      "Section B" and "Section C".
+    - after "Section B done sleeping" is printed.
 
- 4. In the right ("system analysis") pane of your tmux window, run the `ps`
-    command, first during the initial 30-second `sleep()` call, then again after
-    the first 30 seconds is over, but before the end of the program.
+    Use the `-p`, `-o`, and `--forest` options when you run `ps` so that,
+    respectively:
 
-    Use the `-p` and `-o` options when you run `ps` so that, respectively:
-
-    - only the process with the PID output by `exec` is shown
+    - only the processes with the PIDs output by `fork` are shown
     - the `ps` output is formatted to have the following fields:
       - `user`: the username of the user running the process
       - `pid`: the process ID of the process
       - `ppid`: the process ID of the parent process
       - `state`: the state of the process, e.g., "Running", "Sleep", "Zombie"
       - `ucmd`: the command executed
+    - the process ancestry is illustrated
 
     Use the man page for `ps` for more on how to use these options.
 
-    *Show your terminal commands and the output.*
+    *Show the two `ps` commands you used, each followed by its respective
+    output.*
 
- 5. *Which fields (if any) have changed in the output of the two ps commands?
-    Briefly explain.*
-    
-    (You can use `ctrl`+`d` to signal end of file (EOF), so the program will
-    run to completion)
+ 5. *What is different between the output of the two `ps` commands?  Briefly
+    explain.*
 
- 6. Run the `exec` program again, but this time using a non-existent program
-    (e.g., `/does-not-exist`) as an argument.  *Show the output, and briefly
-    explain what happened.*
+ 6. If you were to run the `fork` and `ps` commands from question 4 again at
+    the same times as you did before, *what special line of code could you add
+    to `fork.c` to eliminate the process with state "Z" from the output of the
+    second `ps` command?*
 
-Now would be a good time to review questions 1 and 2, both to confirm or update
-your answers and to check your understanding.
+ 7. Referring to the previous question, *where would this line most
+    appropriately go?*  Remember, you want the output of the _first_ `ps`
+    command to look the same as it did before; only the output of the second
+    `ps` command should be different.
 
+ 8. Add the line of code referenced in question 6 to the location referenced
+    in question 7.  Then call `make` to re-compiled `fork.c`. (Note that you
+    may also need to add a few `#include` statements at the top of the file
+    for it to compile and run properly.  See the man page for the function to
+    learn which to include.)
 
-# Part 3: `fork()` Overview
+    Follow the instructions from question 4 again to verify your answers to
+    questions 6 and 7.
 
-Open `fork.c`, and look at what it does.  Then answer the following questions.
-Note that you will be _testing_ the behavior of `fork.c` in Part 4, so you will
-want to consider these questions as you go through that part.
+    *Show the two `ps` commands you used, each followed by its respective
+    output.*
 
- 7. *Briefly describe its behavior.*
+ 9. *What is different between the output of the two `ps` commands?  Briefly
+    explain.*
 
- 8. *Which sections (i.e., of "A", "B", "C", and "D") are run by the parent
-    process?*
+ 10. Modify `fork.c` according to the following:
 
- 9. *Which sections (i.e., of "A", "B", "C", and "D") are run by the child
-    process?*
-
-
-# Part 4: `fork()` Experimentation
-
-In the next few steps, you will be using the `ps` command to examine how the
-process(es) associated with the `fork` program change over time. Because of
-this, you will want to read all of problems 10 through 17 before you start.
-
- 10. In the left pane of your tmux window, run the `fork` program.  In the
-     right pane, run the `ps` command _twice_, according to the following
-     timing:
-     - during the 30 seconds of sleep immediately following the printing of
-       "Section B" and "Section C".
-     - after "Section B done sleeping" is printed.
-
-     Use the `-p`, `-o`, and `--forest` options when you run `ps` so that,
-     respectively:
-
-     - only the processes with the PIDs output by `fork` are shown
-     - the `ps` output is formatted to have the following fields:
-       - `user`: the username of the user running the process
-       - `pid`: the process ID of the process
-       - `ppid`: the process ID of the parent process
-       - `state`: the state of the process, e.g., "Running", "Sleep", "Zombie"
-       - `ucmd`: the command executed
-     - the process ancestry is illustrated
-
-     Use the man page for `ps` for more on how to use these options.
-
-     *Show the two `ps` commands you used, each followed by its respective
-     output.*
-
- 11. *What is different between the output of the two `ps` commands?  Briefly
-     explain.*
-    
- 12. If you were to run the `fork` and `ps` commands from question 10 again at
-     the same times as you did before, *what special line of code could you add
-     to `fork.c` to eliminate the process with state "Z" from the output of the
-     second `ps` command?*
-
- 13. Referring to the previous question, *where would this line most
-     appropriately go?*  Remember, you want the output of the _first_ `ps`
-     command to look the same as it did before; only the output of the second
-     `ps` command should be different.
-
- 14. Add the line of code referenced in question 12 to the location referenced
-     in question 13.  Then call `make` to re-compiled `fork.c`. (Note that you
-     may also need to add a few `#include` statements at the top of the file
-     for it to compile and run properly.  See the man page for the function to
-     learn which to include.)
-
-     Follow the instructions from question 10 again to verify your answers to
-     questions 12 and 13.
-
-     *Show the two `ps` commands you used, each followed by its respective
-     output.*
-
- 15. *What is different between the output of the two `ps` commands?  Briefly
-     explain.*
-    
- 16. Modify `fork.c` according to the following:
-
-     - Comment out the line of code you added in question 14.
+     - Comment out the line of code you added in question 8.
      - Replace the single call to `sleep()` in Section B with two 30-second
        `sleep()` calls, back-to-back.
      - Replace the two back-to-back calls to `sleep()` in Section C with a
@@ -171,30 +118,30 @@ this, you will want to read all of problems 10 through 17 before you start.
 
      Re-`make`, then run `fork` in the left pane of your tmux window.  In the
      right pane, run the `ps` command _twice_, with the same options as in
-     question 10, according to the following timing:
+     question 4, according to the following timing:
      - during the 30 seconds of sleep immediately following the printing of
        "Section B" and "Section C".
      - after "Section C done sleeping" is printed.
 
      *Show the two `ps` commands, each followed by its respective output.*
 
- 17. *What is different between the output of the two `ps` commands?  Briefly
+ 11. *What is different between the output of the two `ps` commands?  Briefly
      explain.*
-    
+
 You can now close the right pane in tmux.  Further commands will only use a
 single pane.
 
-Now would be a good time to review questions 7 through 9, both to confirm or
+Now would be a good time to review questions 1 through 3, both to confirm or
 update your answers and to check your understanding.
 
 
-# Part 5: File Descriptor Inheritance and File Description Sharing
+# Part 3: File Descriptor Inheritance and File Description Sharing
 
 In this section, you will learn hands-on how file descriptors are inherited by
 child processes, and how two different processes with descriptors referencing
 the same system-wide file description can write to the same open file.
 
- 18. Modify `fork.c` according to the following:
+ 12. Modify `fork.c` according to the following:
 
      - Comment out _all_ calls to `sleep()`.
      - Comment out _all_ `printf()` calls that print "...done sleeping".
@@ -227,15 +174,15 @@ the same system-wide file description can write to the same open file.
      Re-`make` and run the newly recompiled `fork`. *Using `cat`, show the
      contents of the `fork-output.txt` file you created.*
 
- 19. *Based on the contents of `fork-output.txt`, Which process(es) wrote to
+ 13. *Based on the contents of `fork-output.txt`, Which process(es) wrote to
      the file?*
 
- 20. *Based on both the contents of `fork-output.txt` and what was written to
+ 14. *Based on both the contents of `fork-output.txt` and what was written to
      the terminal, which file descriptor(s) were inherited by the child
      process?  (Hint: See also the "Note the following further points" in the
      man page for `fork()`.)*
 
- 21. Consider the timing of the two `fprintf()` calls made in section B and C,
+ 15. Consider the timing of the two `fprintf()` calls made in section B and C,
      which caused processes to write to `fork-output.txt`.  The execution of
      one call clearly occurred before the other.
 
@@ -244,7 +191,7 @@ the same system-wide file description can write to the same open file.
      the previous call?  Why?  (Hint: See the section titled "Open file
      descriptions" in the man page for `open(2)`.)*
 
- 22. Consider the timing of the `fclose()` call in relation to the later call
+ 16. Consider the timing of the `fclose()` call in relation to the later call
      to `fprintf()` that  caused processes to write to `fork-output.txt`.  The
      execution of `fclose()` clearly occurred before the second call to
      `fprintf()`.
@@ -255,12 +202,12 @@ the same system-wide file description can write to the same open file.
      `close(2)`.)*
 
 
-# Part 6: Pipes
+# Part 4: Pipes
 
 In this section, you will learn how pipes are created and used to communicate
 between different processes.
 
- 23. Modify `fork.c` according to the following:
+ 17. Modify `fork.c` according to the following:
 
      - Prior to the call to `fork()`, open a pipe (see the man page for
        `pipe()`).
@@ -292,6 +239,59 @@ between different processes.
      program.*
 
 
+# Part 5: `exec()` Overview
+
+Open `exec.c`, and look at what it does.  Then answer the following questions.
+Note that you will be _testing_ the behavior of `exec.c` in Part 6, so you
+might want to revisit these questions after you go through that part.
+
+ 18. *Briefly describe the behavior of `exec.c`.*
+
+ 19. *At what point will the final `printf()` statement get executed?*
+
+
+# Part 6: `exec()` Experimentation
+
+In the next steps, you will be using the `ps` command to examine how a process
+associated with the `exec` program changes over time. Because of this, you will
+want to read all of problems 3 through 6 before you start.
+
+ 20. In the left ("command execution") pane of your tmux window, run the `exec`
+     program, passing `/bin/cat` as the first command-line argument. *Show your
+     terminal commands and the output.*
+
+ 21. In the right ("system analysis") pane of your tmux window, run the `ps`
+     command, first during the initial 30-second `sleep()` call, then again after
+     the first 30 seconds is over, but before the end of the program.
+
+     Use the `-p` and `-o` options when you run `ps` so that, respectively:
+
+     - only the process with the PID output by `exec` is shown
+     - the `ps` output is formatted to have the following fields:
+       - `user`: the username of the user running the process
+       - `pid`: the process ID of the process
+       - `ppid`: the process ID of the parent process
+       - `state`: the state of the process, e.g., "Running", "Sleep", "Zombie"
+       - `ucmd`: the command executed
+
+     Use the man page for `ps` for more on how to use these options.
+
+     *Show your terminal commands and the output.*
+
+ 22. *Which fields (if any) have changed in the output of the two ps commands?
+     Briefly explain.*
+
+     (You can use `ctrl`+`d` to signal end of file (EOF), so the program will
+     run to completion)
+
+ 23. Run the `exec` program again, but this time using a non-existent program
+     (e.g., `/does-not-exist`) as an argument.  *Show the output, and briefly
+     explain what happened.*
+
+Now would be a good time to review questions 1 and 2, both to confirm or update
+your answers and to check your understanding.
+
+
 # Part 7: Combining `fork()` and `exec()`
 
 In this section, you will learn hands-on how file descriptors are inherited by
@@ -320,6 +320,7 @@ child processes and maintained after a call to `exec`.
      flushed.  In this case, the statements you wrote to `fork-output.txt`
      in the child process_before_ calling `execve()` will never make it to the
      file!  You could fix this by using `fflush()` immediately after `fprintf()`.
+
 
 # Part 8: File Descriptor Duplication
 
