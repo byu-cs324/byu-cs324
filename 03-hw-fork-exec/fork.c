@@ -15,6 +15,7 @@ int main(int argc, char *argv[]) {
 	/* BEGIN SECTION A */
 
 	printf("Section A;  pid %d\n", getpid());
+	sleep(5);
 
 	/* END SECTION A */
 	if (pid == 0) {

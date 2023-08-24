@@ -99,9 +99,7 @@ this, you will want to read all of problems 4 through 11 before you start.
     second `ps` command?*
 
  7. Referring to the previous question, *where would this line most
-    appropriately go?*  Remember, you want the output of the _first_ `ps`
-    command to look the same as it did before; only the output of the second
-    `ps` command should be different.
+    appropriately go?*
 
  8. Add the line of code referenced in question 6 to the location referenced
     in question 7.  Then call `make` to re-compiled `fork.c`. (Note that you
@@ -121,10 +119,10 @@ this, you will want to read all of problems 4 through 11 before you start.
  10. Modify `fork.c` according to the following:
 
      - Comment out the line of code you added in question 8.
-     - Replace the single call to `sleep()` in Section B with two 30-second
-       `sleep()` calls, back-to-back.
-     - Replace the two back-to-back calls to `sleep()` in Section C with a
-       single 30-second `sleep()` call.
+     - Replace the single 30-second call to `sleep()` in Section B with two
+       30-second `sleep()` calls, back-to-back.
+     - Replace the 60-second `sleep()` in Section C with a 30-second `sleep()`
+       call.
 
      Re-`make`, then run `fork` in the left pane of your tmux window.  In the
      right pane, run the `ps` command _twice_, with the same options as in
