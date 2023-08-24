@@ -15,7 +15,6 @@ int main(int argc, char *argv[]) {
 	/* BEGIN SECTION A */
 
 	printf("Section A;  pid %d\n", getpid());
-	sleep(30);
 
 	/* END SECTION A */
 	if (pid == 0) {
@@ -32,8 +31,7 @@ int main(int argc, char *argv[]) {
 		/* BEGIN SECTION C */
 
 		printf("Section C\n");
-		sleep(30);
-		sleep(30);
+		sleep(60);
 		printf("Section C done sleeping\n");
 
 		exit(0);
