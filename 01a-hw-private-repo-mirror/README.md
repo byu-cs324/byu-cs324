@@ -16,7 +16,7 @@ repository will be given to you elsewhere and will be referred to in this
 document as "CLASS\_REPO\_PATH" and "PRIVATE\_REPO\_NAME", respectively.
 Additionally, "USERNAME" refers to your GitHub username.
 
-These instructions have first you create your mirrored repository on your
+These instructions have you first create your mirrored repository on your
 primary development system and then optionally create clones of that repository
 on other systems.
 
@@ -35,8 +35,10 @@ from and to GitHub.  They should be performed on the primary development system
 If you already have an SSH key registered with GitHub on your system, then you
 do not need to do this again.
 
- 1. Find out if you already have an SSH key to use by running the following:
+ 1. Find out if you already have an SSH key to use by running the `ls` command
+    as follows:
 
+    (The command is everything following the prompt $ on the first line.)
     ```bash
     $ ls -ltra ~/.ssh/id_*
     -rw-r--r-- 1 user group  564 Jan  7 15:35 /home/user/.ssh/id_rsa.pub
