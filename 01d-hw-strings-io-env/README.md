@@ -51,8 +51,8 @@ Follow the instructions for and answer each question.  For most questions, you
 will re-compile and re-run the program using the following commands:
 
 ```bash
-$ gcc -Wall -Wno-unused-variable -o learn_c learn_c.c
-$ ./learn_c test.txt
+gcc -Wall -Wno-unused-variable -o learn_c learn_c.c
+./learn_c test.txt
 ```
 
 `gcc` is the GNU compiler collection, the C compiler that will be used.  The
@@ -289,7 +289,7 @@ and observe the effects of `malloc()` and `free()` using `valgrind`.
  8. Run the program with `valgrind`:
 
     ```
-    $ valgrind ./learn_c test.txt
+    valgrind ./learn_c test.txt
     ```
 
     *How many bytes are "in use" at exit?  In other words, how many have been
@@ -300,7 +300,7 @@ and observe the effects of `malloc()` and `free()` using `valgrind`.
     again:
 
     ```
-    $ valgrind ./learn_c test.txt
+    valgrind ./learn_c test.txt
     ```
 
     *How many bytes are "in use" at exit?  In other words, how many have been
@@ -678,8 +678,8 @@ environment variable and then practice getting and setting it.
      Run the following two commands:
 
      ```bash
-     $ ./learn_c test.txt
-     $ CS324_VAR=foo ./learn_c test.txt
+     ./learn_c test.txt
+     CS324_VAR=foo ./learn_c test.txt
      ```
 
      *What is the difference between running the commands?  Briefly explain.*
@@ -687,8 +687,8 @@ environment variable and then practice getting and setting it.
  49. Run the following two commands:
 
      ```bash
-     $ export CS324_VAR=foo
-     $ ./learn_c test.txt
+     export CS324_VAR=foo
+     ./learn_c test.txt
      ```
 
      *How does this differ from running the first of the commands in question

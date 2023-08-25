@@ -371,7 +371,7 @@ child processes after a call to `fork()` and maintained after a call to
 
      Re-`make` and execute the following:
 
-     ```
+     ```bash
      echo foobar | ./fork /bin/cat
      ```
 
@@ -393,7 +393,7 @@ using `dup2()`.
  33. First make a copy of `fork-output.txt` with the following:
 
      ```bash
-     $ cp fork-output.txt fork-output-old.txt
+     cp fork-output.txt fork-output-old.txt
      ```
 
      Modify `fork.c` according to the following:
@@ -408,7 +408,7 @@ using `dup2()`.
 
      Here is a brief explanation about `dup2()`.  The man page gives the
      following synopsis:
-     ```
+     ```c
      int dup2(int oldfd, int newfd);
      ```
      The man page explains that "the file descriptor `newfd` is adjusted so
@@ -419,7 +419,7 @@ using `dup2()`.
 
      Re-make and execute the following to show that it works:
 
-     ```
+     ```bash
      echo foobar | ./fork /bin/cat
      ```
 

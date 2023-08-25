@@ -6,7 +6,7 @@ compilation, and execution, using `scp`, `ssh`, and `tmux`.
  1. Download [hello.c](hello.c) to your local machine, and then copy it to one
     of the BYU CS lab machines using `scp`:
 
-    ```
+    ```bash
     scp hello.c username@schizo.cs.byu.edu:
     ```
 
@@ -14,14 +14,14 @@ compilation, and execution, using `scp`, `ssh`, and `tmux`.
 
  2. Log in to one of the CS machines using the following command:
 
-    ```
+    ```bash
     ssh username@schizo.cs.byu.edu
     ```
     (again, use your actual username)
 
  3. Run the following command:
 
-    ```
+    ```bash
     tmux
     ```
 
@@ -69,7 +69,7 @@ compilation, and execution, using `scp`, `ssh`, and `tmux`.
 
  12. In the upper pane, run the following to compile and run `hello.c`:
 
-     ```
+     ```bash
      gcc -o hello hello.c
      ./hello
      ```
@@ -77,7 +77,7 @@ compilation, and execution, using `scp`, `ssh`, and `tmux`.
  13. In the upper pane, run the following to see which host you are currently
      running on:
 
-     ```
+     ```bash
      hostname
      ```
 
@@ -87,13 +87,13 @@ compilation, and execution, using `scp`, `ssh`, and `tmux`.
 
  14. Run the following to log out of the BYU CS machine:
 
-     ```
+     ```bash
      exit
      ```
 
  15. Log in to one of the CS machines using the following command:
 
-     ```
+     ```bash
      ssh username@schizo.cs.byu.edu
      ```
      (again, use your actual username)
@@ -105,7 +105,7 @@ compilation, and execution, using `scp`, `ssh`, and `tmux`.
  16. Log in to the CS machine on which you were working previously using the
      following command:
 
-     ```
+     ```bash
      ssh username@hostname
      ```
      (again, use your actual username and the hostname of the machine you were
@@ -113,7 +113,7 @@ compilation, and execution, using `scp`, `ssh`, and `tmux`.
 
  17. Run the following command:
 
-     ```
+     ```bash
      tmux attach
      ```
 

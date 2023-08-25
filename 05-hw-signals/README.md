@@ -37,7 +37,7 @@ Read the following in preparation for this assignment:
 
 Run the following to build the `signals` and `killer` executables:
 
-```
+```bash
 make
 ```
 
@@ -77,7 +77,7 @@ each scenario will be inserted into each corresponding `case` statement.
 To demonstrate how things work, let's walk through an example.  First, run the following:
 
 ```bash
-$ ./signals ./killer 0
+./signals ./killer 0
 ```
 
 This will invoke the code corresponding to `case` "0", which is initially empty:
@@ -89,7 +89,7 @@ This will invoke the code corresponding to `case` "0", which is initially empty:
 That means that the `sleep()` will simply run uninterrupted.  After 20
 seconds, you should see the following output:
 
-```
+```bash
 25
 ```
 
@@ -122,8 +122,8 @@ child immediately:
 Re-`make` and then re-run the command:
 
 ```bash
-$ make
-$ ./signals ./killer 0
+make
+./signals ./killer 0
 ```
 
 You should now see the output associated with `sig_handler3()`--that is, the
@@ -287,7 +287,7 @@ For your convenience, a script is also provided for automated testing.  This is
 not a replacement for manual testing but can be used as a sanity check.  You
 can use it by simply running the following:
 
-```
+```bash
 ./driver.py
 ```
 

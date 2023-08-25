@@ -32,7 +32,7 @@ both communication types.
  4. Log on to a BYU CS lab workstation directly, or log on remotely via SSH
     using the following command:
 
-    ```
+    ```bash
     ssh username@schizo.cs.byu.edu
     ```
     (Replace "username" with your actual CS username)
@@ -55,7 +55,7 @@ both communication types.
     _different_ from the one you are already on.  (see a list of machine names
     [here](https://docs.cs.byu.edu/doku.php?id=open-lab-layout)):
 
-    ```
+    ```bash
     ssh username@hostname
     ```
     (Replace "username" with your actual CS username and "hostname" with the
@@ -82,7 +82,7 @@ server side, using the `client` and `server` programs, respectively.
 In the left "remote" pane, run the the following command:
 
 ```bash
-$ ./server -4 port
+./server -4 port
 ```
 
 (Replace `port` with a port of your choosing, an integer between 1024 and
@@ -113,7 +113,7 @@ Now, let's run the client to create some interaction between client and server.
 In the right "local" pane, run the following:
 
 ```bash
-$ ./client -4 hostname port foo bar abc123
+./client -4 hostname port foo bar abc123
 ```
 
 (Replace `hostname` and `port` with name of the "remote" host and the port on
@@ -129,7 +129,7 @@ the best option.
 Now run the command a second time:
 
 ```bash
-$ ./client -4 hostname port foo bar abc123
+./client -4 hostname port foo bar abc123
 ```
 
  3. The server prints out the _remote_ address and port associated with the
@@ -280,8 +280,8 @@ Before you begin modifications, make a copy of the UDP version of your client
 and server programs:
 
 ```bash
-$ cp client.c client-udp.c
-$ cp server.c server-udp.c
+cp client.c client-udp.c
+cp server.c server-udp.c
 ```
 
 Make the following modifications:
@@ -338,8 +338,8 @@ the left "remote" pane.
 Now run the following command twice:
 
 ```bash
-$ ./client -4 hostname port foo bar abc123
-$ ./client -4 hostname port foo bar abc123
+./client -4 hostname port foo bar abc123
+./client -4 hostname port foo bar abc123
 ```
 
 (Replace `hostname` and `port` with name of the "remote" host and the port
@@ -379,7 +379,7 @@ While the server is running on the remote host in the left "remote"
 pane), run the following in the right "local" pane:
 
 ```bash
-$ ./client -4 hostname port foo bar abc123
+./client -4 hostname port foo bar abc123
 ```
 
  19. *How many total calls to `send()` / `write()` were made by the client?*
@@ -445,7 +445,7 @@ In the left "remote" pane, start a netcat (`nc` command) server listening
 for incoming TCP connections on a port of your choosing:
 
 ```bash
-$ nc -l port
+nc -l port
 ```
 
 (Replace `port` with a port of your choosing.)
@@ -454,7 +454,7 @@ Now test your client program by running the following in the right "local"
 pane:
 
 ```bash
-$ ./client -4 hostname port < alpha.txt
+./client -4 hostname port < alpha.txt
 ```
 
 Because the open file descriptor associated with `alpha.txt` will be duplicated
@@ -465,13 +465,13 @@ To ensure that all bytes from the file were sent by `client` and received by
 `server`, re-run `nc`, this time piping its standard output to `sha1sum`:
 
 ```bash
-$ nc -l port | sha1sum
+nc -l port | sha1sum
 ```
 
 Then re-run the client program:
 
 ```bash
-$ ./client -4 hostname port < alpha.txt
+./client -4 hostname port < alpha.txt
 ```
 
  24. *What is the output of the pipeline ending with `sha1sum`?*
@@ -534,12 +534,12 @@ Note that after you have run your program, `bestill.txt` should contain:
 You can check this by running the following:
 
 ```bash
-$ cat bestill.txt
+cat bestill.txt
 ```
 
  25. *Show the output to the following:*
      ```bash
-     $ cat bestill.txt | ./strip_http.py | sha1sum
+     cat bestill.txt | ./strip_http.py | sha1sum
      ```
 
      Hint: it should start with `0dd26e...`
@@ -568,7 +568,7 @@ program (e.g., a Web browser) to check its correctness.
 
  26. *Show the output to the following:*
      ```bash
-     $ sha1sum socket.jpg
+     sha1sum socket.jpg
      ```
 
      Hint: it should start with `c03ce5...`

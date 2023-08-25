@@ -35,20 +35,20 @@ Run the following to compile `mandelbrot.c` without compiler optimization
 (i.e., without the `-O` option):
 
 ```bash
-$ gcc -o mandelbrot mandelbrot.c
+gcc -o mandelbrot mandelbrot.c
 ```
 
 Now execute the command to build the Mandelbrot set with the following:
 
 ```bash
-$ ./mandelbrot 0.27085 0.27100 0.004640 0.004810 1000 8192 pic.ppm
+./mandelbrot 0.27085 0.27100 0.004640 0.004810 1000 8192 pic.ppm
 ```
 
 Normalize, and convert the output to png format using `convert` (part of the
 ImageMagick suite):
 
 ```bash
-$ MAGICK_CONFIGURE_PATH=. convert -negate -normalize -fill blue -tint 100 pic.ppm pic.png
+MAGICK_CONFIGURE_PATH=. convert -negate -normalize -fill blue -tint 100 pic.ppm pic.png
 ```
 
 (Note: setting the `MAGICK_CONFIGURE_PATH` environment variable communicates to
@@ -60,7 +60,7 @@ setting 256MiB of memory that `convert` can use to 2GiB.)
 Run the following to get the SHA1 sum of the file:
 
 ```bash
-$ sha1sum pic.ppm
+sha1sum pic.ppm
 ```
 
 Finally, open `pic.png` in a Web browser or image viewer to see it.
@@ -79,7 +79,7 @@ should be shared across threads and which need only be used locally.
 Compile your program with `-fopenmp`:
 
 ```bash
-$ gcc -o mandelbrot mandelbrot.c -fopenmp
+gcc -o mandelbrot mandelbrot.c -fopenmp
 ```
 
 Now use the
@@ -87,7 +87,7 @@ Now use the
 to run your execution with 1 thread, then 2 threads.  For example:
 
 ```bash
-$ OMP_NUM_THREADS=1 ./mandelbrot 0.27085 0.27100 0.004640 0.004810 1000 8192 pic.ppm
+OMP_NUM_THREADS=1 ./mandelbrot 0.27085 0.27100 0.004640 0.004810 1000 8192 pic.ppm
 ```
 
 In both cases (1 and 2 threads), make sure the SHA1 sum of the file is the same
@@ -97,7 +97,7 @@ Now use the `time` command to run the program again, so you can see the total
 _elapsed_ time (i.e., "wall clock time").
 
 ```bash
-$ OMP_NUM_THREADS=1 time ./mandelbrot 0.27085 0.27100 0.004640 0.004810 1000 8192 pic.ppm
+OMP_NUM_THREADS=1 time ./mandelbrot 0.27085 0.27100 0.004640 0.004810 1000 8192 pic.ppm
 ```
 
 Note that `time` also shows the amount of "user" time, which is the sum total
@@ -131,7 +131,7 @@ elapsed time for only the parallelized part of your program, with the total
 elapsed time for your program.
 
 ```bash
-$ OMP_NUM_THREADS=1 time ./mandelbrot 0.27085 0.27100 0.004640 0.004810 1000 8192 pic.ppm
+OMP_NUM_THREADS=1 time ./mandelbrot 0.27085 0.27100 0.004640 0.004810 1000 8192 pic.ppm
 ```
 
 The amount of time spent on the parallel part of your program should be a
@@ -160,7 +160,7 @@ For each run, record both:
 
  1. How many cores are available for computation on your machine?  Hint: run:
     ```bash
-    $ cat /proc/cpuinfo | grep ^proc | wc -l
+    cat /proc/cpuinfo | grep ^proc | wc -l
     ```
 
  2. What happens to the time associated with computation of *only the parallel
@@ -221,7 +221,7 @@ For each run, record both:
 Remove `pic.ppm` and `pic.png` from your filesystem:
 
 ```bash
-$ rm -f pic.ppm pic.png
+rm -f pic.ppm pic.png
 ```
 
 

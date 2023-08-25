@@ -59,8 +59,7 @@ do not need to do this again.
     pair:
 
     ```bash
-    $ ssh-keygen
-    Generating public/private rsa key pair.
+    ssh-keygen
     ```
 
     At the following prompt, just hit enter to use the default file location:
@@ -81,7 +80,7 @@ do not need to do this again.
  3. Print the contents of your _public_ key, and copy them to your clipboard:
 
     ```bash
-    $ cat ~/.ssh/id_rsa.pub
+    cat ~/.ssh/id_rsa.pub
     ```
 
     (this assumes the name of your public key file is `id_rsa.pub`.)
@@ -113,7 +112,7 @@ will also be a mirror of the upstream class repository.
     terminal:
 
     ```bash
-    $ git clone --bare https://github.com/CLASS_REPO_PATH upstream-repo
+    git clone --bare https://github.com/CLASS_REPO_PATH upstream-repo
     ```
 
     (Substitute "CLASS\_REPO\_PATH" with the path of the upstream class
@@ -123,8 +122,8 @@ will also be a mirror of the upstream class repository.
     which you have just created:
 
     ```bash
-    $ cd upstream-repo
-    $ git push --mirror ssh://git@github.com/USERNAME/PRIVATE_REPO_NAME
+    cd upstream-repo
+    git push --mirror ssh://git@github.com/USERNAME/PRIVATE_REPO_NAME
     ```
 
     (Substitute "USERNAME" with your GitHub username and "PRIVATE\_REPO\_NAME"
@@ -133,8 +132,8 @@ will also be a mirror of the upstream class repository.
  5. Remove your clone of the upstream repository.
 
     ```bash
-    $ cd ../
-    $ rm -rf upstream-repo
+    cd ../
+    rm -rf upstream-repo
     ```
 
 
@@ -146,7 +145,7 @@ This is a one-time process to clone the private repository you have created.
     class repository:
 
     ```bash
-    $ git clone ssh://git@github.com/USERNAME/PRIVATE_REPO_NAME
+    git clone ssh://git@github.com/USERNAME/PRIVATE_REPO_NAME
     ```
 
     (Substitute "USERNAME" with your GitHub username and "PRIVATE\_REPO\_NAME"
@@ -156,9 +155,9 @@ This is a one-time process to clone the private repository you have created.
  2. Add the upstream repository to your clone:
 
     ```bash
-    $ cd PRIVATE_REPO_NAME
-    $ git remote add upstream ssh://git@github.com/CLASS_REPO_PATH
-    $ git remote -v
+    cd PRIVATE_REPO_NAME
+    git remote add upstream ssh://git@github.com/CLASS_REPO_PATH
+    git remote -v
     ```
 
     (Substitute "PRIVATE\_REPO\_NAME" with the name of your private repository
@@ -186,32 +185,32 @@ need to do this for any and all clones
  1. Pull down the latest changes from both your repository and the upstream:
 
     ```bash
-    $ git fetch --all
+    git fetch --all
     ```
 
  2. Stash (save aside) any uncommitted changes that you might have locally in
     your clone:
 
     ```bash
-    $ git stash
+    git stash
     ```
 
  3. Merge in the changes from the upstream repository:
 
     ```bash
-    $ git merge upstream/master
+    git merge upstream/master
     ```
 
  4. Merge back in any uncommitted changes that were stashed:
 
     ```bash
-    $ git stash pop
+    git stash pop
     ```
 
  5. Push out the locally merged changes to your repository:
 
     ```bash
-    $ git push
+    git push
     ```
 
 
@@ -223,12 +222,12 @@ and push them out to the repository:
  1. Commit any local changes that you've made (i.e., in your own development):
 
     ```bash
-    $ git commit ...
+    git commit ...
     ```
 
     (replace "..." with the names of any files or directories that have changes)
  2. Push out your local commits to your repository:
 
     ```bash
-    $ git push
+    git push
     ```

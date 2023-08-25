@@ -12,7 +12,7 @@ CS network, or the exercises will not work. To accomplish this, you may either
 log on to a BYU CS lab workstation directly or log on remotely via SSH using
 the following command:
 
-```
+```bash
 ssh username@schizo.cs.byu.edu
 ```
 (Replace "username" with your actual CS username)
@@ -25,8 +25,8 @@ Follow these steps:
  1. Use the SSH program to log in remotely to the computer imaal.byu.edu with
     username `bandit0` and password `bandit0`:
 
-    ```
-    $ ssh bandit0@imaal.byu.edu
+    ```bash
+    ssh bandit0@imaal.byu.edu
     ```
 
  2. Follow the instructions in the file `readme` to get the password for Level
@@ -48,7 +48,7 @@ contain a single command (example: learning the password for Level 1).  For
 most cases, however, more than one command is required.  For example, consider
 the following pipeline:
 
-```
+```bash
 grep bar somefile.txt | awk '{ print $8 }' | base64 -d
 ```
 
@@ -69,7 +69,7 @@ command.
 
 As you go, create a file `bandit.txt` that has the following format:
 
-```
+```bash
 Level 0:
 PASSWORD1
 PIPELINE1
@@ -83,7 +83,7 @@ PIPELINE2
 pipeline of commands (i.e., "one-liner") you used to get that password while
 logged in as `bandit0`, etc.  For example:
 
-```
+```bash
 Level 0:
 0G3wlqW6MYydw4jQJb99pW8+uISjbJhe
 foo
@@ -107,7 +107,7 @@ For your convenience, a script is also provided for automated testing.  This is
 not a replacement for manual testing but can be used as a sanity check.  You
 can use it by simply running the following:
 
-```
+```bash
 ./SshTester.py bandit.txt
 ```
 
@@ -140,19 +140,19 @@ You might feel overwhelmed with the "pipeline" aspect of this assignment.  To
 help you out, build the pipeline gradually.  For example, in the above example,
 run just the following to see what the output is:
 
-```
+```bash
 grep bar somefile.txt
 ```
 
 Then run:
 
-```
+```bash
 grep bar somefile.txt | awk ' { print $8 }'
 ```
 
 Finally, when that is working, run the whole thing:
 
-```
+```bash
 grep bar somefile.txt | awk '{ print $8 }' | base64 -d
 ```
 
