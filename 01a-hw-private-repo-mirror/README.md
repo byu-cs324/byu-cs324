@@ -38,7 +38,8 @@ do not need to do this again.
  1. Find out if you already have an SSH key to use by running the `ls` command
     as follows:
 
-    (The command is everything following the prompt $ on the first line.)
+    (The command is everything following the prompt `$` on the first line.)
+
     ```bash
     $ ls -ltra ~/.ssh/id_*
     -rw-r--r-- 1 user group  564 Jan  7 15:35 /home/user/.ssh/id_rsa.pub
@@ -79,16 +80,18 @@ do not need to do this again.
     Enter same passphrase again:
     ```
 
- 3. Print the contents of your _public_ key, and copy them to your clipboard:
+ 3. Display the contents of your _public_ key, and copy them to your clipboard.
+    The following command prints the contents to the terminal:
 
     ```bash
     cat ~/.ssh/id_rsa.pub
     ```
 
-    (this assumes the name of your public key file is `id_rsa.pub`.)
+    (This assumes the name of your public key file is `id_rsa.pub`, which is
+    the default.)
 
  4. Follow steps 2 through 8 in the
-    [official documentation](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account)
+    [official documentation](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account#adding-a-new-ssh-key-to-your-account)
     to register your SSH key with your GitHub account.
 
 
@@ -113,23 +116,23 @@ will also be a mirror of the upstream class repository.
  3. Clone the upstream repository by running the following from the
     terminal:
 
+    (Substitute "CLASS\_REPO\_PATH" with the path of the upstream class
+    repository.)
+
     ```bash
     git clone --bare https://github.com/CLASS_REPO_PATH upstream-repo
     ```
 
-    (Substitute "CLASS\_REPO\_PATH" with the path of the upstream class
-    repository.)
-
  4. Push a mirror of the upstream repository to the new, private repository,
     which you have just created:
+
+    (Substitute "USERNAME" with your GitHub username and "PRIVATE\_REPO\_NAME"
+    with the name of your private repository.)
 
     ```bash
     cd upstream-repo
     git push --mirror ssh://git@github.com/USERNAME/PRIVATE_REPO_NAME
     ```
-
-    (Substitute "USERNAME" with your GitHub username and "PRIVATE\_REPO\_NAME"
-    with the name of your private repository.)
 
  5. Remove your clone of the upstream repository.
 
@@ -146,24 +149,23 @@ This is a one-time process to clone the private repository you have created.
  1. Clone your new, private repository, which is now a mirror of the upstream
     class repository:
 
+    (Substitute "USERNAME" with your GitHub username and "PRIVATE\_REPO\_NAME"
+    with the name of your private repository.)
+
     ```bash
     git clone ssh://git@github.com/USERNAME/PRIVATE_REPO_NAME
     ```
 
-    (Substitute "USERNAME" with your GitHub username and "PRIVATE\_REPO\_NAME"
-    with the name of your private repository.)
-
-
  2. Add the upstream repository to your clone:
+
+    (Substitute "PRIVATE\_REPO\_NAME" with the name of your private repository
+    and "CLASS\_REPO\_PATH" with the path of the upstream class repository.)
 
     ```bash
     cd PRIVATE_REPO_NAME
     git remote add upstream ssh://git@github.com/CLASS_REPO_PATH
     git remote -v
     ```
-
-    (Substitute "PRIVATE\_REPO\_NAME" with the name of your private repository
-    and "CLASS\_REPO\_PATH" with the path of the upstream class repository.)
 
 
 # Create Additional Clones of Your Private Repository (Optional)
@@ -223,11 +225,13 @@ and push them out to the repository:
 
  1. Commit any local changes that you've made (i.e., in your own development):
 
+    (Replace "..." with the names of any files or directories that have
+    changes.)
+
     ```bash
     git commit ...
     ```
 
-    (replace "..." with the names of any files or directories that have changes)
  2. Push out your local commits to your repository:
 
     ```bash
