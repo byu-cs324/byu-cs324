@@ -83,7 +83,7 @@ assignment:
 Run the reference shell by running the following from your terminal:
 
 ```bash
-$ ./tshref
+./tshref
 ```
 
 You will now see a prompt:
@@ -210,13 +210,13 @@ here, for your reference:
 Run the following to compile `tsh.c`:
 
 ```bash
-$ make
+make
 ```
 
 Run the incomplete tiny shell implementation derived from `tsh.c`:
 
 ```bash
-$ ./tsh
+./tsh
 ```
 
 But you will note that it is not as responsive as the reference implementation:
@@ -562,7 +562,7 @@ is passed in as an argument: `char **argv` (i.e., an array of `char *`).
 For example, suppose the following command line is provided to your shell:
 
 ```bash
-$ /bin/cat < test.txt | /bin/grep foo > test2.txt
+/bin/cat < test.txt | /bin/grep foo > test2.txt
 ```
 
 After calling `parseline()`, `argv` contains the following:
@@ -662,7 +662,7 @@ arguments passed have the following values:
    being issued.  `strace` can be used with various command-line options to
    cater it to your needs.  For example, the following command:
    ```bash
-   $ strace -f -e trace=close,pipe,open,dup2 ./tsh
+   strace -f -e trace=close,pipe,open,dup2 ./tsh
    ```
    calls `strace` on `./tsh`, showing only the system calls: `close()`,
    `pipe()`, `open()`, and `dup2()`.  The `-f` option indicates that child
@@ -730,7 +730,7 @@ or `ctrl`+`z`, respectively.
 To run the _reference_ shell against the a `trace41.txt`, use the following:
 
 ```bash
-$ make rtest41
+make rtest41
 ```
 
 Replace `rtest41` with `rtest01`, `rtest02`, etc., to test the reference shell
@@ -759,7 +759,7 @@ tsh> /bin/cat < tshtmp-1-1KEnkI | /bin/grep [a-z]
 For comparison, to run _your_ shell against `trace41.txt`, run the following:
 
 ```bash
-$ make stest41
+make stest41
 ```
 
 By comparing the output of `make stest` with that of `make rtest`, you can see
@@ -767,13 +767,19 @@ how well your tiny shell did against the reference shell.  This can be
 automated with:
 
 ```
-$ make test41
+make test41
 ```
 
 (etc.)
 
 Additonally, to run a comparison against _all_ traces, you can run the
 following:
+
+```
+make testall
+```
+
+For example:
 
 ```
 $ make testall

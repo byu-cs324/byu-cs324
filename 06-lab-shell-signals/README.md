@@ -85,7 +85,7 @@ assignment:
 Run the reference shell by running the following from your terminal:
 
 ```bash
-$ ./tshref
+./tshref
 ```
 
 You will now see a prompt:
@@ -381,7 +381,7 @@ tsh> /bin/sleep 30
 Now suppose the following is run from a different shell on the same system:
 
 ```bash
-$ kill -INT 17311
+kill -INT 17311
 ```
 
 The signal is sent directly to the process, not to the shell.  Yet the shell
@@ -459,13 +459,13 @@ here, for your reference:
 Run the following to compile `tsh.c`:
 
 ```bash
-$ make
+make
 ```
 
 Run the incomplete tiny shell implementation derived from `tsh.c`:
 
 ```bash
-$ ./tsh
+./tsh
 ```
 
 But you will note that it is not as responsive as the reference implementation:
@@ -859,7 +859,7 @@ or not the job should start out in the background or foreground, respectively.
 For example, suppose the following command line is provided to your shell:
 
 ```bash
-$ /bin/cat test.txt
+/bin/cat test.txt
 ```
 
 After calling `parseline()`, `argv` contains the following:
@@ -877,7 +877,7 @@ In this case, `parseline()` will return `0` (false).  However, if the command
 line had been the following:
 
 ```bash
-$ /bin/cat test.txt &
+/bin/cat test.txt &
 ```
 
 Then `argv` would still contain the following after calling `parseline()`:
@@ -976,7 +976,7 @@ the shell, simulating a `ctrl`+`c` or `ctrl`+`z`, respectively.
 To run the _reference_ shell against the a `trace16.txt`, use the following:
 
 ```bash
-$ make rtest16
+make rtest16
 ```
 
 Replace `rtest16` with `rtest01`, `rtest02`, etc., to test the reference shell
@@ -1004,7 +1004,7 @@ Job [2] (5045) terminated by signal 2
 For comparison, to run _your_ shell against `trace16.txt`, run the following:
 
 ```bash
-$ make stest16
+make stest16
 ```
 
 By comparing the output of `make stest` with that of `make rtest`, you can see
@@ -1012,13 +1012,19 @@ how well your tiny shell did against the reference shell.  This can be
 automated with:
 
 ```
-$ make test16
+make test16
 ```
 
 (etc.)
 
 Additonally, to run a comparison against _all_ traces, you can run the
 following:
+
+```
+make testall
+```
+
+For example:
 
 ```
 $ make testall

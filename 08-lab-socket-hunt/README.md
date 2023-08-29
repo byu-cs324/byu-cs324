@@ -85,7 +85,7 @@ than 128 (see `man ascii`).
 Your program should have the following usage:
 
 ```
-$ ./treasure_hunter server port level seed
+./treasure_hunter server port level seed
 ```
 
  - `server`: the domain name of the server.
@@ -104,13 +104,13 @@ stored appropriately from the command line.  Create some print statements to
 that effect.  Then build your program by running the following:
 
 ```bash
-$ make
+make
 ```
 
 Then run it:
 
 ```bash
-$ ./treasure_hunter server 32400 0 7719
+./treasure_hunter server 32400 0 7719
 ```
 
 Try running it with different values for server, port, level, and seed to make
@@ -165,8 +165,8 @@ an 8-byte message).
 Re-build and run your file with the following:
 
 ```bash
-$ make
-$ ./treasure_hunter server 32400 0 7719
+make
+./treasure_hunter server 32400 0 7719
 ```
 
 Check the `print_bytes()` output to make sure that the message you intend to
@@ -189,7 +189,7 @@ that you can find the hexadecimal representation of your user ID, the seed, and
 any other integer, by running the following from the command line:
 
 ```bash
-$ printf "%08x\n" 12345
+printf "%08x\n" 12345
 ```
 
 substituting `12345` with the integer that you wish you represent as
@@ -268,8 +268,8 @@ print out the contents of the message received by the server.
 Re-build and re-run your program:
 
 ```bash
-$ make
-$ ./treasure_hunter server 32400 0 7719
+make
+./treasure_hunter server 32400 0 7719
 ```
 
 At this point, you need to supply the name of an actual server. See
@@ -338,7 +338,7 @@ pay attention to endian-ness.  For example, if you receive the nonce
 0x12345678, then printing out the value of the variable in which you have
 stored the nonce, e.g., with:
 
-```
+```c
 printf("%x", nonce);
 ```
 
@@ -379,8 +379,8 @@ Build your follow-up request using the guidance in the
 your program:
 
 ```bash
-$ make
-$ ./treasure_hunter server 32400 0 7719
+make
+./treasure_hunter server 32400 0 7719
 ```
 
 If everything looks good, then use `sendto()` to send your follow-up request
@@ -832,7 +832,7 @@ reason or another, we have created the following script, which will show
 both a status of servers the *primary* machine that *you* should use:
 
 ```
-$ ./server_status.py
+./server_status.py
 ```
 
 

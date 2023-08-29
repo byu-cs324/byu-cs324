@@ -177,13 +177,13 @@ hostname, and incomplete HTTP request.
 Compile your proxy code by running the following:
 
 ```bash
-$ make
+make
 ```
 
 Then run the following to see that it behaves as you would expect it to:
 
 ```bash
-$ ./proxy
+./proxy
 ```
 
 At this point, remove or comment out the call to `test_parser()` in `main()`;
@@ -245,20 +245,20 @@ But you should be able to get a sense for how your proxy server is progressing.
 Run the following to build your proxy:
 
 ```bash
-$ make
+make
 ```
 
 Now use the following command to find a port that is unlikely to conflict with
 that of another user:
 
 ```bash
-$ ./port-for-user.pl
+./port-for-user.pl
 ```
 
 Then run the following to start your proxy server:
 
 ```bash
-$ ./proxy port
+./proxy port
 ```
 
 Replace `port` with the port returned by `./port-for-user.pl`.
@@ -270,11 +270,14 @@ your proxy server implementation is incomplete.  The commands are merely a way
 to see how your proxy server behaves with its current, incomplete
 functionality.)
 
-```bash
-$ curl -x http://localhost:port/ "http://www-notls.imaal.byu.edu:5599/cgi-bin/slowsend.cgi?obj=lyrics"
-$ curl -x http://localhost:port/ "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
-```
 (Replace `port` with the port on which your proxy server is listening.)
+
+```bash
+curl -x http://localhost:port/ "http://www-notls.imaal.byu.edu:5599/cgi-bin/slowsend.cgi?obj=lyrics"
+```
+```bash
+curl -x http://localhost:port/ "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
+```
 
 `curl` is a command-line HTTP client, described more in
 [the section on manual testing](#manual-testing---non-local-server).
@@ -295,11 +298,14 @@ Now try the following:
 
 (NOTE: the commands below are still expected to fail.)
 
-```bash
-$ ./slow-client.py -x http://localhost:port/ -b 1 "http://www-notls.imaal.byu.edu:5599/cgi-bin/slowsend.cgi?obj=lyrics"
-$ ./slow-client.py -x http://localhost:port/ -b 1 "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
-```
 (Replace `port` with the port on which your proxy server is listening.)
+
+```bash
+./slow-client.py -x http://localhost:port/ -b 1 "http://www-notls.imaal.byu.edu:5599/cgi-bin/slowsend.cgi?obj=lyrics"
+```
+```bash
+./slow-client.py -x http://localhost:port/ -b 1 "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
+```
 
 The `./slow-client.py` script is also described more in
 [the section on manual testing](#manual-testing---non-local-server).
@@ -382,14 +388,20 @@ properly when you run the following:
 
 (NOTE: the commands below are still expected to fail.)
 
-```bash
-$ curl -x http://localhost:port/ "http://www-notls.imaal.byu.edu:5599/cgi-bin/slowsend.cgi?obj=lyrics"
-$ curl -x http://localhost:port/ "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
-$ ./slow-client.py -x http://localhost:port/ -b 1 "http://www-notls.imaal.byu.edu:5599/cgi-bin/slowsend.cgi?obj=lyrics"
-$ ./slow-client.py -x http://localhost:port/ -b 1 "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
-```
-
 (Replace `port` with the port on which your proxy server is listening.)
+
+```bash
+curl -x http://localhost:port/ "http://www-notls.imaal.byu.edu:5599/cgi-bin/slowsend.cgi?obj=lyrics"
+```
+```bash
+curl -x http://localhost:port/ "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
+```
+```bash
+./slow-client.py -x http://localhost:port/ -b 1 "http://www-notls.imaal.byu.edu:5599/cgi-bin/slowsend.cgi?obj=lyrics"
+```
+```bash
+./slow-client.py -x http://localhost:port/ -b 1 "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
+```
 
 
 ### Communicating with the HTTP Server
@@ -431,8 +443,10 @@ it works properly when you run the following:
 (NOTE: the commands below are still expected to fail.)
 
 ```bash
-$ curl -x http://localhost:port/ "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
-$ ./slow-client.py -x http://localhost:port/ -b 1 "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
+curl -x http://localhost:port/ "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
+```
+```bash
+./slow-client.py -x http://localhost:port/ -b 1 "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
 ```
 
 (Replace `port` with the port on which your proxy server is listening.  Also
@@ -458,7 +472,7 @@ At this point you should be able to pass:
  - [Tests performed against a local Web server](#manual-testing---local-server).
  - [Automated tests](#automated-testing) with the following command:
    ```bash
-   $ ./driver.py -b 50 threadpool
+   ./driver.py -b 50 threadpool
    ```
 
 
@@ -491,7 +505,7 @@ At this point you should be able to pass:
  - [Tests performed against a local Web server](#manual-testing---local-server).
  - [Automated tests](#automated-testing) with the following command:
    ```bash
-   $ ./driver.py -b 50 -c 45 multithread
+   ./driver.py -b 50 -c 45 multithread
    ```
 
 
@@ -523,7 +537,7 @@ At this point you should be able to pass:
  - [Tests performed against a local Web server](#manual-testing---local-server).
  - [Automated tests](#automated-testing) with the following command:
    ```bash
-   $ ./driver.py -b 50 -c 45 threadpool
+   ./driver.py -b 50 -c 45 threadpool
    ```
 
 
@@ -542,17 +556,25 @@ functionality.  To test basic, sequential HTTP proxy functionality, first run th
 following to start your proxy server:
 
 ```bash
-$ ./proxy port
+./proxy port
 ```
 
 Then in another window on the same machine, run the following:
 
 ```bash
-$ curl -o tmp1 http://www-notls.imaal.byu.edu/index.html
-$ ./slow-client.py -o tmp2 -b 1 http://www-notls.imaal.byu.edu/index.html
-$ curl -o tmp3 "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
-$ ./slow-client.py -o tmp4 -b 1 "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
-$ curl -o tmp5 http://www-notls.imaal.byu.edu/images/imaal-80x80.png
+curl -o tmp1 http://www-notls.imaal.byu.edu/index.html
+```
+```bash
+./slow-client.py -o tmp2 -b 1 http://www-notls.imaal.byu.edu/index.html
+```
+```bash
+curl -o tmp3 "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
+```
+```bash
+./slow-client.py -o tmp4 -b 1 "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
+```
+```bash
+curl -o tmp5 http://www-notls.imaal.byu.edu/images/imaal-80x80.png
 ```
 
 `curl` is a command-line HTTP client.  The `-o` option tells `curl` to save the
@@ -567,32 +589,48 @@ it will sleep in between lines that it sends.
 
 Now run the following:
 
-```bash
-$ curl -o tmp1p -x http://localhost:port/ http://www-notls.imaal.byu.edu/index.html
-$ ./slow-client.py -o tmp2p -x http://localhost:port/ -b 1 http://www-notls.imaal.byu.edu/index.html
-$ curl -o tmp3p -x http://localhost:port/ "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
-$ ./slow-client.py -o tmp4p -x http://localhost:port/ -b 1 "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
-$ curl -o tmp5p -x http://localhost:port/ http://www-notls.imaal.byu.edu/images/imaal-80x80.png
-```
-
 (Replace `port` with the port on which your proxy server is running.)
+
+```bash
+curl -o tmp1p -x http://localhost:port/ http://www-notls.imaal.byu.edu/index.html
+```
+```bash
+./slow-client.py -o tmp2p -x http://localhost:port/ -b 1 http://www-notls.imaal.byu.edu/index.html
+```
+```bash
+curl -o tmp3p -x http://localhost:port/ "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
+```
+```bash
+./slow-client.py -o tmp4p -x http://localhost:port/ -b 1 "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
+```
+```bash
+curl -o tmp5p -x http://localhost:port/ http://www-notls.imaal.byu.edu/images/imaal-80x80.png
+```
 
 This time we used `-x` to specify a proxy server.
 
 Finally, run the following to see if there are any differences (there should not be):
 
 ```bash
-$ diff -u tmp1 tmp1p
-$ diff -u tmp2 tmp2p
-$ diff -u tmp3 tmp3p
-$ diff -u tmp4 tmp4p
-$ diff -u tmp5 tmp5p
+diff -u tmp1 tmp1p
+```
+```bash
+diff -u tmp2 tmp2p
+```
+```bash
+diff -u tmp3 tmp3p
+```
+```bash
+diff -u tmp4 tmp4p
+```
+```bash
+diff -u tmp5 tmp5p
 ```
 
 Don't forget to remove them:
 
 ```bash
-$ rm tmp1 tmp1p tmp2 tmp2p tmp3 tmp3p tmp4 tmp4p tmp5 tmp5p
+rm tmp1 tmp1p tmp2 tmp2p tmp3 tmp3p tmp4 tmp4p tmp5 tmp5p
 ```
 
 
@@ -604,12 +642,12 @@ for testing:
 
  1. Enter the `tiny` sub-directory:
     ```bash
-    $ cd tiny
+    cd tiny
     ```
 
  2. Compile `tiny`:
     ```bash
-    $ make
+    make
     ```
 
     Note: there are a number of compilation errors in the `tiny` code.  This is
@@ -618,7 +656,7 @@ for testing:
 
  3. Start `tiny`:
     ```bash
-    $ ./tiny port2
+    ./tiny port2
     ```
 
     Replace `port2` with the port returned by `./port-for-user.pl` -- plus one.
@@ -628,52 +666,77 @@ for testing:
     server.
 
  4. While `tiny` is running in one window or pane, start your proxy server:
-    ```bash
-    $ ./proxy port
-    ```
 
-    Replace `port` with the port returned by `./port-for-user.pl`.
+    (Replace `port` with the port returned by `./port-for-user.pl`.)
+
+    ```bash
+    ./proxy port
+    ```
 
 With `tiny` running on one port (`port2`) and your proxy server running on
 another port (`port`), both on the same system, try running the following:
 
-```bash
-$ curl -o tmp1 http://localhost:port2/home.html
-$ curl -o tmp2 http://localhost:port2/csapp.c
-$ curl -o tmp3 http://localhost:port2/godzilla.jpg
-$ curl -o tmp4 "http://localhost:port2/cgi-bin/slow?sleep=1&size=4096"
-$ ./slow-client.py -o tmp5 "http://localhost:port2/cgi-bin/slow?sleep=1&size=4096"
-```
-
 (Replace `port2` with the port on which the `tiny` Web server is running.)
 
-Then run the following:
-
 ```bash
-$ curl -o tmp1p -x http://localhost:port/ http://localhost:port2/home.html
-$ curl -o tmp2p -x http://localhost:port/ http://localhost:port2/csapp.c
-$ curl -o tmp3p -x http://localhost:port/ http://localhost:port2/godzilla.jpg
-$ curl -o tmp4p -x http://localhost:port/ "http://localhost:port2/cgi-bin/slow?sleep=1&size=4096"
-$ ./slow-client.py -o tmp5p -x http://localhost:port/ "http://localhost:port2/cgi-bin/slow?sleep=1&size=4096"
+curl -o tmp1 http://localhost:port2/home.html
 ```
+```bash
+curl -o tmp2 http://localhost:port2/csapp.c
+```
+```bash
+curl -o tmp3 http://localhost:port2/godzilla.jpg
+```
+```bash
+curl -o tmp4 "http://localhost:port2/cgi-bin/slow?sleep=1&size=4096"
+```
+```bash
+./slow-client.py -o tmp5 "http://localhost:port2/cgi-bin/slow?sleep=1&size=4096"
+```
+
+Then run the following:
 
 (Replace `port` with the port on which your proxy server is running and `port2`
 with the port on which the `tiny` Web server is running.)
 
+```bash
+curl -o tmp1p -x http://localhost:port/ http://localhost:port2/home.html
+```
+```bash
+curl -o tmp2p -x http://localhost:port/ http://localhost:port2/csapp.c
+```
+```bash
+curl -o tmp3p -x http://localhost:port/ http://localhost:port2/godzilla.jpg
+```
+```bash
+curl -o tmp4p -x http://localhost:port/ "http://localhost:port2/cgi-bin/slow?sleep=1&size=4096"
+```
+```bash
+./slow-client.py -o tmp5p -x http://localhost:port/ "http://localhost:port2/cgi-bin/slow?sleep=1&size=4096"
+```
+
 Now run the following to see if there are any differences (there should not be):
 
 ```bash
-$ diff -u tmp1 tmp1p
-$ diff -u tmp2 tmp2p
-$ diff -u tmp3 tmp3p
-$ diff -u tmp4 tmp4p
-$ diff -u tmp5 tmp5p
+diff -u tmp1 tmp1p
+```
+```bash
+diff -u tmp2 tmp2p
+```
+```bash
+diff -u tmp3 tmp3p
+```
+```bash
+diff -u tmp4 tmp4p
+```
+```bash
+diff -u tmp5 tmp5p
 ```
 
 Don't forget to remove them:
 
 ```bash
-$ rm tmp1 tmp1p tmp2 tmp2p tmp3 tmp3p tmp4 tmp4p tmp5 tmp5p
+rm tmp1 tmp1p tmp2 tmp2p tmp3 tmp3p tmp4 tmp4p tmp5 tmp5p
 ```
 
 
@@ -683,7 +746,7 @@ For your convenience, a script is provided for automated testing.  You can use
 it by running the following:
 
 ```bash
-$ ./driver.py -b 50 -c 45 threadpool
+./driver.py -b 50 -c 45 threadpool
 ```
 
 The `-b` option specifies the points awarded for basic HTTP functionality, and
@@ -706,30 +769,30 @@ For example:
  - *Basic Only*.  If you are just testing the basic functionality of your proxy
    (i.e., without concurrency), just use the `-b` option.
    ```bash
-   $ ./driver.py -b 50 threadpool
+   ./driver.py -b 50 threadpool
    ```
  - *Increased Verbosity.*  If you want more output, including descriptions of
    each test that is being performed, use `-v`:
    ```bash
-   $ ./driver.py -v -b 50 -c 45 threadpool
+   ./driver.py -v -b 50 -c 45 threadpool
    ```
    For even more output, including the commands that are being executed, use
    `-vv`:
    ```bash
-   $ ./driver.py -vv -b 50 -c 45 threadpool
+   ./driver.py -vv -b 50 -c 45 threadpool
    ```
  - *Proxy Output.*  If you want the output of your proxy to go to a file, which
    you can inspect either real-time or after-the-fact, use the `-p` option.
    Use `-p - ` for your proxy output to go to standard output.
    ```bash
-   $ ./driver.py -p myproxyoutput.txt -b 50 -c 45 threadpool
+   ./driver.py -p myproxyoutput.txt -b 50 -c 45 threadpool
    ```
  - *Downloaded Files.*  By default, the downloaded files are saved to a
    temporary directory, which is deleted after the tests finish--so your home
    directory does not get bloated.  If you want to keep these files to inspect
    them, use the `-k` option.
    ```bash
-   $ ./driver.py -k -b 50 -c 45 threadpool
+   ./driver.py -k -b 50 -c 45 threadpool
    ```
    If you use this option, be sure to delete the directors afterwards!
 
@@ -749,7 +812,7 @@ following distribution:
 Run the following to check your implementation on one of the CS lab machines:
 
 ```b
-$ ./driver.py -b 50 -c 45 threadpool
+./driver.py -b 50 -c 45 threadpool
 ```
 
 

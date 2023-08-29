@@ -172,20 +172,20 @@ you should be able to test your work so far!
 Run the following to build your proxy:
 
 ```bash
-$ make
+make
 ```
 
 Now use the following command to find a port that is unlikely to conflict with
 that of another user:
 
 ```bash
-$ ./port-for-user.pl
+./port-for-user.pl
 ```
 
 Then run the following to start your proxy server:
 
 ```bash
-$ ./proxy port
+./proxy port
 ```
 
 Replace `port` with the port returned by `./port-for-user.pl`.
@@ -197,10 +197,11 @@ your proxy server implementation is incomplete.  The commands are merely a way
 to see how your proxy server behaves with its current, incomplete
 functionality.)
 
-```bash
-$ curl -x http://localhost:port/ "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
-```
 (Replace `port` with the port on which your proxy server is listening.)
+
+```bash
+curl -x http://localhost:port/ "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
+```
 
 `curl` is a command-line HTTP client, described more in
 [the section on manual testing](#manual-testing---non-local-server).
@@ -232,11 +233,14 @@ the following:
 
 (NOTE: the commands below are still expected to fail.)
 
-```bash
-$ curl -x http://localhost:port/ "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
-$ ./slow-client.py -x http://localhost:port/ -b 1 "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
-```
 (Replace `port` with the port on which your proxy server is listening.)
+
+```bash
+curl -x http://localhost:port/ "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
+```
+```bash
+./slow-client.py -x http://localhost:port/ -b 1 "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
+```
 
 The `./slow-client.py` script is also described more in
 [the section on manual testing](#manual-testing---non-local-server).
@@ -276,12 +280,14 @@ Now would be a good time to test with the following commands:
 
 (NOTE: the commands below are still expected to fail.)
 
-```bash
-$ curl -x http://localhost:port/ "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
-$ ./slow-client.py -x http://localhost:port/ -b 1 "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
-```
-
 (Replace `port` with the port on which your proxy server is listening.)
+
+```bash
+curl -x http://localhost:port/ "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
+```
+```bash
+./slow-client.py -x http://localhost:port/ -b 1 "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
+```
 
 Just as before, you should not only observe that the proxy server successfully
 issues the request and receives the response from the HTTP server, but also
@@ -303,7 +309,7 @@ At this point you should be able to pass:
  - [Tests performed against a local Web server](#manual-testing---local-server).
  - [Automated tests](#automated-testing) with the following command:
    ```bash
-   $ ./driver.py -b 20 -c 75 epoll
+   ./driver.py -b 20 -c 75 epoll
    ```
 
 
@@ -483,7 +489,7 @@ using epoll, complete with non-blocking sockets and edge-triggered monitoring.
 To compile it, run the following from the `echoserver-epoll` directory:
 
 ```bash
-$ gcc -o echoservere echoservere.c
+gcc -o echoservere echoservere.c
 ```
 
 You can use the code as a guide for building your HTTP proxy server with epoll.
@@ -531,7 +537,7 @@ following distribution:
 Run the following to check your implementation:
 
 ```b
-$ ./driver.py -b 20 -c 75 epoll
+./driver.py -b 20 -c 75 epoll
 ```
 
 
