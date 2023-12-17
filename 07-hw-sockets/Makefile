@@ -1,14 +1,14 @@
 CC = gcc
-CFLAGS = -Wall -O2 -g
+CFLAGS = -Wall -O2 -g -I ../include/
 
 .PHONY: all
 all: client server
 
 client: client.c
-	$(CC) $(CFLAGS) -o client client.c
+	$(CC) $(CFLAGS) -o client client.c ../code/sockhelper.c
 
 server: server.c
-	$(CC) $(CFLAGS) -o server server.c
+	$(CC) $(CFLAGS) -o server server.c ../code/sockhelper.c
 
 .PHONY: clean
 clean:

@@ -107,11 +107,9 @@ In the left "remote" pane, run the the following command:
 ```
 
 The `-4` forces the server to prepare the socket to receive incoming messages
-only on its IPv4 addresses.  While it is possible to have a program listen on
-both IPv4 _and_ IPv6, that requires _two_ sockets--one for each protocol--and
-that goes beyond the scope of this assignment, so using either `-4` or `-6`
-designates which specific single address family (IP version) to use, IPv4 or
-IPv6, respectively.
+only on its IPv4 addresses.  It is possible to have a program expect
+communications on both IPv4 _and_ IPv6, but we will use IPv4 only for this
+assignment to keep things simple.
 
 While it looks like the server is "hanging", it is actually just awaiting
 incoming data from some client.  This is what is referred to as _blocking_.  To
@@ -167,13 +165,17 @@ Let's learn a bit more about how and when the _local_ address and port are set
 on the socket used by the client.  Modify `client.c` in the following ways:
  - Comment out the line of code containing the call to `connect()`.  You will
    uncomment it later.  _Leave_ the line containing `break;` immediately below!
- - Comment out the line of code containing the call to `write()`.  You will
+   This effectively makes it so that 1) only the first entry in the linked list
+   of `struct addrinfo` is ever looked at and 2) `connect()` is never called on
+   the socket.
+ - Comment out the line of code containing the call to `send()`.  You will
    uncomment it later.
- - Replace the call to `write()` with a call to `sendto()`.  The new line of
-   code will look similar to the one you just commented out, except that
-   `sendto()` allows you to specify the recipient (remote IP address and
-   port), which is necessary if `connect()` has not been called on the socket.
-   See the usage of `connect()` to add the remote IP address and port.
+ - Replace the call to `send()` (now commented out) with a call to `sendto()`.
+   The new line of code will look similar to the one you just commented out,
+   except that `sendto()` allows you to specify the recipient (remote IP
+   address and port), which is necessary if `connect()` has not been called on
+   the socket.  See the usage of `connect()` to add the remote IP address and
+   port.
 
 Re-run `make` to rebuild both binaries.  Interrupt and restart the server in
 the left "remote" pane.
@@ -186,9 +188,10 @@ before.
      compare to those detected by the server?*
 
 In `client.c` copy the lines of code that retrieve and print the local address
-and port from the socket (i.e., starting with `getsockname()` and ending with
-`fprintf()`) such that they are executed again _immediately_ after the call to
-`sendto()`.
+and port from the socket--starting with the initialization of the `addr_len`,
+and the call to `getsockname()`, ending with `fprintf()`.  Place them
+immediately after the call to `sendto()`, such that they are executed again
+after `sendto()` is called.
 
 Re-run `make` to rebuild both binaries.  You might get some warnings about
 variables that _might_ not have been initialized; for the purposes of this
@@ -203,26 +206,26 @@ before.
     the calls to `getsockname()`.  *What do the differences in output teach
     you about _when_ the local address and port are set for a given socket?*
 
-Let's make some other observations.  First, note that the lengths (i.e., number
-of bytes) of the messages sent were longer than the lengths of the strings
-making up the messages.  This is because we _chose_ to explicitly include the
-null character for this particular program:
+
+Let's make some other observations.  First, note that `strlen()` is used on
+`argv[j]` only because we know it is a null-terminated string.  `strlen()`
+returns the count of only the characters before the null character.  Thus, when
+the string is sent with `sendto()`, using the return value of `strlen()` as the
+length, the null character itself is not actually sent.  Likewise, the server
+is programmed to send back to the client exactly the bytes that it received
+from the client, regardless of their value.  Thus, the bytes received with
+`recv()` do not include a null character.  See
+[Strings, I/O, and Environment](../01d-hw-strings-io-env) for more.  When
+the server echoes back our message, we can perform string operations on it
+(e.g., `strlen()`, `strstr()`, etc.), but _only after_ we have added the null
+character and _only if_ we know everything before that character is non-null.
+In this case, we know that they are non-null characters because they are what
+we passed on the command line.  To add a null character at the end (for
+performing string operations), you can do something like this:
 
 ```c
-		len = strlen(argv[j]) + 1;
-		/* +1 for terminating null byte */
-		// ...
-		if (write(sfd, argv[j], len) != len) {
+`buf[nread]` = '\0';
 ```
-
-`strlen()` is used on `argv[j]` only because we know it is a null-terminated
-string (i.e., because we wrote the program!).  But `write()` is only concerned
-with bytes, so writing with argument `len` will result in writing one more
-character than the string is long--the null character.  See
-[Strings, I/O, and Environment](../01d-hw-strings-io-env) for more.  When the
-server echoes back our message, we can use string operations on it--but only
-because we know that it contains the null character that we included when we
-sent the message.
 
 Now take note of how the number of calls to `sendto()` on the client relates to
 the number of `recvfrom()` calls on the server.  Let's make some modifications
@@ -234,10 +237,11 @@ to both client and server code to better understand what is going on:
    - Remove the `printf()` statements that you added earlier around the
      `recvfrom()` statement.
  - Modify `client.c`:
-   - Remove the lines following `sendto()` beginning with `getsockname()` and
-     ending with `fprintf()`, which you added previously.
-   - Comment out the code that calls `read()` and `printf()`, such that it does
-     not attempt to read from the socket or print what it read after writing
+   - Remove the lines following `sendto()` that you added previously, starting
+     with the initialization of `addr_len`, followed  `getsockname()`, through
+     `fprintf()`.
+   - Comment out the code that calls `recv()` and `printf()`, such that it does
+     not attempt to read from the socket or print what it read, after writing
      to the socket.
 
 These changes make it so that the client is no longer waiting for the server to
@@ -258,10 +262,10 @@ before.
  9. *How many messages had been received by the server's kernel and were still
     waiting to be read by the server-side process immediately before the server
     called `recvfrom()` for the second time?* You can assume that the messages
-    were sent immediately when the client called `write()` and that any network
+    were sent immediately when the client called `sendto()` and that any network
     delay was negligible.
  10. *How many total calls to `recvfrom()` were required for the server process to
-     read all of the messages/bytes that were sent _including_ the first call to
+     read all of the messages/bytes that were sent, _including_ the first call to
      `recvfrom()`?*  Hint: look at the server output, and refer to `server.c`.
  11. *When more than one message was ready for reading, why didn't the server
      read _all_ the messages that were ready with a single call to
@@ -288,7 +292,6 @@ Restore the value of the `len` argument passed to `recvfrom()` in `server.c` to
 `BUF_SIZE`.
 
 
-
 ## Part 2: TCP Sockets
 
 In the next steps, you will be modifying the programs, so that they communicate
@@ -308,37 +311,41 @@ Make the following modifications:
  - Modify `client.c`:
    - Make the socket use TCP (`SOCK_STREAM`) instead of UDP (`SOCK_DGRAM`).
    - Uncomment the `connect()` code that you commented out in Part 1.
-   - Uncomment the read/print code that you commented out in Part 1.
-   - Uncomment the `write()` code that you commented out in Part 1.
+   - Uncomment the `recv()`/`printf()` code that you commented out in Part 1.
+   - Uncomment the `send()` code that you commented out in Part 1.
    - Remove the `sendto()` code that you added in Part 1 to the take the place
-     of `write()`.
+     of `send()`.
 
  - Modify `server.c`:
    - Make the server socket of TCP (`SOCK_STREAM`) instead of UDP.
-   - Wrap the entire `for` loop (i.e., `for (;;)`) in _another_ `for` loop with
-     the same conditions (i.e., `for (;;)`).
-   - Immediately before the _outer_ `for` loop, call the `listen()` function on
+   - Wrap the entire `while` loop (i.e., `while (1)`) in _another_ `while` loop with
+     the same conditions (i.e., `while (1)`).
+   - Immediately before the _outer_ `while` loop, call the `listen()` function on
      the TCP server socket (you can use a `backlog` value of 100).
-   - _Inside_ the outer `for` loop and immediately _before_ the inner `for`
+   - _Inside_ the outer `while` loop and immediately _before_ the inner `while`
      loop, use the `accept()` function to block, waiting for a client to
      connect, and return a new client socket.
      - You will need to declare a new variable of type `int` to hold the socket
        returned by `accept()`.
      - You can re-use some of the arguments that are currently used with
        `recvfrom()`, further down.
-     - You will need to initialize `remote_addr_len` before it is used with
+     - You will need to initialize `addr_len` before it is used with
        `accept()`, just as it is currently initialized before being called with
        `recvfrom()`.
-   - Change the `recvfrom()` call to `recv()`  and the `sendto()` call to
+   - Change the `recvfrom()` call to `recv()` and the `sendto()` call to
      `send()`.  Note that you just need to remove some of the arguments for
-     each.
-   - Comment out the `sleep()` call that you added in Part 1.
+     each.  Remember that with TCP, the socket returned from `accept()` has all
+     of the local and remote information associated with it, so there is no
+     need to collect the remote information with `recvfrom()` or specify remote
+     information with `sendto()`.
    - Use the file descriptor returned by `accept()` in the `recv()` and
      `send()` calls (i.e., the client socket).
+   - Comment out the `sleep()` call that you added in Part 1.
    - If `recv()` returns 0 bytes, then:
      - call `close()` on the client socket.  When 0 is returned by `recv()`,
        the client has closed its end of the connection and is effectively EOF.
-     - break out of the inner `for` loop; we can now listen for another client.
+     - break out of the inner `while` loop; we can now wait for another
+       client.
 
  14. *How does the role of the original socket (i.e., `sfd`, returned from the
      call to `socket()`), after `listen()` is called on it, compare with the
@@ -385,7 +392,8 @@ Make the following modifications, which mirror those made in Part 1
     calling `accept()`.
   - Modify `client.c` such that it does not attempt to read from the
     socket--or print what it read--after writing to the socket.  To do this,
-    comment out the code that calls `read()` and `printf()` as described.
+    comment out the code that calls `recv()` and `printf()` as described
+    previously.
 
 Similar to the changes made in Part 1, these changes make it so that the client
 will have sent all of its messages _and_ those messages will have been received
@@ -401,12 +409,12 @@ pane), run the following in the right "local" pane:
 ./client -4 hostname port foo bar abc123
 ```
 
- 19. *How many total calls to `send()` / `write()` were made by the client?*
-     Hint: refer to `client.c`.
+ 19. *How many total calls to `send()` were made by the client?* Hint: refer to
+     `client.c`.
  20. *How many messages had been received by the server's kernel and were still
      waiting to be read by the server-side process immediately before the
      server called `recv()`?*   You can assume that the messages were sent
-     immediately when the client called `write()` and that any network delay
+     immediately when the client called `send()` and that any network delay
      was negligible.
  21. *How many total calls to `recv()` were required for the server process to
      read all of the messages/bytes that were sent?*  Hint: look at the server
@@ -429,7 +437,7 @@ before.
  23. *Were all the bytes _sent_ by the client _received_ by the application?*
      Hint: look at the server output, and refer to `server.c`.
 
-Restore the value of the `len` argument passed to `recvfrom()` in `server.c` to
+Restore the value of the `len` argument passed to `recv()` in `server.c` to
 `BUF_SIZE`.
 
 
@@ -449,31 +457,34 @@ cp client.c client-tcp.c
 
 Remove the code in `client.c` that loops through command-line arguments and
 writes each to the socket.  Replace it using the following instructions. These
-should take place should take place immediately after the socket connection is
-established--that is, after breaking out of the loop that uses `connect()` to
-establish a connection with the remote side.
+should take place immediately after the socket connection is established--that
+is, after breaking out of the loop that uses `connect()` to establish a
+connection with the remote side.
 
  - Write a loop to read (using `read()`) input from standard input
    (`STDIN_FILENO` or 0) into an array of type `unsigned char` until EOF is
    reached (max total bytes 4096).  You can designate a specific "chunk" size
    (e.g., 512 bytes) to read from the file with each loop iteration.
  - Keep track of the number of bytes that were read from standard input during
-   each iteration and in total.  Hint: see the return value of `read()`.  With
+   each iteration and in total.  Hint: use the return value of `read()`.  With
    each iteration of the loop, you will want to offset the buffer (the one to
    which you are writing data read from standard input) by the number of total
    bytes read, so the bytes read are placed in the buffer immediately following
-   bytes previously read.
+   bytes previously read.  For example:
+   ```c
+   read(fd, buf + tot_bytes_read, bytes_to_read);
+   ```
  - After _all_ the data has been read from standard input (i.e., EOF has been
    reached), write another loop to send all the data that was received (i.e.,
    the bytes you just stored in the buffer) to the connected socket, until it
    has all been sent.  You can designate a specific message size (e.g., 512
-   bytes) to send with each loop iteration.  You can use `write()` or `send()`
-   to send the bytes.
+   bytes) to send with each loop iteration.  You can use `send()` to send the
+   bytes.
 
-   Note that `write()` / `send()` will return the number of bytes actually
-   sent, which might be less than the number you requested to be sent (see the
-   `write(2)` man page for more!), so you need to keep track of the total bytes
-   sent to ensure that all has been sent and write your loop termination test
+   Note that `send()` will return the number of bytes actually sent, which
+   might be less than the number you requested to be sent (see the `send(2)`
+   man page for more!), so you need to keep track of the total bytes sent to
+   ensure that all has been sent and write your loop termination test
    accordingly.
 
 In the left "remote" pane, start a netcat (`nc` command) server listening
@@ -521,14 +532,14 @@ Then re-run the client program:
 Modify `client.c`:
 
  - After _all_ the data read from standard input has been sent to the socket,
-   write another loop to read (using `read()` or `recv()`) from the socket into
+   write another loop to read (using `recv()`) from the socket into
    a buffer (`unsigned char []`) until the remote host closes its socket--that
-   is, the return value from `read()` / `recv()` is 0 (note that this is,
+   is, the return value from `recv()` is 0 (note that this is,
    effectively, EOF).  The maximum _total_ bytes that you will read fom the
    socket is 16384.  You can designate a specific "chunk" size (e.g., 512
    bytes) to read from the socket with each loop iteration.
  - Keep track of the bytes that were read from the socket during each iteration
-   and in total.  Hint: see the return value of `read()`.  With each iteration
+   and in total.  Hint: see the return value of `recv()`.  With each iteration
    of the loop, you will want to offset the buffer (the one to which you are
    writing data read from the socket) by the number of total bytes read, so the
    bytes read are placed in the buffer immediately following bytes previously
@@ -619,25 +630,24 @@ program (e.g., a Web browser) to check its correctness.
 For this final set of questions, you are welcome to refer to previous
 code/questions, set up your own experiments, and/or read the man pages.
 
- 27. What happens when you call `read()` (or `recv()`) on an open socket (UDP
+ 27. What happens when you call `recv()` on an open socket (UDP
      or TCP), and there are no messages are available at the socket for
      reading?  Hint: see the man page for `recv(2)`, especially the
      "DESCRIPTION" section.  See also the instructions in Part 1.
 
- 28. What happens when you call `read()` (or `recv()`) on an open socket (UDP
-     or TCP), and the number of bytes available for reading is less than the
-     requested amount?  Hint: see the man page for `read(2)`, especially the
-     "RETURN VALUE" section.
+ 28. What happens when you call `recv()` on an open socket (UDP or TCP), and
+     the number of bytes available for reading is less than the requested
+     amount?  Hint: see the man pages for `read(2)` and `recv(2)`, especially
+     the "RETURN VALUE" section.
 
- 29. What happens you you call `read()` (or `recv()`) on an open UDP socket,
-     and you specify a length that is less than the length of the next
-     datagram?  Hint: see the man page for `udp(7)`, specifically within the first
-     three paragraphs of the "DESCRIPTION" section.  See also questions
-     12 and 13.
+ 29. What happens you you call `recv()` on an open UDP socket, and you specify
+     a length that is less than the length of the next datagram?  Hint: see the
+     man page for `udp(7)`, specifically within the first three paragraphs of
+     the "DESCRIPTION" section.  See also questions 12 and 13.
 
- 30. What happens you you call `read()` (or `recv()`) on an open TCP socket,
-     and you specify a length that is less than the number of bytes available
-     for reading? Hint: see questions 22 and 23.
+ 30. What happens you you call `recv()` on an open TCP socket, and you specify
+     a length that is less than the number of bytes available for reading?
+     Hint: see questions 22 and 23.
 
 Close down all the terminal panes in your `tmux` session to _close_ your `tmux`
 session.
