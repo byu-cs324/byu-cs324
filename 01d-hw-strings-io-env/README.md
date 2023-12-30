@@ -325,6 +325,30 @@ In this section, you will perform some hands-on exercises to better understand
 how arrays, strings, and pointers are used by the compiler to reference the
 content they refer to, whether on the stack or on the heap.
 
+Some of the questions that follow might feel similar, like the same thing is
+being asked multiple times.  For this reason, we start with a brief
+introduction.  Let's say the memory for the call frame for a given function
+(e.g., `part2()`) is organized something like this:
+
+Variable | Type | Variable Address | Address Referred To
+---------|------|------------------|-------------------
+`s1` | `char []` | addr1 (`&s1`) | `&s1[0]`
+`s2` | `char []` | addr2 (`&s2`) | `&s2[0]`
+`s3` | `char *` | addr3 (`&s3`) | `&s3[0]`
+
+What this means is that each variable is stored at a given address on the
+stack, denoted by "addr1", "addr2", etc.  These addresses can be found with the
+code `&s1`, `&s2`, etc.  When any of these variables (`s1`, `s2`, etc.) is used
+in your code, the bytes ultimately _referred to_ might be at the same address
+as the variable itself or somewhere else, depending on the type of the
+variable.  This is explained further in Question 11.  These referred-to
+addresses can be found with the code `&s1[0]`, `&s2[0]`, etc.  All that being
+said:
+
+ - Question 10 is about comparing addr1 (`&s1`) to addr2 (`&s2`), etc.
+ - Question 11 is about comparing `&s1[0]` to addr1, `&s2[0]` to addr2, etc.
+ - Question 12 is about comparing `&s1[0]` to `&s2[0]`, etc.
+
  10. Print out the address of (i.e., using the `&` operator) of each of the
      variables `s1`, `s2`, and `s3`, as a long unsigned integer in decimal
      format (i.e., format `"%lu"`), each on a line by itself.
@@ -366,7 +390,7 @@ content they refer to, whether on the stack or on the heap.
      However, one difference between `char[]` and `char *` is that for
      `char[]`, the address of the variable is _also_ the address _referred to_
      by the variable.  That means that there is no changing the _referred-to
-     address_ (or _pointer value__) of a variable declared `char[]`.
+     address_ (or _pointer value_) of a variable declared `char[]`.
 
      *For which of the variables is the referred-to address (i.e., the pointer
      value) the same as the _address_ of the variable itself (i.e., the output
@@ -374,8 +398,8 @@ content they refer to, whether on the stack or on the heap.
      text in this question.)
 
  12. *Which of the variables reference the same content?  That is, which of the
-     addresses / pointer values are the same between `s1`, `s2`, and/or `s3`?
-     Briefly explain.*
+     referred-to addresses / pointer values are the same between `s1`, `s2`,
+     and/or `s3`?  Briefly explain.*
 
  13. Use `printf()` to print out the contents of each of the array/string
      variables `s1`, `s2`, and `s3`, i.e., using the `"%s"` format, each on a
@@ -389,7 +413,7 @@ content they refer to, whether on the stack or on the heap.
      if the values are equal.
 
      The C compiler will warn that you are comparing two pointer values and
-     that the more deliberate way to do this is to point compare the addresses
+     that the more deliberate way to do this is to compare the addresses
      of the _first byte/character_ in each array/string referred to.  This is
      true!  And if that warning is heeded (and the code is changed), then it
      will be clearer to you and anyone else looking at the code it is not
@@ -405,7 +429,7 @@ content they refer to, whether on the stack or on the heap.
      `s3`; `s2` and `s3`.  In each case, print "s1 == s2" (replacing the
      variable names, as appropriate) on its own line if the values are equal.
 
-     *Based on the output, which of arrays/strings have equal content (i.e.,
+     *Based on the output, which arrays/strings have equal content (i.e.,
      the values of the bytes they point to are the same) and why?* (Hint: Your
      answer should be consistent with the answer for question 13).
 
