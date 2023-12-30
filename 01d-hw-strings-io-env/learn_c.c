@@ -171,21 +171,21 @@ void part5(char *filename) {
 
 	printf("===== Question 33 (no code changes) =====\n");
 
-	printf("===== Question 34 (no code changes) =====\n");
+	printf("===== Question 34 =====\n");
 
-	printf("===== Question 35 =====\n");
+	printf("===== Question 35 (no code changes) =====\n");
 
 	printf("===== Question 36 (no code changes) =====\n");
 
-	printf("===== Question 37 (no code changes) =====\n");
+	printf("===== Question 37 =====\n");
 
-	printf("===== Question 38 =====\n");
+	printf("===== Question 38 (no code changes) =====\n");
 
 	printf("===== Question 39 (no code changes) =====\n");
 
 	printf("===== Question 40 (no code changes) =====\n");
 
-	printf("===== Question 41 (no code changes) =====\n");
+	printf("===== Question 41 =====\n");
 
 	printf("===== Question 42 =====\n");
 
