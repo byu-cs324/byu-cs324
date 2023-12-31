@@ -364,9 +364,9 @@ the process is:
      respectively, and duplicating the newly-opened file descriptor onto
      standard input or standard output, respectively.
 
-     Note that for input redirection, you should open the file with `flags`
-     `O_RDONLY` (read-only) for `open()` and mode `"r"` for `fopen()`. For output
-     redirection, you should open the file with `flags`
+     Note that for input redirection, you should open the file with `open()`
+     using a `flags` value of `O_RDONLY` (read-only) to `open()`. For output
+     redirection, you should call `open()` on the file with a `flags` value of
      `O_WRONLY | O_CREAT | O_TRUNC` (i.e., write-only, create the file if it
      doesn't exist, and truncate the file if it does exist) and `mode` `0600`
      (or, equivalently, `S_IRUSR | S_IWUSR`, i.e., readable/writable by only
@@ -403,8 +403,6 @@ the process is:
 The tools that you will use for this are:
 
  - `fork()`
- - `fopen()`
- - `fileno()`
  - `dup2()`
  - `close()`
  - `waitpid()`
@@ -439,7 +437,9 @@ child processes.
 Thus, the process is:
 
  - Create a pipe.
- - Fork two child processes.
+ - Fork two child processes, corresponding to the left- and right-hand commands
+   of the pipe.  Each new child process will have its own code to run, based on
+   the following bullet point.
  - In each child process:
    - Check the command for any input or output redirection, and perform that
      redirection using the methodology described previously.
@@ -511,8 +511,6 @@ goal is that they all closed before returning from `eval()`.
 The tools that you will use for this are:
 
  - `fork()`
- - `fopen()`
- - `fileno()`
  - `pipe()`
  - `dup2()`
  - `close()`
@@ -728,6 +726,12 @@ arguments passed have the following values:
    of the shell is creating and managing child processes.  See the man page for
    `strace(1)` for more usage information.  Note that any calls to `fork()`
    will appear as `clone()` in `strace()` output.
+ - TODO: add `strace` to examples in beginning, right from the start
+ - TODO: When calling `setpgid(pid2, pid1)` "setpgid:  Operation not permitted"
+   Make sure you are calling `setpgid()` for pid1 before calling it for pid2.
+ - TODO: General tip for lab 1: make sure to check the return values of the
+   system calls (pipe, fork, execve, etc.) and use `perror()` Doing so can help
+   you identify errors faster!
 
 
 # Automated Testing
