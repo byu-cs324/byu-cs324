@@ -44,7 +44,6 @@ char sbuf[MAXLINE];         /* for composing sprintf messages */
 
 struct job_t {              /* The job struct */
     pid_t pid;              /* job PID */
-    pid_t pgid;             /* job pgid */
     int jid;                /* job ID [1, 2, ...] */
     int state;              /* UNDEF, BG, FG, or ST */
     char cmdline[MAXLINE];  /* command line */
@@ -67,13 +66,12 @@ void sigint_handler(int sig);
 
 /* Here are helper routines that we've provided for you */
 int parseline(const char *cmdline, char **argv); 
-int parseargs(char **argv, int *cmds, int *stdin_redir, int *stdout_redir);
 void sigquit_handler(int sig);
 
 void clearjob(struct job_t *job);
 void initjobs(struct job_t *jobs);
 int maxjid(struct job_t *jobs); 
-int addjob(struct job_t *jobs, pid_t pid, pid_t pgid, int state, char *cmdline);
+int addjob(struct job_t *jobs, pid_t pid, int state, char *cmdline);
 int deletejob(struct job_t *jobs, pid_t pid); 
 pid_t fgpid(struct job_t *jobs);
 struct job_t *getjobpid(struct job_t *jobs, pid_t pid);
@@ -168,67 +166,6 @@ int main(int argc, char **argv)
 void eval(char *cmdline) 
 {
     return;
-}
-
-/* 
- * parseargs - Parse the arguments to identify pipelined commands
- * 
- * Walk through each of the arguments to find each pipelined command.  If the
- * argument was | (pipe), then the next argument starts the new command on the
- * pipeline.  If the argument was < or >, then the next argument is the file
- * from/to which stdin or stdout should be redirected, respectively.  After it
- * runs, the arrays for cmds, stdin_redir, and stdout_redir all have the same
- * number of items---which is the number of commands in the pipeline.  The cmds
- * array is populated with the indexes of argv corresponding to the start of
- * each command sequence in the pipeline.  For each slot in cmds, there is a
- * corresponding slot in stdin_redir and stdout_redir.  If the slot has a -1,
- * then there is no redirection; if it is >= 0, then the value corresponds to
- * the index in argv that holds the filename associated with the redirection.
- * 
- */
-int parseargs(char **argv, int *cmds, int *stdin_redir, int *stdout_redir) 
-{
-    int argindex = 0;    /* the index of the current argument in the current cmd */
-    int cmdindex = 0;    /* the index of the current cmd */
-
-    if (!argv[argindex]) {
-        return 0;
-    }
-
-    cmds[cmdindex] = argindex;
-    stdin_redir[cmdindex] = -1;
-    stdout_redir[cmdindex] = -1;
-    argindex++;
-    while (argv[argindex]) {
-        if (strcmp(argv[argindex], "<") == 0) {
-            argv[argindex] = NULL;
-            argindex++;
-            if (!argv[argindex]) { /* if we have reached the end, then break */
-                break;
-	    }
-            stdin_redir[cmdindex] = argindex;
-	} else if (strcmp(argv[argindex], ">") == 0) {
-            argv[argindex] = NULL;
-            argindex++;
-            if (!argv[argindex]) { /* if we have reached the end, then break */
-                break;
-	    }
-            stdout_redir[cmdindex] = argindex;
-	} else if (strcmp(argv[argindex], "|") == 0) {
-            argv[argindex] = NULL;
-            argindex++;
-            if (!argv[argindex]) { /* if we have reached the end, then break */
-                break;
-	    }
-            cmdindex++;
-            cmds[cmdindex] = argindex;
-            stdin_redir[cmdindex] = -1;
-            stdout_redir[cmdindex] = -1;
-	}
-        argindex++;
-    }
-
-    return cmdindex + 1;
 }
 
 /* 
@@ -385,7 +322,7 @@ int maxjid(struct job_t *jobs)
 }
 
 /* addjob - Add a job to the job list */
-int addjob(struct job_t *jobs, pid_t pid, pid_t pgid, int state, char *cmdline) 
+int addjob(struct job_t *jobs, pid_t pid, int state, char *cmdline) 
 {
     int i;
     
@@ -395,7 +332,6 @@ int addjob(struct job_t *jobs, pid_t pid, pid_t pgid, int state, char *cmdline)
     for (i = 0; i < MAXJOBS; i++) {
 	if (jobs[i].pid == 0) {
 	    jobs[i].pid = pid;
-	    jobs[i].pgid = pgid;
 	    jobs[i].state = state;
 	    jobs[i].jid = nextjid++;
 	    if (nextjid > MAXJOBS)
