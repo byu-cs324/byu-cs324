@@ -281,10 +281,11 @@ between different processes.
      (Hint: See "Note the following further points" in the man page for
      `fork(2)`)
 
- 20. The way that you have set things up, one process is writing to the pipe,
-     and another is reading from the pipe.  *Can the communication also go in
-     reverse order, such that two processes were reading and writing to one
-     another over the same pipe?*  (Hint: see the man page for `pipe(7)`.)
+ 20. The way that you have set things up, one process is is writing to its end
+     of the pipe, while the other is reading from its end of the pipe.  *Can
+     the communication also go in reverse direction, such that each process is
+     both reading and writing from its end of the pipe?*  (Hint: see the man
+     page for `pipe(7)`.)
 
  21. Modify `fork.c` according to the following:
 
