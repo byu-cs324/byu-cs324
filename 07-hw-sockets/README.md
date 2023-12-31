@@ -204,8 +204,8 @@ before.
 
  7. Analyze the output associated with the `fprintf()` statements that follow
     the calls to `getsockname()`.  *What do the differences in output teach
-    you about _when_ the local address and port are set for a given socket?*
-
+    you about _when_ the local port is set for a given socket?*  Note that the
+    local address remains unset when `sendto()` is used instead of `connect()`.
 
 Let's make some other observations.  First, note that `strlen()` is used on
 `argv[j]` only because we know it is a null-terminated string.  `strlen()`
@@ -264,9 +264,12 @@ before.
     called `recvfrom()` for the second time?* You can assume that the messages
     were sent immediately when the client called `sendto()` and that any network
     delay was negligible.
- 10. *How many total calls to `recvfrom()` were required for the server process to
-     read all of the messages/bytes that were sent, _including_ the first call to
-     `recvfrom()`?*  Hint: look at the server output, and refer to `server.c`.
+ 10. Consider _only_ the messages referred to in the previous question, i.e.,
+     those still waiting to be read immediately before the server called
+     `recvfrom()` for the second time. *How many calls to `recvfrom()`
+     (including the second call and any additional calls) were required for the
+     server process to read all of those messages/bytes?* Hint: look at the
+     server output, and refer to `server.c`.
  11. *When more than one message was ready for reading, why didn't the server
      read _all_ the messages that were ready with a single call to
      `recvfrom()`?*  Hint: see the man page for `udp(7)`, specifically within the
@@ -409,8 +412,8 @@ pane), run the following in the right "local" pane:
 ./client -4 hostname port foo bar abc123
 ```
 
- 19. *How many total calls to `send()` were made by the client?* Hint: refer to
-     `client.c`.
+ 19. *How many _total_ calls to `send()` were made by the client?* Hint: refer
+     to `client.c`.
  20. *How many messages had been received by the server's kernel and were still
      waiting to be read by the server-side process immediately before the
      server called `recv()`?*   You can assume that the messages were sent
