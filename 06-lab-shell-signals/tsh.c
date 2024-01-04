@@ -90,7 +90,7 @@ handler_t *Signal(int signum, handler_t *handler);
  */
 int main(int argc, char **argv) 
 {
-    char c;
+    int c;
     char cmdline[MAXLINE];
     int emit_prompt = 1; /* emit prompt (default) */
 
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
     dup2(1, 2);
 
     /* Parse the command line */
-    while ((c = getopt(argc, argv, "hvp")) != EOF) {
+    while ((c = getopt(argc, argv, "hvp")) >= 0) {
         switch (c) {
         case 'h':             /* print help message */
             usage();
