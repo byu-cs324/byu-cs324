@@ -111,7 +111,9 @@ assignment:
 
 ## Reference Tiny Shell
 
-Run the reference shell by running the following from your terminal:
+This section walks through the reference shell behavior, so you know what you
+will be implementing.  Run the reference shell by running the following from
+your terminal:
 
 ```bash
 ./tshref
@@ -555,6 +557,48 @@ an array of `char`, terminated by a null byte).  But that single string needs
 to be parsed and then evaluated.  Fortunately, there is a
 [helper function](#parseline) to help you with the parsing.
 
+Now make one last change, which will help you see how the program `strace`
+might help you understand and troubleshoot your shell.  `strace` reports any
+system calls that are made by a specified process, as well as signals received
+by that process.  Modify your `eval()` function to fork a child process and
+send a `SIGTERM` signal to that process, as follows:
+
+```c
+void eval(char *cmdline) 
+{
+    printf("You entered: %s\n", cmdline);
+    pid_t pid = fork();
+    if (pid > 0) {
+        kill(pid, SIGTERM);
+    }
+}
+```
+
+Now enter the following at the command line:
+
+```bash
+strace -f ./tsh
+```
+
+You will see a bunch of output associated with system calls being made.  At the
+very end you'll see `read(0, `.  That is the call to `read()` that is waiting
+for data on standard input before it returns.  Enter "foo" at the prompt to get
+the `eval()` code to be run.  You should see additional lines of output that
+show: the call to `read()` returning; the `write()` call associated with
+`printf()`; the `fork()` call (shows up as `clone()`); the `kill()` call issued
+by the parent process; the `SIGTERM` call being received by the child process;
+and the `SIGCHLD` call being received by the parent process.  The output is
+quite a lot to take in, but you can also limit the system calls that `strace()`
+prints out with something like this:
+
+```bash
+strace -f -e trace=clone,%signal ./tsh
+```
+
+This shows only the `clone()` (i.e., `fork()`) system call and any
+signal-related activiy (including `kill()`).
+See [Debugging Hints](#debugging-hints) for more.
+
 
 ### Signal Handlers
 
@@ -626,6 +670,8 @@ indicator that the command passed in was _not_ a built-in command.
 
  - `char *cmdline` - a string containing the contents of a command line read in
    from standard input in the read/eval loop.
+
+Remove any code added for demonstration purposes.
 
 Call the `parseline()` helper function,
 [which has been implemented for you](#helper-functions).  Call `builtin_cmd()`
@@ -956,13 +1002,17 @@ structures (`struct job_t`), `jobs`:
  - If you are using VScode,
    [set up the debugger](../contrib/vscode-debugger/README.md), and use it to
    walk through your code.
- - Use the program `strace` to show you which signals are being sent.  `strace`
-   can be used with various command-line options to cater it to your needs.
-   For example, the following command:
+ - Use the program `strace` to show you which system calls are being issued and
+   which signals are being received.  `strace` can be used with various
+   command-line options to cater it to your needs.  For example, the following
+   command:
+
    ```bash
-   $ strace -f -e trace=%signal ./tsh
+   strace -f -e trace=clone,%signal ./tsh
    ```
-   calls `strace` on `./tsh`, showing only calls related to signals. The `-f`
+
+   calls `strace` on `./tsh`, showing only the `clone()` (i.e., `fork()`)
+   system call and any signal-related activiy (including `kill()`).  The `-f`
    option indicates that child processes should be traced also, which is
    desirable since an important part of the shell is creating and managing
    child processes.  See the man page for `strace(1)` for more usage
