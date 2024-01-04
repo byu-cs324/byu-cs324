@@ -323,6 +323,8 @@ void eval(char *cmdline)
 }
 ```
 
+(Note that you will need to add `#include <fcntl.h>`).
+
 Now enter the following at the command line:
 
 ```bash
