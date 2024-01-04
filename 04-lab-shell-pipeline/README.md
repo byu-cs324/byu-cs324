@@ -310,7 +310,7 @@ to help you with the parsing.
 
 Now make one last change, which will help you see how the program `strace`
 might help you understand and troubleshoot your shell.  `strace` reports any
-system calls that are made by a specified program.  Modify your `eval()`
+system calls that are made by a specified process.  Modify your `eval()`
 function to include two system calls, `open()` and `close()`, as follows:
 
 ```c
@@ -371,6 +371,8 @@ in was _not_ a built-in command.
 
  - `char *cmdline` - a string containing the contents of a command line read in
    from standard input in the read/eval loop.
+
+Remove any code added for demonstration purposes.
 
 Use the `parseline()` and `parseargs()` helper functions, 
 [which have been implemented for you](#helper-functions), and pass the first
