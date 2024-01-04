@@ -43,53 +43,53 @@ typedef void handler_t(int);
  */
 int main(int argc, char **argv) 
 {
-    int c;
-    char cmdline[MAXLINE];
-    int emit_prompt = 1; /* emit prompt (default) */
+	int c;
+	char cmdline[MAXLINE];
+	int emit_prompt = 1; /* emit prompt (default) */
 
-    /* Redirect stderr to stdout (so that driver will get all output
-     * on the pipe connected to stdout) */
-    dup2(1, 2);
+	/* Redirect stderr to stdout (so that driver will get all output
+	 * on the pipe connected to stdout) */
+	dup2(1, 2);
 
-    /* Parse the command line */
-    while ((c = getopt(argc, argv, "hvp")) >= 0) {
-        switch (c) {
-        case 'h':             /* print help message */
-            usage();
-	    break;
-        case 'v':             /* emit additional diagnostic info */
-            verbose = 1;
-	    break;
-        case 'p':             /* don't print a prompt */
-            emit_prompt = 0;  /* handy for automatic testing */
-	    break;
-	default:
-            usage();
-	}
-    }
-
-    /* Execute the shell's read/eval loop */
-    while (1) {
-
-	/* Read command line */
-	if (emit_prompt) {
-	    printf("%s", prompt);
-	    fflush(stdout);
-	}
-	if ((fgets(cmdline, MAXLINE, stdin) == NULL) && ferror(stdin))
-	    app_error("fgets error");
-	if (feof(stdin)) { /* End of file (ctrl-d) */
-	    fflush(stdout);
-	    exit(0);
+	/* Parse the command line */
+	while ((c = getopt(argc, argv, "hvp")) >= 0) {
+		switch (c) {
+			case 'h':             /* print help message */
+				usage();
+				break;
+			case 'v':             /* emit additional diagnostic info */
+				verbose = 1;
+				break;
+			case 'p':             /* don't print a prompt */
+				emit_prompt = 0;  /* handy for automatic testing */
+				break;
+			default:
+				usage();
+		}
 	}
 
-	/* Evaluate the command line */
-	eval(cmdline);
-	fflush(stdout);
-	fflush(stdout);
-    } 
+	/* Execute the shell's read/eval loop */
+	while (1) {
 
-    exit(0); /* control never reaches here */
+		/* Read command line */
+		if (emit_prompt) {
+			printf("%s", prompt);
+			fflush(stdout);
+		}
+		if ((fgets(cmdline, MAXLINE, stdin) == NULL) && ferror(stdin))
+			app_error("fgets error");
+		if (feof(stdin)) { /* End of file (ctrl-d) */
+			fflush(stdout);
+			exit(0);
+		}
+
+		/* Evaluate the command line */
+		eval(cmdline);
+		fflush(stdout);
+		fflush(stdout);
+	} 
+
+	exit(0); /* control never reaches here */
 }
   
 /* 
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 */
 void eval(char *cmdline) 
 {
-    return;
+	return;
 }
 
 /* 
@@ -122,47 +122,47 @@ void eval(char *cmdline)
  */
 int parseargs(char **argv, int *cmds, int *stdin_redir, int *stdout_redir) 
 {
-    int argindex = 0;    /* the index of the current argument in the current cmd */
-    int cmdindex = 0;    /* the index of the current cmd */
+	int argindex = 0;    /* the index of the current argument in the current cmd */
+	int cmdindex = 0;    /* the index of the current cmd */
 
-    if (!argv[argindex]) {
-        return 0;
-    }
-
-    cmds[cmdindex] = argindex;
-    stdin_redir[cmdindex] = -1;
-    stdout_redir[cmdindex] = -1;
-    argindex++;
-    while (argv[argindex]) {
-        if (strcmp(argv[argindex], "<") == 0) {
-            argv[argindex] = NULL;
-            argindex++;
-            if (!argv[argindex]) { /* if we have reached the end, then break */
-                break;
-	    }
-            stdin_redir[cmdindex] = argindex;
-	} else if (strcmp(argv[argindex], ">") == 0) {
-            argv[argindex] = NULL;
-            argindex++;
-            if (!argv[argindex]) { /* if we have reached the end, then break */
-                break;
-	    }
-            stdout_redir[cmdindex] = argindex;
-	} else if (strcmp(argv[argindex], "|") == 0) {
-            argv[argindex] = NULL;
-            argindex++;
-            if (!argv[argindex]) { /* if we have reached the end, then break */
-                break;
-	    }
-            cmdindex++;
-            cmds[cmdindex] = argindex;
-            stdin_redir[cmdindex] = -1;
-            stdout_redir[cmdindex] = -1;
+	if (!argv[argindex]) {
+		return 0;
 	}
-        argindex++;
-    }
 
-    return cmdindex + 1;
+	cmds[cmdindex] = argindex;
+	stdin_redir[cmdindex] = -1;
+	stdout_redir[cmdindex] = -1;
+	argindex++;
+	while (argv[argindex]) {
+		if (strcmp(argv[argindex], "<") == 0) {
+			argv[argindex] = NULL;
+			argindex++;
+			if (!argv[argindex]) { /* if we have reached the end, then break */
+				break;
+			}
+			stdin_redir[cmdindex] = argindex;
+		} else if (strcmp(argv[argindex], ">") == 0) {
+			argv[argindex] = NULL;
+			argindex++;
+			if (!argv[argindex]) { /* if we have reached the end, then break */
+				break;
+			}
+			stdout_redir[cmdindex] = argindex;
+		} else if (strcmp(argv[argindex], "|") == 0) {
+			argv[argindex] = NULL;
+			argindex++;
+			if (!argv[argindex]) { /* if we have reached the end, then break */
+				break;
+			}
+			cmdindex++;
+			cmds[cmdindex] = argindex;
+			stdin_redir[cmdindex] = -1;
+			stdout_redir[cmdindex] = -1;
+		}
+		argindex++;
+	}
+
+	return cmdindex + 1;
 }
 
 /* 
@@ -174,52 +174,52 @@ int parseargs(char **argv, int *cmds, int *stdin_redir, int *stdout_redir)
  */
 int parseline(const char *cmdline, char **argv) 
 {
-    static char array[MAXLINE]; /* holds local copy of command line */
-    char *buf = array;          /* ptr that traverses command line */
-    char *delim;                /* points to first space delimiter */
-    int argc;                   /* number of args */
-    int bg;                     /* background job? */
+	static char array[MAXLINE]; /* holds local copy of command line */
+	char *buf = array;          /* ptr that traverses command line */
+	char *delim;                /* points to first space delimiter */
+	int argc;                   /* number of args */
+	int bg;                     /* background job? */
 
-    strcpy(buf, cmdline);
-    buf[strlen(buf)-1] = ' ';  /* replace trailing '\n' with space */
-    while (*buf && (*buf == ' ')) /* ignore leading spaces */
-	buf++;
+	strcpy(buf, cmdline);
+	buf[strlen(buf)-1] = ' ';  /* replace trailing '\n' with space */
+	while (*buf && (*buf == ' ')) /* ignore leading spaces */
+		buf++;
 
-    /* Build the argv list */
-    argc = 0;
-    if (*buf == '\'') {
-	buf++;
-	delim = strchr(buf, '\'');
-    }
-    else {
-	delim = strchr(buf, ' ');
-    }
-
-    while (delim) {
-	argv[argc++] = buf;
-	*delim = '\0';
-	buf = delim + 1;
-	while (*buf && (*buf == ' ')) /* ignore spaces */
-	       buf++;
-
+	/* Build the argv list */
+	argc = 0;
 	if (*buf == '\'') {
-	    buf++;
-	    delim = strchr(buf, '\'');
+		buf++;
+		delim = strchr(buf, '\'');
 	}
 	else {
-	    delim = strchr(buf, ' ');
+		delim = strchr(buf, ' ');
 	}
-    }
-    argv[argc] = NULL;
-    
-    if (argc == 0)  /* ignore blank line */
-	return 1;
 
-    /* should the job run in the background? */
-    if ((bg = (*argv[argc-1] == '&')) != 0) {
-	argv[--argc] = NULL;
-    }
-    return bg;
+	while (delim) {
+		argv[argc++] = buf;
+		*delim = '\0';
+		buf = delim + 1;
+		while (*buf && (*buf == ' ')) /* ignore spaces */
+			buf++;
+
+		if (*buf == '\'') {
+			buf++;
+			delim = strchr(buf, '\'');
+		}
+		else {
+			delim = strchr(buf, ' ');
+		}
+	}
+	argv[argc] = NULL;
+
+	if (argc == 0)  /* ignore blank line */
+		return 1;
+
+	/* should the job run in the background? */
+	if ((bg = (*argv[argc-1] == '&')) != 0) {
+		argv[--argc] = NULL;
+	}
+	return bg;
 }
 
 /* 
@@ -228,7 +228,7 @@ int parseline(const char *cmdline, char **argv)
  */
 int builtin_cmd(char **argv) 
 {
-    return 0;     /* not a builtin command */
+	return 0;     /* not a builtin command */
 }
 
 /***********************
@@ -240,11 +240,11 @@ int builtin_cmd(char **argv)
  */
 void usage(void) 
 {
-    printf("Usage: shell [-hvp]\n");
-    printf("   -h   print this message\n");
-    printf("   -v   print additional diagnostic information\n");
-    printf("   -p   do not emit a command prompt\n");
-    exit(1);
+	printf("Usage: shell [-hvp]\n");
+	printf("   -h   print this message\n");
+	printf("   -v   print additional diagnostic information\n");
+	printf("   -p   do not emit a command prompt\n");
+	exit(1);
 }
 
 /*
@@ -252,8 +252,8 @@ void usage(void)
  */
 void unix_error(char *msg)
 {
-    fprintf(stdout, "%s: %s\n", msg, strerror(errno));
-    exit(1);
+	fprintf(stdout, "%s: %s\n", msg, strerror(errno));
+	exit(1);
 }
 
 /*
@@ -261,7 +261,7 @@ void unix_error(char *msg)
  */
 void app_error(char *msg)
 {
-    fprintf(stdout, "%s\n", msg);
-    exit(1);
+	fprintf(stdout, "%s\n", msg);
+	exit(1);
 }
 
