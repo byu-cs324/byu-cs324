@@ -88,6 +88,9 @@ $grade = $opt_g;
 open INFILE, $infile
     or die "$0: ERROR: Couldn't open input file $infile: $!\n";
 
+# killing processes related to previous instances
+system("killall -q tsh myintgroup myppid myspin mygrep mycat");
+
 # 
 # Fork a child, run the shell in it, and connect the parent
 # and child with a pair of unidirectional pipes: 
