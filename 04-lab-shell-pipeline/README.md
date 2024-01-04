@@ -112,7 +112,9 @@ assignment:
 
 ## Reference Tiny Shell
 
-Run the reference shell by running the following from your terminal:
+This section walks through the reference shell behavior, so you know what you
+will be implementing.  Run the reference shell by running the following from
+your terminal:
 
 ```bash
 ./tshref
@@ -305,6 +307,43 @@ This gives you an idea of what is being passed to `eval()`--a string (i.e.,
 an array of `char`, terminated by a null byte).  But that single string needs
 to be parsed and then evaluated.  Fortunately, there are some helper functions
 to help you with the parsing.
+
+Now make one last change, which will help you see how the program `strace`
+might help you understand and troubleshoot your shell.  `strace` reports any
+system calls that are made by a specified program.  Modify your `eval()`
+function to include two system calls, `open()` and `close()`, as follows:
+
+```c
+void eval(char *cmdline) 
+{
+    printf("You entered: %s\n", cmdline);
+    int fd = open("tsh.c", O_RDONLY);
+    close(fd);
+    return;
+}
+```
+
+Now enter the following at the command line:
+
+```bash
+strace -f ./tsh
+```
+
+You will see a bunch of output associated with system calls being made.  At the
+very end you'll see `read(0, `.  That is the call to `read()` that is waiting
+for data on standard input before it returns.  Enter "foo" at the prompt to get
+the `eval()` code to be run.  You should see additional lines of output that
+show: the call to `read()` returning; the `write()` call associated with
+`printf()`; the `openat()` call associated with `open()`; and the `close()`
+call.  The output is quite a lot to take in, but you can also limit the system
+calls that `strace()` prints out with something like this:
+
+```bash
+strace -f -e trace=close,pipe,open,openat,dup2 ./tsh
+```
+
+This shows only the system calls: `close()`, `pipe()`, `open()` (and
+`openat()`), and `dup2()`.  See [Debugging Hints](#debugging-hints) for more.
 
 
 # Instructions
@@ -707,6 +746,10 @@ arguments passed have the following values:
    standard output will sometimes be redirected to file or to a pipe, use
    `fprintf(stderr, ...)` to print to standard error, which is not touched in
    this lab.
+ - Check the return values of all system calls (`pipe()`, `fork()`, `execve()`,
+   etc.), and use `perror()` to print out the descriptions of any errors
+   encountered along the way.  This will save you time when something goes
+   wrong!
  - If you are using VScode,
    [set up the debugger](../contrib/vscode-debugger/README.md), and use it to
    walk through your code.
@@ -714,24 +757,25 @@ arguments passed have the following values:
    corrupt through mistaken shell calls (e.g., accidentally redirecting output
    to `./myppid`).  Try running `make clean` then `make` to remove old
    (possibly corrupt) binaries and create new, fresh ones.
- - Use the program `strace` to show you which file-related system calls are
-   being issued.  `strace` can be used with various command-line options to
-   cater it to your needs.  For example, the following command:
+ - Use the program `strace` to show you which system calls are being issued.
+   `strace` can be used with various command-line options to cater it to your
+   needs.  For example, the following command:
+
    ```bash
-   strace -f -e trace=close,pipe,open,dup2 ./tsh
+   strace -f -e trace=close,pipe,open,openat,dup2 ./tsh
    ```
+
    calls `strace` on `./tsh`, showing only the system calls: `close()`,
-   `pipe()`, `open()`, and `dup2()`.  The `-f` option indicates that child
-   processes should be traced also, which is desirable since an important part
-   of the shell is creating and managing child processes.  See the man page for
-   `strace(1)` for more usage information.  Note that any calls to `fork()`
-   will appear as `clone()` in `strace()` output.
- - TODO: add `strace` to examples in beginning, right from the start
- - TODO: When calling `setpgid(pid2, pid1)` "setpgid:  Operation not permitted"
-   Make sure you are calling `setpgid()` for pid1 before calling it for pid2.
- - TODO: General tip for lab 1: make sure to check the return values of the
-   system calls (pipe, fork, execve, etc.) and use `perror()` Doing so can help
-   you identify errors faster!
+   `pipe()`, `open()` (and `openat()`), and `dup2()`.  This can help you track
+   the creation of new file descriptors and which have been closed vs which
+   remain open.  The `-f` option indicates that child processes should be
+   traced also, which is desirable since an important part of the shell is
+   creating and managing child processes.  See the man page for `strace(1)` for
+   more usage information.  Note that any calls to `fork()` will appear as
+   `clone()` in `strace()` output.
+ - If you get "Operation not permitted" when calling `setpgid(pid2, pid1)`
+   (i.e., putting process `pid2` into group `pid1`), make sure that you have
+   first called `setpgid(pid1, pid1)` to put process `pid1` into group `pid1`.
 
 
 # Automated Testing
