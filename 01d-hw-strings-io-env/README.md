@@ -43,8 +43,8 @@ and followed by parts
 [6](#part-6---getting-and-setting-environment-variables).
 The instructions in each part provide exercises for learning about memory
 allocation, strings, I/O, and environment variables in C.  The file `learn_c.c`
-contains a function corresponding each part, in which you will do the specified
-work.
+contains a function corresponding to each part, in which you will do the
+specified work for each question.
 
 Follow the instructions for and answer each question.  For most questions, you
 will re-compile and re-run the program using the following commands:
@@ -93,7 +93,8 @@ char s1[] = { 0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x0a };
 together represent the ASCII values: `'h'`, `'e'`, `'l'`, `'l'`, `'o'`, `'\n'`
 (newline).
 
-If you write them to the terminal, it will display them as such:
+You can send these bytes to the terminal using the `write()` function, and the
+terminal will display them as their corresponding ASCII values.
 
 ```c
 write(STDOUT_FILENO, s1, 6);
@@ -113,7 +114,7 @@ ASCII has limitations in that it only supports 127 unique characters
 widely used of which is Unicode.  Unicode has the ambitious goal of having a
 mapping for "every character in every human language" (man page for
 `charsets(7)`).  ASCII is a subset of Unicode: if a byte value is less than 128,
-then it is ASCII, but if it greater, then then it is encoded for Unicode,
+then it is ASCII, but if it greater, then it is encoded for Unicode,
 typically using a byte encoding called UTF-8.  For example, the following array
 of six bytes together represent the two simplified Chinese characters that mean
 "Taiwan", followed by an (ASCII) newline:
@@ -122,8 +123,8 @@ of six bytes together represent the two simplified Chinese characters that mean
 char s2[] = { 0xe5, 0x8f, 0xb0, 0xe7, 0x81, 0xa3, 0x0a };
 ```
 
-If you write them to the terminal, again the terminal will display them as
-such:
+Again you can send these bytes to the terminal using the `write()` function,
+and the terminal will display them as their corresponding unicode characters.
 
 ```c
 write(STDOUT_FILENO, s2, 7);
@@ -146,8 +147,8 @@ For more information, see the man pages for `charsets(7)` and `ascii(7)`.
 
 ## `printf()` and Friends
 
-What do `printf()` and `fprintf()` do?  There are three things different than
-calling `write()`.
+What do `printf()` and `fprintf()` do?  They are similar to `write()`, but with
+some important differences:
  - First, `printf()` and `fprintf()` operate on file streams (`FILE *`), which
    include user-level buffering.  That simply means that they "save up"
    `write()` calls and send the pending bytes only when it's most efficient to
@@ -156,18 +157,28 @@ calling `write()`.
    food item.
  - Second, instead of explicitly setting the number of bytes to send,
    `printf()` and `fprintf()` know when to stop sending bytes when they detect
-   a null byte value (integer value 0), which you will see in a later exercise.
+   a null byte value (integer value 0), which you will see in this assignment.
  - Third, and most importantly for now, they perform "replacements" before
    calling `write()` on the resulting string.  For example, the `s` (e.g.,
    `"%s"`) conversion specifier indicates that it should be replaced by the
    null-terminated string specified.  The `x` and `d` conversion specifiers
-   indicate that they should be replaced with the integers corresponding to the
-   ASCII characters for the hexadecimal and decimal representations of those
-   integers, respectively (See the man page for `printf(3)`).  For example, for
-   the conversion specifier `d`, the integer 42 would become the (decimal) byte
-   values 52 and 50 (hexadecimal 0x34 and 0x32), corresponding to the ASCII
-   characters `'4'` and `'2'`.  After replacements, the modified set of bytes
-   is sent to the terminal or application, so "42" is what is presented.
+   indicate that they should be replaced with the hexadecimal and decimal
+   representations (in ASCII characters) of an integer, respectively.
+
+   For example, consider the following statement:
+
+   ```c
+   printf("hello %d\n", 42);
+   ```
+
+   Before the string is written to the terminal, the substring "%d" (i.e., the
+   two characters `'%'` and `'d'`) are replaced with the two byte values that
+   comprise the string "42": 52 and 50 (decimal), 0x34 and 0x32 (hexadecimal),
+   or `'4'` and `'2'` (ASCII).  The resulting string that is printed is:
+   "hello 42\n".
+
+   You can learn more about the available conversion specifiers on the man page
+   for `printf(3)`.
 
 The following snippets all yield equivalent results:
 
@@ -202,7 +213,7 @@ examples of this later in the assignment.
 ## Summary and Main Points
 
 While you will get more hands on with `printf()` and friends in the exercises
-at follow, the most important things are:
+that follow, the most important things to remember are:
 
  - Text is really just a bunch of integer values that an application (e.g., a
    terminal) knows how to interpret and present a certain way--i.e., as text.
@@ -215,6 +226,11 @@ In this section, you will perform some hands-on exercises to better understand
 allocation of memory for arrays, strings, and pointers, both on the stack and
 on the heap.  You will also learn about the compile-time operator `sizeof()`
 and observe the effects of `malloc()` and `free()` using `valgrind`.
+
+Remember that each question corresponds to a portion of code, each marked by a
+comment in `learn_c.c`.  Each part also corresponds to a function in
+`learn_c.c`.  You are expected to edit and/or add to the code for each question
+unless the question's comment states that "no code changes" are required.
 
  1. `s1` is allocated on the stack.  Find the number of bytes/characters
     allocated on the stack for `s1` using the `sizeof()` operator (not
@@ -303,6 +319,13 @@ and observe the effects of `malloc()` and `free()` using `valgrind`.
     *How many bytes are "in use" at exit?  In other words, how many have been
     allocated on the heap with `malloc()` but not `free()`d?*
 
+    Note that `valgrind` reports `malloc()`'d bytes that were not explicitly
+    `free()`'d by the program itself, but the heap and all bytes allocated
+    thereon are freed by the kernel when the program exits.  Thus, while
+    calling `free()` explicitly is good practice and especially important for
+    long-running programs, `malloc()`'d bytes will not consume resources beyond
+    the lifetime of the program runtime.
+
  9. Immediately after printing out the return value of `sizeof()` for `s4`, use
     `free()` to de-allocate the memory associated with `s4`.  Run the following
     again:
@@ -314,9 +337,15 @@ and observe the effects of `malloc()` and `free()` using `valgrind`.
     *How many bytes are "in use" at exit?  In other words, how many have been
     allocated on the heap with `malloc()` but not `free()`d?*
 
-You should now have an understanding of how bytes are allocated -- both on the
-stack and on the heap, and for strings as well as arrays of arbitrary byte
-value.
+
+## Summary and Main Points
+
+ - Bytes for strings and arrays of arbitrary byte value can be allocated on the
+   stack or on the heap.
+ - Bytes are allocated differently depending on how the variables are declared.
+ - `sizeof()` is a compile-time operator.
+ - Bytes allocated with `malloc()` continue to consume system resources until
+   `free()` is called or the program exits.
 
 
 # Part 2 - Arrays, Strings, Pointers, and Shared Content
@@ -349,9 +378,9 @@ said:
  - Question 11 is about comparing `&s1[0]` to addr1, `&s2[0]` to addr2, etc.
  - Question 12 is about comparing `&s1[0]` to `&s2[0]`, etc.
 
- 10. Print out the address of (i.e., using the `&` operator) of each of the
+ 10. Print out the address (i.e., using the `&` operator) of each of the
      variables `s1`, `s2`, and `s3`, as a long unsigned integer in decimal
-     format (i.e., format `"%lu"`), each on a line by itself.
+     format (i.e., format `"%lu"`), each on its own line.
 
      The C compiler will complain that you are passing `char *` where a
      `long unsigned int` was expected.  Usually that means that you are doing
@@ -370,8 +399,8 @@ said:
 
  11. Print out the address _referred to_ by (i.e., the pointer _value_ of) each
      of the variables `s1`, `s2`, and `s3` as a long unsigned integer in
-     decimal format (i.e., format `"%lu"`), each on a line by itself.  Since
-     all these variables refer to arrays/strings, you can also think of each
+     decimal format (i.e., format `"%lu"`), each on its own line.  Since all
+     these variables refer to arrays/strings, you can also think of each
      referred-to address as the address of the _first byte/character_ in each
      array/string referred to.
 
@@ -389,7 +418,7 @@ said:
 
      However, one difference between `char[]` and `char *` is that for
      `char[]`, the address of the variable is _also_ the address _referred to_
-     by the variable.  That means that there is no changing the _referred-to
+     by the variable.  That means that you cannot change the _referred-to
      address_ (or _pointer value_) of a variable declared `char[]`.
 
      *For which of the variables is the referred-to address (i.e., the pointer
@@ -402,21 +431,22 @@ said:
      and/or `s3`?  Briefly explain.*
 
  13. Use `printf()` to print out the contents of each of the array/string
-     variables `s1`, `s2`, and `s3`, i.e., using the `"%s"` format, each on a
-     line by itself.
+     variables `s1`, `s2`, and `s3`, i.e., using the `"%s"` format, each on its
+     own line.
 
      *Which arrays/strings have equal content and why?*
 
  14. Compare the following pairs of pointer values using the equality operator,
      `==`: `s1` and `s2`; `s1` and `s3`; `s2` and `s3`.  In each case, print
-     "s1 == s2" (replacing the variable names, as appropriate) on its own line
-     if the values are equal.
+     the string "s1 == s2" (replacing the variable names for each pair, as
+     appropriate) the conditional is true, indicating that the pointer values
+     are equal.
 
      The C compiler will warn that you are comparing two pointer values and
      that the more deliberate way to do this is to compare the addresses
      of the _first byte/character_ in each array/string referred to.  This is
      true!  And if that warning is heeded (and the code is changed), then it
-     will be clearer to you and anyone else looking at the code it is not
+     will be clearer to you and anyone else looking at the code that it is not
      _content_ being compared but rather addresses. And that is the entire
      point of this exercise.  Thus, `s1 == s2` is equivalent to
      `&s1[0] == &s2[0]`, but the latter is more explicit.
@@ -426,8 +456,10 @@ said:
 
  15. Compare the values of the strings referenced by the following pairs of
      pointers, using the `strcmp()` function: `s1` and `s2`; `s1` and
-     `s3`; `s2` and `s3`.  In each case, print "s1 == s2" (replacing the
-     variable names, as appropriate) on its own line if the values are equal.
+     `s3`; `s2` and `s3`.  In each case, print the string "s1 == s2"
+     (replacing the variable names for each pair, as appropriate) on its own
+     line if the return value of `strcmp()` is 0, indicating that the string
+     values are equal.
 
      *Based on the output, which arrays/strings have equal content (i.e.,
      the values of the bytes they point to are the same) and why?* (Hint: Your
@@ -449,8 +481,15 @@ said:
      *Has the equivalence of content changed from question 15?  Why or why
      not?*
 
-You should now have an understanding of how memory is referenced and compared
-by the compiler when arrays and pointers are used.
+
+## Summary and Main Points
+
+Pointers (including strings) can be referenced and compared in several ways:
+
+ - Address of content (i.e., pointer value), e.g., `s1 == s2`
+ - Referenced content (i.e., bytes corresponding to pointer value)
+   - As arbitrary bytes, e.g., `memcmp()`
+   - As a null-terminated string of non-null characters, e.g., `strcmp()`
 
 
 # Part 3 - Equivalence of Byte Values Using Different Representations
@@ -458,11 +497,17 @@ by the compiler when arrays and pointers are used.
  19. Compare the values of the bytes referenced by the following pairs of
      pointers, using the `memcmp()` function (not `strcmp()`!):
      `s1` and `s2`; `s1` and `s3`; `s2` and `s3`.  In each case, print
-     "s1 == s2" (replacing the variable names, as appropriate) on its own line if
-     the values are equal.
+     the string "s1 == s2" (replacing the variable names for each pair, as
+     appropriate) on its own line if the return value of `memcmp()` is 0,
+     indicating that the values of the compared bytes are equal.
 
      *Which arrays/strings have the same content and why?* (Hint: See both the
      [introduction section](#ascii) and questions 2 through 4.)
+
+
+## Summary and Main Points
+
+Bytes can be represented in different ways, even if their values do not change.
 
 
 # Part 4 - String Comparison
@@ -471,15 +516,17 @@ In this section, you will perform some hands-on exercises to better understand
 how to compare and copy both strings and arrays of arbitrary values in C.
 
  20. Compare the values of the bytes referenced by pointers `s1` and `s2`,
-     using the `memcmp()` function (not `strcmp()`!).  Print "s1 == s2" on its
-     own line if the values are equal.
+     using the `memcmp()` function (not `strcmp()`!).  Print the string "s1 == s2"
+     on a line by itself if the return value of `memcmp()` is 0, indicating
+     that the values of the compared bytes are equal.
 
      *Does `memcmp()` indicate that the arrays have the same content?  Why
      or why not?*
 
  21. Compare the values of the bytes referenced by pointers `s1` and `s2`,
-     using the `strcmp()` function (not `memcmp()`!).  Print "s1 == s2" on its
-     own line if the values are equal.
+     using the `strcmp()` function (not `memcmp()`!).  Print the string
+     "s1 == s2" on a line by itself if the return value of `strcmp()` is 0,
+     indicating that the string values are equal.
 
      *Does `strcmp()` indicate that the arrays have the same content?  Why
      or why not?*
@@ -526,6 +573,16 @@ how to compare and copy both strings and arrays of arbitrary values in C.
      question 11.
 
 
+## Summary and Main Points
+
+String comparison differs from arbitrary byte comparison in the following ways:
+
+ - String comparison with `strcmp()` compares strings byte-by-byte until a null
+   character is encountered;
+ - Byte comparison with `memcmp()` compares bytes up to the specified number of
+   bytes, independent of byte values.
+
+
 # Part 5 - Input/Output
 
 In this section, you will perform some hands-on exercises to better understand
@@ -536,8 +593,9 @@ user-level buffering with file streams (`FILE *`).
  26. Read the man page for `stdin(3)` (which also shows the information for
      `stdout` and `stderr`).  Now use the `fileno()` and `printf()` functions
      to find and print out the file descriptor values for the `stdin`,
-     `stdout`, and `stderr` file streams, each on a line by itself.  For
-     example: "stdout: n" (where `n` is the descriptor value).
+     `stdout`, and `stderr` file streams, each on its own line.  For example,
+     the line corresponding to standard output would contain the string
+     "stdout: n", where `n` is the descriptor value.
 
      *What are the file descriptor values for stdin, stdout, and stderr?*
 
@@ -574,15 +632,15 @@ user-level buffering with file streams (`FILE *`).
      After each, print a newline character, so each printout is on its own
      line.
 
-     Run the command with `> /dev/null` appended to the end of the command
-     line.
+     Run the `./learn_c` command with "> /dev/null" appended to the end of the
+     command line.
 
-     *What happens to the output when you run with `> /dev/null` appended?*
+     *What happens to the output when you run with "> /dev/null" appended?*
 
- 30. Run the command with `2> /dev/null` appended to the end of the command
-     line.
+ 30. Run the `./learn_c` command with "2> /dev/null" appended to the end of the
+     command line.
 
-     *What happens to the output when you run with `2> /dev/null` appended?*
+     *What happens to the output when you run with "2> /dev/null" appended?*
 
  31. Using the `open()` system call (not `fopen()`), open the file specified by
      the filename variable passing `O_RDONLY` as the only flag (i.e., open the
@@ -597,7 +655,7 @@ user-level buffering with file streams (`FILE *`).
  32. Use the `read()` system call to read up to 4 bytes from `fd1`, placing the
      bytes read into `buf`.  Save the return value as `nread`.  Add the value
      of `nread` to `totread`.  Then print the values of `nread` and `totread`,
-     each on their own line (they should currently be the same).  Finally, call
+     each on its own line (they should currently be the same).  Finally, call
      `memprint()` on `buf` using `BUFSIZE` showing each byte/character value as
      hexadecimal (i.e., format `"%02x"`).
 
@@ -615,7 +673,7 @@ user-level buffering with file streams (`FILE *`).
      data should be copied, use the offset into `buf` corresponding to the
      total bytes read (i.e., `buf + totread` or `&buf[totread]`). Save the
      return value as `nread`. Add the value of `nread` to `totread`.  Then
-     print the values of `nread` and `totread`, each on their own line.
+     print the values of `nread` and `totread`, each on its own line.
      Finally, call `memprint()` on `buf` using `BUFSIZE` showing each
      byte/character value as hexadecimal (i.e., format `"%02x"`).
 
@@ -698,6 +756,18 @@ user-level buffering with file streams (`FILE *`).
      `fprintf()` vs. using `write()` and why?*
 
 
+## Summary and Main Points
+
+ - A file descriptor is allocated for every file-like object opened during a
+   program execution.  This descriptor is simply an integer that is passed to
+   functions like `write()`, `read()`, and `close()`.
+ - Reading fewer bytes than requested means that all available bytes have been
+   read.
+ - When `read()` returns 0, it is a indicator that the file associated with the
+   file descriptor has been closed (i.e., end-of-file).
+ - File streams offer a higher-level interface for I/O, including buffering.
+
+
 # Part 6 - Getting and Setting Environment Variables
 
 In this section, you will write code that looks for the presence of an
@@ -726,3 +796,12 @@ environment variable and then practice getting and setting it.
 
      *How does this differ from running the first of the commands in question
      48?  Briefly explain.*
+
+
+ 50. (Upload your edited `learn_c.c` file to LearningSuite.)
+
+
+## Summary and Main Points
+
+ - Environment variables can be set on the command line (or with `setenv()`).
+ - Environment variables can be retrieved by a C program using `getenv()`.
