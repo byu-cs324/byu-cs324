@@ -200,8 +200,8 @@ on _that_ machine.  Just remember that you will need to keep all clones
 
 # Update Your Mirrored Repository from the Upstream
 
-Throughout the semester we will be integrating changes and fixes to the
-class repository.  Every time you start an assignment, and as often as you
+Throughout the semester we will be updating the class repository with changes
+that seem appropriate.  Every time you start an assignment, and as often as you
 like, please run the commands listed below to pull down the changes from the
 upstream class repository and integrate them into your own private repository.
 Remember that you will need to do this for any and all clones
