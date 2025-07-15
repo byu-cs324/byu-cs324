@@ -3,7 +3,7 @@
 The purpose of this assignment is to help you become more familiar with the
 concepts associated with client and server sockets that are nonblocking, as
 part of the I/O multiplexing concurrency paradigm.  You will learn these
-concepts by building a working HTTP proxy that uses epoll.
+concepts by building a working HTTP proxy that uses `select()`.
 
 
 # Maintain Your Repository
@@ -71,21 +71,11 @@ availability of I/O.
 Read the following in preparation for this assignment:
 
  - Sections 11.1 - 11.6, 12.1 - 12.2 in the book
- - `epoll (7)` - general overview of epoll, including detailed examples
+ - `select (2)` - general overview of `select()`
 
 Additionally, man pages for the following are referenced throughout the
 assignment:
 
- - `epoll_create1(2)` - shows the usage of the simple function to create an
-   epoll instance
- - `epoll_ctl(2)` - shows the definition of the `epoll_data_t` and
-   `struct epoll_event` structures, which are used by both `epoll_ctl()` and
-   `epoll_wait()`.  Also describes the event types with which events are
-   registered to an epoll instance, e.g., for reading or writing, and which
-   type of triggering is used (for this lab you will use edge-triggered
-   monitoring).
- - `epoll_wait()` - shows the usage of the simple `epoll_wait()` function,
-   including how events are returned and how errors are indicated,
  - `fcntl(2)` - used to make sockets nonblocking
  - `socket(2)`, `socket(7)`
  - `send(2)`
@@ -137,20 +127,21 @@ client requests would really mess things up!
 You can avoid this by defining a struct to keep track of all the state
 associated with handling a given HTTP request.  When a new client connection is
 accepted, then a new instance of this struct is allocated and initialized for
-the new HTTP request.  This instance is registered with the file descriptor
-associated with the new client connection using `epoll_ctl()`.  The `data.ptr`
-member of the `struct epoll_event` used with `epoll_ctl()` points to the newly
-allocated and initialized allocated struct.  Now when there is an event, your
-code uses the `data.ptr` member of the event returned to retrieve that
-instance.  This is how the code knows where it left off and thus where to pick
-up this time.  Here is a list of members that that structure might contain.
-Note that these should loosely correspond to local variables used in the
+the new HTTP request.  An array of pointers is used to associate file
+descriptors to instances of these structs (e.g.,
+`struct request_info *fd_to_client[1024]`).  When a file descriptor is set in
+one of the ready sets -- `readfds` or `writefds` -- the appropriate instance
+can be recalled by referencing the pointer in the array at the index
+corresponding to the file descriptor (e.g., `fd_to_client[fd]`).  This instance
+is how the code knows where it left off and thus where to pick up this time.
+Here is a list of members that that structure might contain.  Note that these
+should loosely correspond to local variables used in the
 [thread- or threadpool-based version of the proxy](../10-lab-proxy-threadpool).
 
- - the client-to-proxy socket, i.e., the one corresponding to the requesting
-   client
- - the proxy-to-server socket, i.e., the one corresponding to the connection
-   to the HTTP server
+ - the file descriptor for the client-to-proxy socket, i.e., the one
+   corresponding to the requesting client
+ - the file descriptor for the proxy-to-server socket, i.e., the one
+   corresponding to the connection to the HTTP server
  - the current state of the request (see note below).
  - the buffer(s) to read into and write from
  - the total number of bytes read from the client
@@ -234,11 +225,12 @@ Write functions for each of the following:
      - Allocate memory for a new `struct request_info` and initialize the
        values in that `struct request_info`.  The initial state should be
        `READ_REQUEST`.
-     - Using `epoll_ctl()` and `EPOLL_CTL_ADD`, register each returned
-       client-to-proxy socket with the epoll instance that you created, for
-       reading, using edge-triggered monitoring (i.e., `EPOLLIN | EPOLLET`).
-       Associate the newly-allocated `struct request_info` with the event by
-       assigning the `data.ptr` member to it.
+     - Assign the slot in the array corresponding to the file descriptor
+       returned by `accept()` to the pointer of the newly-allocated `struct
+       request_info`.
+     - Set the bit corresponding to the file descriptor returned by `accept()`
+       in the `fd_set` corresponding to your `readfds`, i.e., the set of file
+       descriptors looking for data to be read.
 
      You should only break out of your loop and stop calling `accept()` when it
      returns a value less than 0, in which case:
@@ -247,29 +239,41 @@ Write functions for each of the following:
      - If `errno` is anything else, this is an error.  Use `perror()` to print
        out the error description.
 
-     Have your HTTP proxy print the newly created file descriptor associated with
-     any new clients.  You can remove this later, but it will be good for you
-     to see now that they are being created.
+     Have your HTTP proxy print the newly created file descriptor associated
+     with any new clients.  You can remove this later, but it will be good for
+     you to see now that they are being created.
 
-     You will need to pass your epoll file descriptor as an argument, so you
-     can register the new file descriptor with the epoll instance.
+     You will either need to use global instances of the `fd_set` variables for
+     `readfds` and `writefds` or pass their addresses as pointer arguments to
+     `handle_new_clients()`, so you can keep track of these globally.
 
 Now add the following to `main()`:
 
- - Create an epoll instance with `epoll_create1()`.
+ - Allocate and initialize `fd_set` variables for `readfds` and `writefds`.
+   Even if you chose to declare them globally, you will need to initialize them
+   here.
  - Call `open_sfd()` to get your listening socket.
- - Register your listening socket with the epoll instance that you created, for
-   *reading* and for edge-triggered monitoring (i.e., `EPOLLIN | EPOLLET`).
+ - Set the bit corresponding to the listening file descriptor in `readfds`,
+   i.e., the set of file descriptors looking for data to be read -- or, in this
+   case, connections to be `accept()`ed.
  - Create a `while(1)` loop that does the following:
-   - Calls `epoll_wait()` loop with a timeout of 1 second.
-   - If the result was an error (i.e., return value from `epoll_wait()` is less
-     than 0), then handle the error appropriately (see the man page for
-     `epoll_wait(2)` for more).
-   - If there was no error, you should loop through all the events and handle
-     each appropriately.  For now, just start with handling new clients.  We
-     will implement the handling of existing clients later.  If the event
-     corresponds to the listening file descriptor, then call
+   - Calls `select()`.  Remember to make _copies_ of `readfds` and `writefds`
+     and pass those copies to `select()`, so the originals aren't modified!
+   - If the result was an error (i.e., return value from `select()` is less
+     than 0), then print the error and break out of the loop.
+   - If there was no error, you should loop through all possible file
+     descriptor values and handle those that are ready (whether in `readfds` or
+     in `writefds`), as appropriate.  For now, just start with handling new
+     clients.  We will implement the handling of existing clients later.  If
+     the ready file descriptor is the listening file descriptor, then call
      `handle_new_clients()`.
+
+     Note that the return value of `select()` is "the number of file
+     descriptors contained in the three returned descriptor sets (that is, the
+     total number of bits that are set in readfds, writefds, exceptfds)." (man
+     page for `select(2)`).  Thus, if you subtract one every time a file
+     descriptor is handled from `readfds` or `writefds`, you can break out of
+     the loop when your count gets to zero.
 
 At this point, your server is merely set up to listen for incoming client
 connections and `accept()` them.  It is not yet doing anything else useful, but
@@ -331,8 +335,8 @@ doing much else--not just yet anyway.
 ### Receiving the HTTP Request
 
 Write a function, `handle_client()`, that takes a pointer to a
-[struct client request](#part-2---client-request-data-and-client-request-states).
-The function should use the `struct client request` pointer passed in to
+[`struct request_info`](#part-2---client-request-data-and-client-request-states).
+The function should use the `struct request_info` pointer passed in to
 determine what state the request is currently in.
 
 Then do the following:
@@ -366,32 +370,31 @@ Then do the following:
      - Create a new socket and call `connect()` to the HTTP server.
      - Configure the new socket as nonblocking. (Do this only _after_ calling
        `connect()`!)
-     - Using `epoll_ctl()` and `EPOLL_CTL_DEL`, deregister the client-to-proxy
-       socket with the epoll instance that you created.
-     - Register the proxy-to-server socket with the epoll instance that you
-       created, for _writing_ (i.e., `EPOLLOUT`).
+     - Clear the bit corresponding to the file descriptor for the
+       client-to-proxy socket in `readfds`.
+     - Set the bit corresponding to the file descriptor for the proxy-to-server
+       socket in `writefds`.
      - Change the state of the request to `SEND_REQUEST`.
 
    - `read()` (or `recv()`) returns a value less than 0.
      - If `errno` is `EAGAIN` or `EWOULDBLOCK`, it just means that there is no
        more data ready to be read; you will continue reading from the socket
-       when you are notified by epoll that there is more data to be read.
+       when you are notified by `select()` that there is more data to be read.
      - If `errno` is anything else, this is an error.  Print out the error with
        `perror()`, close the client-to-proxy socket, and free the memory
-       associated with the current `struct request_info *`.  Closing the socket
-       automatically deregisters it from any associations with the epoll
-       instance.
+       associated with the current `struct request_info *`.  Clear the bit
+       corresponding to the file descriptor for the client-to-proxy socket from
+       `readfds`.
 
    - At this point, you can return from the function.  There is no more that
-     can be done with the current HTTP request at this time.  `epoll_wait()`
+     can be done with the current HTTP request at this time.  `select()`
      will notify you when more can be done.
 
-Now add some code to your `epoll_wait()` loop.  Cast the `data.ptr` member of the
-`struct epoll_event` that represents the current event to a
-`struct request_info *`.  Determine whether the `struct request_info` instance
-referred to is the listening socket or corresponds to an existing client.  If
-the listening socket, then call `handle_new_clients()`; otherwise, call
-`handle_client()`.
+Now add some logic to your `select()` loop.  For each possible file descriptor
+value, check whether or not that file descriptor is set in `readfds` or
+`writefds`.  As a special case, if the listening socket is set in `readfds`,
+then call `handle_new_clients()`; otherwise, if a file descriptor is set in
+either `readfds` or `writefds`, call `handle_client()`.
 
 Re-build and re-start your proxy, and make sure it works properly when you run
 the following:
@@ -406,6 +409,7 @@ curl -x http://localhost:port/ "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.
 ```bash
 ./slow-client.py -x http://localhost:port/ -b 1 "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
 ```
+
 
 ### Checkpoint 3
 
@@ -435,22 +439,24 @@ If in the `SEND_REQUEST` state, loop to write the request to the server
 using the proxy-to-server socket until one of the following happens:
 
  - you have sent the entire HTTP request to the server.  If this is the case:
-   - Deregister the proxy-to-server socket with the epoll instance for writing.
-   - Register the proxy-to-server socket with the epoll instance for reading.
+   - Clear the bit corresponding to the file descriptor for the proxy-to-server
+     socket in `writefds`.
+   - Set the bit corresponding to the file descriptor for the proxy-to-server
+     socket in `readfds`.
    - Change state to `READ_RESPONSE`.
  - `write()` (or `send()`) returns a value less than 0.
    - If `errno` is `EAGAIN` or `EWOULDBLOCK`, it just means that there is no
      buffer space available for writing to the socket; you will continue
-     writing to the socket when you are notified by epoll that there is more
+     writing to the socket when you are notified by `select()` that there is more
      buffer space available for writing.
    - If `errno` is anything else, this is an error.  Print out the error with
      `perror()`, close both client-to-proxy and proxy-to-server sockets, and
      free the memory associated with the current `struct request_info *`.
-     Closing the sockets automatically deregisters your sockets from any
-     associations with the epoll instance.
+     Clear the bits corresponding to the file descriptors for the
+     client-to-proxy and proxy-to-server sockets in `writefds`.
 
 At this point, you can return from the function.  There is no more that can be
-done with the current HTTP request at this time.  `epoll_wait()` will notify
+done with the current HTTP request at this time.  `select()` will notify
 you when more can be done.
 
 Now would be a good time to test with the following commands:
@@ -465,6 +471,7 @@ curl -x http://localhost:port/ "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.
 ```bash
 ./slow-client.py -x http://localhost:port/ -b 1 "http://www-notls.imaal.byu.edu/cgi-bin/slowsend.cgi?obj=lyrics"
 ```
+
 
 ### Checkpoint 4
 
@@ -489,22 +496,25 @@ until one of the following happens:
  - you have read the entire HTTP response from the server.  Since this is
    HTTP/1.0, this is when the call to `read()` (or `recv()`) returns 0,
    indicating that the server has closed the connection.  If this is the case:
+   - Clear the bit corresponding to the file descriptor for the proxy-to-server
+     socket in `readfds`.
    - Close the proxy-to-server socket.
    - Use `print_bytes()` to print out the HTTP response you received.
-   - Register the client-to-proxy socket with the epoll instance for writing.
+   - Set the bit corresponding to the file descriptor for the client-to-proxy
+     socket in `writefds`.
    - Change state to `SEND_RESPONSE`.
  - `read()` (or `recv()`) returns a value less than 0.
    - If `errno` is `EAGAIN` or `EWOULDBLOCK`, it just means that there is no
      more data ready to be read; you will continue reading from the socket when
-     you are notified by epoll that there is more data to be read.
+     you are notified by `select()` that there is more data to be read.
    - If `errno` is anything else, this is an error.  Print out the error with
      `perror()`, close both client-to-proxy and proxy-to-server sockets, and
      free the memory associated with the current `struct request_info *`.
-     Closing the sockets automatically deregisters your sockets from any
-     associations with the epoll instance.
+     Clear the bit corresponding to the file descriptor for the client-to-proxy
+     socket from `readfds`.
 
 At this point, you can return from the function.  There is no more that can be
-done with the current HTTP request at this time.  `epoll_wait()` will notify
+done with the current HTTP request at this time.  `select()` will notify
 you when more can be done.
 
 Now would be a good time to test with the following commands:
@@ -550,13 +560,13 @@ using the client-to-proxy socket until one of the following happens:
  - `write()` (or `send()`) returns a value less than 0.
    - If `errno` is `EAGAIN` or `EWOULDBLOCK`, it just means that there is
      no buffer space available for writing to the socket; you will continue
-     writing to the socket when you are notified by epoll that there is more
-     buffer space available for writing.
+     writing to the socket when you are notified by `select()` that there is
+     more buffer space available for writing.
    - If `errno` is anything else, this is an error.  Print out the error with
      `perror()`, close the client-to-proxy socket, and free the memory
-     associated with the current `struct request_info *`.  Closing the socket
-     automatically deregisters it from any associations with the epoll
-     instance.
+     associated with the current `struct request_info *`.  Clear the bit
+     corresponding to the file descriptor for the client-to-proxy socket from
+     `writefds`.
 
 At this point, you can return from the function.  The HTTP request has been
 successfully handled!
@@ -582,7 +592,7 @@ At this point you should be able to pass:
  - [Tests performed against a local HTTP server](#manual-testing---local-server).
  - [Automated tests](#automated-testing) with the following command:
    ```bash
-   ./driver.py -b 60 -c 35 epoll
+   ./driver.py -b 60 -c 35 select
    ```
 
 
@@ -595,17 +605,17 @@ This includes the listen socket, the sockets associated with communications
 between client and proxy, and the sockets associated with communications
 between proxy and server.
 
-Additionally, all sockets must be registered with the epoll instance--for
-reading or writing--using edge-triggered monitoring.
-
 That being said, for simplicity, you _should_ wait to set the proxy-to-server
 socket as nonblocking _after_ you call `connect()`, rather than before.  While
 that will mean that your server not fully nonblocking, it will allow you to
 focus on the more important parts of I/O multiplexing.  This is permissible.
 
+Additionally, all sockets must be used with `select()` for
+communications--either with `readfds` or `writefds`.
+
 If you choose to ignore the previous paragraph and set the proxy-to-server
 socket as nonblocking before calling `connect()`, you can execute `connect()`
-immediately, but you cannot initiate the `write()` call until `epoll_wait()`
+immediately, but you cannot initiate the `write()` call until `select()`
 indicates that this socket is ready for writing. Because the socket is
 nonblocking, `connect()` will return before the connection is actually
 established.  In this case, the return value is -1 and `errno` is set to
@@ -639,7 +649,7 @@ See
 
 See
 [Automated Testing](../10-lab-proxy-threadpool#automated-testing),
-but use "epoll" in place of "threadpool" whenever the driver is used.
+but use "select" in place of "threadpool" whenever the driver is used.
 
 
 # Debugging Hints
@@ -653,14 +663,17 @@ See
 Your score will be computed out of a maximum of 100 points based on the
 following distribution:
 
- - 60 for basic HTTP proxy functionality with epoll
- - 35 for handling concurrent HTTP proxy requests using epoll
+ - 60 for basic HTTP proxy functionality with `select()`
+ - 35 for handling concurrent HTTP proxy requests using `select()`
  - 5 - compiles without any warnings
+
+Note that _no credit will be given_ -- even for basic HTTP functionaly --
+without the use of `select()`.
 
 Run the following to check your implementation:
 
 ```b
-./driver.py -b 60 -c 35 epoll
+./driver.py -b 60 -c 35 select
 ```
 
 

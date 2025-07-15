@@ -760,7 +760,7 @@ class ExtendedConcurrencyProxyTest(GenericConcurrencyProxyTest):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('mode', type=str, action='store',
-            choices=('multiprocess', 'processpool', 'multithread', 'threadpool', 'epoll'))
+            choices=('multiprocess', 'processpool', 'multithread', 'threadpool', 'select'))
     parser.add_argument('-b', '--check-basic', type=int, action='store', metavar='<points>',
             help='Check proxy with basic HTTP tests')
     parser.add_argument('-c', '--check-concurrency', type=int, action='store', metavar='<points>',
