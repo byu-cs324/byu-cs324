@@ -667,7 +667,7 @@ following distribution:
  - 35 for handling concurrent HTTP proxy requests using `select()`
  - 5 - compiles without any warnings
 
-Note that _no credit will be given_ -- even for basic HTTP functionaly --
+Note that _no credit will be given_ -- even for basic HTTP functionality --
 without the use of `select()`.
 
 Run the following to check your implementation:
