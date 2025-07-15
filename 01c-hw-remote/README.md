@@ -3,20 +3,31 @@
 The purpose of these exercises is to familiarize you with remote copy,
 compilation, and execution, using `scp`, `ssh`, and `tmux`.
 
-Open a terminal from which you will run the commands specified.
+Using the guidance from the
+[remote access information page](../REMOTE_ACCESS.md), follow the instructions
+to "get on to the CS network", but do *not* log on to a CS lab machine.
 
- 1. Copy `hello.c` to one of the BYU CS lab machines using `scp`:
+From a terminal on your own computer, open a terminal from which you will run
+the commands specified.
+
+(If you do not have a personal computer, you may log on to a CS lab machine and
+perform these exercises.)
+
+ 1. Copy `hello.c` to the home directory of one of the BYU CS lab machines
+    using `scp`:
+
+    (Replace "username" with your BYU CS username)
 
     ```bash
-    scp hello.c username@schizo.cs.byu.edu:
+    scp hello.c username@schizo:
     ```
 
  2. Log in to one of the CS machines using the following command:
 
-    (Again, replace `username` with your BYU CS username)
+    (Again, replace "username" with your BYU CS username)
 
     ```bash
-    ssh username@schizo.cs.byu.edu
+    ssh username@schizo
     ```
 
  3. Run the following command:

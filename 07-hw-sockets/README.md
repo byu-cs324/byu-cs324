@@ -37,15 +37,9 @@ both communication types.
     assignment.  Reviewing the principles on strings and I/O will greatly help
     you in this assignment!
 
- 3. Either log on to a BYU CS lab workstation directly or log on remotely using
-    SSH.  To log in using `ssh`, open a terminal and use the following `ssh`
-    command:
-
-    (Replace "username" with your actual CS username)
-
-    ```bash
-    ssh username@schizo.cs.byu.edu
-    ```
+ 3. Using the guidance from the
+    [remote access information page](../REMOTE_ACCESS.md), log in to a CS lab
+    machine.
 
     The exercises in this assignment will only work if run from a CS lab
     machine.
@@ -63,10 +57,7 @@ both communication types.
 
  5. On the left "remote" pane, use SSH to remotely log on to a CS lab machine
     _different_ from the one you are already on.  See a list of machine names
-    [here](https://docs.cs.byu.edu/doku.php?id=open-lab-layout):
-
-    Fall 2023 Note: At the moment, only machines within the "States" and
-    "Marvel" labs appear to be reliable choices.
+    [here](https://support.cs.byu.edu/KB/View/81187473-lab-maps):
 
     (Replace "username" with your actual CS username and "hostname" with the
     name of the host to which you wish to log on.)
@@ -477,6 +468,9 @@ connection with the remote side.
    ```c
    read(fd, buf + tot_bytes_read, bytes_to_read);
    ```
+   (Remember: `bytes_to_read` should never be more than
+   `BUFSIZE - tot_bytes_read`, or else you might accidentally write beyond your
+   buffer, causing a buffer overflow.)
  - After _all_ the data has been read from standard input (i.e., EOF has been
    reached), write another loop to send all the data that was received (i.e.,
    the bytes you just stored in the buffer) to the connected socket, until it
