@@ -25,7 +25,7 @@ to use nonblocking sockets for extra efficiency.
  1. Read the following in preparation for this assignment:
 
     - Sections 12.1 - 12.2 in the book
-    - `select (2)` - general overview of `select`
+    - `select (2)` - general overview of `select()`
 
     Additionally, man pages for the following are referenced throughout the
     assignment:
