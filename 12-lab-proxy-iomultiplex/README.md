@@ -129,13 +129,13 @@ associated with handling a given HTTP request.  When a new client connection is
 accepted, then a new instance of this struct is allocated and initialized for
 the new HTTP request.  An array of pointers is used to associate file
 descriptors to instances of these structs (e.g.,
-`struct request_info *fd_to_client[1024]`).  When a file descriptor is set in
+`struct request_info *fd_to_request[1024]`).  When a file descriptor is set in
 one of the ready sets -- `readfds` or `writefds` -- the appropriate instance
 can be recalled by referencing the pointer in the array at the index
-corresponding to the file descriptor (e.g., `fd_to_client[fd]`).  This instance
-is how the code knows where it left off and thus where to pick up this time.
-Here is a list of members that that structure might contain.  Note that these
-should loosely correspond to local variables used in the
+corresponding to the file descriptor (e.g., `fd_to_request[fd]`).  This
+instance is how the code knows where it left off and thus where to pick up this
+time.  Here is a list of members that that structure might contain.  Note that
+these should loosely correspond to local variables used in the
 [thread- or threadpool-based version of the proxy](../10-lab-proxy-threadpool).
 
  - the file descriptor for the client-to-proxy socket, i.e., the one
