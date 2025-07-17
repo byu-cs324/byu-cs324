@@ -29,8 +29,10 @@ SLOW_CLIENT = os.path.join(CURRENT_DIR, 'slow-client.py')
 NOP_SERVER = os.path.join(CURRENT_DIR, 'nop-server.py')
 PROXY = os.path.join(CURRENT_DIR, 'proxy')
 WWW_DIR = os.path.join(CURRENT_DIR, 'www')
+STRACE = 'strace'
 VALGRIND = 'valgrind'
 VALGRIND_MEMCHECK_PATTERN = 'memcheck'
+PSELECT_STRACE_RE = re.compile('^pselect6\(.*\)\s+=\s+(\d+)')
 
 class ProxyTestSuite:
     def __init__(self, mode, test_classes, proxy_host='localhost',
@@ -48,6 +50,7 @@ class ProxyTestSuite:
         self.server_output = server_output
         self.proxy_output = proxy_output
         self.verbose = verbose
+        self.use_strace = True
         self.use_valgrind = self.mem_mgmt is not None or self.clean_shutdown is not None
 
     def run(self):
@@ -57,6 +60,8 @@ class ProxyTestSuite:
         possible_mem_mgmt = 0
         clean_shutdown = 0
         possible_clean_shutdown = 0
+        points_reduced_msg_possible = 'The concurrency model failed. Some or all credit might be withheld.'
+
         for num, (classes, pts_for_group) in enumerate(self.test_classes):
             attempts = 0
             successes = 0
@@ -66,6 +71,7 @@ class ProxyTestSuite:
             for cls in classes:
                 p = cls(proxy_host=self.proxy_host,
                         server_host=self.server_host,
+                        use_strace=self.use_strace,
                         use_valgrind=self.use_valgrind,
                         keep_files=self.keep_files,
                         server_output=self.server_output,
@@ -81,6 +87,7 @@ class ProxyTestSuite:
                 possible_mem_mgmt += 1
                 possible_clean_shutdown += 1
 
+                points_reduced_msg = ''
                 mem_msg = ''
                 if self.mem_mgmt is not None:
                     mem_msg += '; Mem Mgmt: '
@@ -104,6 +111,10 @@ class ProxyTestSuite:
                         mem_msg += 'success'
                     else:
                         mem_msg += 'failure'
+                        points_reduced_msg = points_reduced_msg_possible
+
+                if self.mode == 'select' and not p.select_used:
+                    points_reduced_msg = points_reduced_msg_possible
 
                 print('      Result: %d/%d%s' % (p.successes, p.attempts, mem_msg))
             tot_pts = pts_for_group * (successes/attempts)
@@ -115,7 +126,7 @@ class ProxyTestSuite:
             mem_mgmt = self.mem_mgmt * (mem_mgmt/possible_mem_mgmt)
             pts += mem_mgmt
             print('Mem Mgmt: %d/%d' % (mem_mgmt, self.mem_mgmt))
-            
+
         if self.clean_shutdown is not None:
             possible_pts += self.clean_shutdown
             clean_shutdown = self.clean_shutdown * (clean_shutdown/possible_clean_shutdown)
@@ -128,6 +139,9 @@ class ProxyTestSuite:
             percent = 0.0
 
         print('Total: %d/%d (%.02f%%)' % (pts, possible_pts, percent))
+        if points_reduced_msg:
+            print()
+            print('Warning:', points_reduced_msg)
 
 class ProxyTest:
     EXECUTABLES = \
@@ -137,8 +151,9 @@ class ProxyTest:
 
     def __init__(self, proxy_host='localhost', proxy_port=None,
             server_host='localhost', server_port=None,
-            use_valgrind=True, keep_files=False,
-            server_output=False, proxy_output=False,
+            use_strace=True, use_valgrind=True,
+            keep_files=False, server_output=False,
+            proxy_output=False,
             verbose=False):
 
         self.logger = logging.getLogger('.')
@@ -165,10 +180,14 @@ class ProxyTest:
         self.noproxy_dir = tempfile.mkdtemp(prefix='noproxy_', dir='.')
         self.logger.info('Created temporary directory for files downloaded directly from the server: %s.', self.noproxy_dir)
         fd, self.valgrind_log_file = tempfile.mkstemp(prefix='log_', dir='.')
-        self.logger.info('Created temporary file for valgrind output: %s.', self.valgrind_log_file)
         os.close(fd)
+        self.logger.info('Created temporary file for valgrind output: %s.', self.valgrind_log_file)
+        fd, self.strace_log_file = tempfile.mkstemp(prefix='log_', dir='.')
+        os.close(fd)
+        self.logger.info('Created temporary file for strace output: %s.', self.strace_log_file)
 
         self.use_valgrind = use_valgrind
+        self.use_strace = use_strace
         self.keep_files = keep_files
         self.server_output = server_output
         self.proxy_output = proxy_output
@@ -187,6 +206,7 @@ class ProxyTest:
         # these are set by cleanup()
         self.mem_mgmt = None
         self.mem_cleanup = None
+        self.select_used = None
 
         self.cleanup_processes_non_targetted()
         self._check_files()
@@ -195,15 +215,31 @@ class ProxyTest:
         self.start_proxy()
 
         # Wait for threads to be initialized
-        time.sleep(2)
+        time.sleep(1)
 
-        self.num_threads_pre = self.get_num_threads(self.proxy_proc.pid)
-        self.num_processes_pre = self.get_num_processes(self.proxy_proc.pid)
+        self.proxy_pid = self.get_proxy_pid()
+
+        self.num_threads_pre = self.get_num_threads(self.proxy_pid)
+        self.num_processes_pre = self.get_num_processes(self.proxy_pid)
 
     def __del__(self):
         self.cleanup_processes()
         if not self.keep_files:
             self.cleanup_files()
+
+    def get_proxy_pid(self):
+        pid = self.proxy_proc.pid
+        if not self.use_strace:
+            return pid
+
+        cmd = ['ps', '--no-headers', '-o', 'pid', '--ppid', str(pid)]
+        try:
+            output = subprocess.check_output(cmd)
+        except subprocess.CalledProcessError:
+            return 0
+        else:
+            pids = [int(p) for p in output.splitlines()]
+            return pids[0]
 
     @classmethod
     def get_num_processes(cls, pid):
@@ -279,7 +315,7 @@ class ProxyTest:
             else:
                 level = logging.ERROR
                 status = False
-            self.logger.log(level, 'A pool of %d processes was created a program start.' % (self.num_threads_pre - 1))
+            self.logger.log(level, 'A pool of %d processes was created at program start.' % (self.num_threads_pre - 1))
         if self.num_threads_realtime > self.num_threads_pre:
             if mode == 'multithread':
                 level = logging.INFO
@@ -293,7 +329,7 @@ class ProxyTest:
             else:
                 level = logging.ERROR
                 status = False
-            self.logger.log(level, 'A pool of %d threads was created a program start.' % (self.num_threads_pre - 2))
+            self.logger.log(level, 'A pool of %d threads was created at program start.' % (self.num_threads_pre - 2))
         return status
 
     def cleanup_processes_non_targetted(self):
@@ -341,13 +377,15 @@ class ProxyTest:
         self._cleanup_processes(kill_server=True, kill_proxy=False, kill_nop=False)
 
     def cleanup_files(self):
-        self.logger.info('Removing temporary files: %s, %s, and %s' % (self.proxy_dir, self.noproxy_dir, self.valgrind_log_file))
-        subprocess.call(['rm', '-r', '-f', self.proxy_dir, self.noproxy_dir,
-            self.valgrind_log_file], stdout=subprocess.DEVNULL,
-            stderr=subprocess.STDOUT)
+        files = [self.proxy_dir, self.noproxy_dir, self.valgrind_log_file, self.strace_log_file]
+        self.logger.info('Removing temporary files: %s' % (', '.join(files)))
+        subprocess.call(['rm', '-r', '-f'] + files,
+                        stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
 
     def cleanup(self):
         self.cleanup_processes()
+        if self.use_strace:
+            self.check_strace()
         if self.use_valgrind:
             self.check_valgrind()
         if self.keep_files:
@@ -355,6 +393,8 @@ class ProxyTest:
                     (self.proxy_dir, self.noproxy_dir)
             if self.valgrind_log_file is not None:
                 msg += '\nValgrind log file: %s' % (self.valgrind_log_file)
+            if self.strace_log_file is not None:
+                msg += '\strace log file: %s' % (self.strace_log_file)
             self.logger.info(msg)
         else:
             self.cleanup_files()
@@ -373,6 +413,10 @@ class ProxyTest:
         for f in self.EXECUTABLES:
             if not os.path.exists(f):
                 raise MissingFile('File "%s" not found' % f)
+
+        # Check for strace
+        if subprocess.call([STRACE, '-h'], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT) != 0:
+            raise FailedCommand('Unable to run strace.  Is it installed and in PATH?')
 
         # Check for valgrind
         if subprocess.call([VALGRIND, '-h'], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT) != 0:
@@ -414,6 +458,20 @@ class ProxyTest:
         if not self.mem_mgmt or not self.mem_cleanup:
             self.logger.debug(valgrind_output)
 
+    def check_strace(self):
+        with open(self.strace_log_file, 'r') as fh:
+            strace_output = fh.read()
+
+        self.select_used = False
+        select_used_count = 0
+        for line in strace_output.splitlines():
+            m = PSELECT_STRACE_RE.search(line)
+            if m is not None:
+                if int(m.group(1)) >= 1:
+                    select_used_count += 1
+        if select_used_count >= 1:
+            self.select_used = True
+
     def start_server(self):
         self.logger.info('Starting server on port %d' % self.server_port)
         cmd = ['python3', '-m', 'http.server', '--cgi', str(self.server_port)]
@@ -428,9 +486,12 @@ class ProxyTest:
 
     def start_proxy(self):
         self.logger.info('Starting proxy on port %d' % self.proxy_port)
+
         cmd = [PROXY, str(self.proxy_port)]
+        if self.use_strace:
+            cmd = [STRACE, '-e', 'trace=pselect6', '-o', self.strace_log_file] + cmd
         if self.use_valgrind:
-            cmd = ['valgrind', '--log-file=%s' % (self.valgrind_log_file), '--leak-check=full', '-v'] + cmd
+            cmd = [VALGRIND, '--log-file=%s' % (self.valgrind_log_file), '--leak-check=full', '-v'] + cmd
         kwargs = {}
         if self.proxy_output:
             kwargs.update(stdout=self.proxy_output, stderr=subprocess.STDOUT)
@@ -520,7 +581,7 @@ class BasicProxyTest(ProxyTest):
     FILES = ['foo.html', 'bar.txt', 'socket.jpg']
     DESCRIPTION = 'Basic Proxy Test'
     EXTENDED_DESCRIPTION = \
-            'Requesting files of several types through proxy.' 
+            'Requesting files of several types through proxy.'
 
     download_proxy = ProxyTest._download_proxy
 
@@ -600,7 +661,7 @@ class DumbConcurrencyProxyTest(BasicProxyTest):
     DESCRIPTION = 'Dumb Concurrency Test'
     EXTENDED_DESCRIPTION = \
             'Issuing a request to the proxy, while it is busy with ' + \
-            'another request.' 
+            'another request.'
 
     def __init__(self, *args, **kwargs):
         super(BasicConcurrencyProxyTest, self).__init__(*args, **kwargs)
@@ -706,8 +767,8 @@ class GenericConcurrencyProxyTest(ProxyTest):
 
         time.sleep(3)
 
-        self.num_processes_realtime = self.get_num_processes(self.proxy_proc.pid)
-        self.num_threads_realtime = self.get_num_threads(self.proxy_proc.pid)
+        self.num_processes_realtime = self.get_num_processes(self.proxy_pid)
+        self.num_threads_realtime = self.get_num_threads(self.proxy_pid)
 
         tried = []
         for i in range(self.TIMES_TO_RUN, self.TIMES_TO_RUN * 2):
