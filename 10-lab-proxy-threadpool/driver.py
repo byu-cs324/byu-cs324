@@ -32,7 +32,7 @@ WWW_DIR = os.path.join(CURRENT_DIR, 'www')
 STRACE = 'strace'
 VALGRIND = 'valgrind'
 VALGRIND_MEMCHECK_PATTERN = 'memcheck'
-PSELECT_STRACE_RE = re.compile('^pselect6\(.*\)\s+=\s+(\d+)')
+PSELECT_STRACE_RE = re.compile('^(pselect\d*|epoll_pwait\d*)\(.*\)\s+=\s+(\d+)')
 
 class ProxyTestSuite:
     def __init__(self, mode, test_classes, proxy_host='localhost',
@@ -113,7 +113,7 @@ class ProxyTestSuite:
                         mem_msg += 'failure'
                         points_reduced_msg = points_reduced_msg_possible
 
-                if self.mode == 'select' and not p.select_used:
+                if self.mode in ('select', 'epoll') and not p.select_used:
                     points_reduced_msg = points_reduced_msg_possible
 
                 print('      Result: %d/%d%s' % (p.successes, p.attempts, mem_msg))
@@ -330,6 +330,14 @@ class ProxyTest:
                 level = logging.ERROR
                 status = False
             self.logger.log(level, 'A pool of %d threads was created at program start.' % (self.num_threads_pre - 2))
+        if self.num_threads_pre == 1 and self.num_threads_realtime == 1 \
+                and self.num_processes_pre == 1 and self.num_processes_realtime == 1:
+            if mode in ('select', 'epoll'):
+                level = logging.INFO
+            else:
+                level = logging.ERROR
+                status = False
+            self.logger.log(level, 'Only a single thread and process are being used.')
         return status
 
     def cleanup_processes_non_targetted(self):
@@ -467,7 +475,7 @@ class ProxyTest:
         for line in strace_output.splitlines():
             m = PSELECT_STRACE_RE.search(line)
             if m is not None:
-                if int(m.group(1)) >= 1:
+                if int(m.group(2)) >= 1:
                     select_used_count += 1
         if select_used_count >= 1:
             self.select_used = True
@@ -489,7 +497,7 @@ class ProxyTest:
 
         cmd = [PROXY, str(self.proxy_port)]
         if self.use_strace:
-            cmd = [STRACE, '-e', 'trace=pselect6', '-o', self.strace_log_file] + cmd
+            cmd = [STRACE, '-e', 'trace=pselect6,epoll_pwait', '-o', self.strace_log_file] + cmd
         if self.use_valgrind:
             cmd = [VALGRIND, '--log-file=%s' % (self.valgrind_log_file), '--leak-check=full', '-v'] + cmd
         kwargs = {}
@@ -821,7 +829,7 @@ class ExtendedConcurrencyProxyTest(GenericConcurrencyProxyTest):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('mode', type=str, action='store',
-            choices=('multiprocess', 'processpool', 'multithread', 'threadpool', 'select'))
+            choices=('multiprocess', 'processpool', 'multithread', 'threadpool', 'select', 'epoll'))
     parser.add_argument('-b', '--check-basic', type=int, action='store', metavar='<points>',
             help='Check proxy with basic HTTP tests')
     parser.add_argument('-c', '--check-concurrency', type=int, action='store', metavar='<points>',
