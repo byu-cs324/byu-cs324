@@ -1,14 +1,20 @@
 # Remote Access to CS Lab Machines
 
-Throughout this class, you will be required to access to the CS lab machines to
-complete various assignments.  You are welcome to log on to a CS lab machine
+Throughout this class, you will be required to log on to a CS lab machine to
+complete an assignment.  You are welcome to log on to a CS lab machine
 directly, by sitting at a workstation in one of the labs.  However, you can
-also access them remotely, which is often more convenient.
+also access the lab machines remotely, which is often more convenient.  To log on
+remotely, please follow these instructions.
 
- 1. Get on to the CS network.
+Please note that access to the CS network and individual CS lab machines
+requires that you are currently enrolled in a CS class.  If you are not
+currently enrolled in a CS class, then you will not be granted access to the CS
+network or individual lab machines.
 
-    To access the CS lab machines, you must first be on the CS network.  There
-    are two ways to do this:
+ 1. Access the CS network.
+
+    To log on to a CS lab machine remotely, you must access the CS network.
+    There are two ways to access the CS network:
 
     - *If you are in the TMCB*, simply connect to the "eduroam" WiFi.  If you
       are in the TMCB and you are currently enrolled in a CS class, then
@@ -25,39 +31,54 @@ also access them remotely, which is often more convenient.
       Note that using the BYU CS VPN requires that you use your BYU
       credentials; that is, your BYU NetID and password.
 
- 2. Access the CS Lab Machines.
+ 2. Log on to a CS Lab Machine Using SSH.
 
-    At this point, you can access an arbitrary CS lab machine remotely over SSH
-    by running the following from a terminal on your machine:
+    At this point, you can access either an _arbitrary_ or a _specific_ CS lab
+    machine remotely over SSH.
 
-    (Replace "username" with your BYU CS username -- not your BYU NetID)
+    - *Arbitrary lab machine.*  You can log on to an _arbitrary_ CS lab machine
+      remotely over SSH by running the following from a terminal on your
+      machine:
 
-    ```bash
-    ssh username@schizo.cs.byu.edu
-    ```
-    or simply:
-    ```bash
-    ssh username@schizo
-    ```
-    (There is some magic that automatically adds the "cs.byu.edu" suffix if
-    you are on the CS network.)
+      (Replace "username" with your BYU CS username -- not your BYU NetID)
 
-    You can think of schizo as a load balancer for SSH.  Note that your home
-    directory is shared across all lab machines (using the network file server
-    or NFS), so you can access the files in your home directory no matter which
-    lab machine you log in to.
+      ```bash
+      ssh username@schizo.cs.byu.edu
+      ```
+      or simply:
+      ```bash
+      ssh username@schizo
+      ```
+      (There is some magic that automatically adds the "cs.byu.edu" suffix if
+      you are on the CS network.)
 
-    Alternatively, you can access *individual* CS machines remotely over SSH by
-    running the following:
+      You can think of schizo as a load balancer for SSH.  That is, when you
+      use schizo, you ultimately log on to _some_ CS lab machine.  Two
+      consecutive connections to schizo might land you on two different lab
+      machines.
 
-    (Replace "username" with your BYU CS username -- not your BYU NetID.  Also,
-    replace "hostname" with the name of the machine to which you are logging on.
-    For example: "florida", "idaho", or "alabama".)
+      Note that your home directory is shared across all lab machines (using
+      the network file server or NFS), so you can access the files in your
+      home directory no matter which lab machine you log on to.
 
-    ```bash
-    ssh username@hostname
-    ```
+    - *Specific Lab Machine.*  A list of CS lab machines can be found
+      [here](https://support.cs.byu.edu/KB/View/81187473).  You can log on to
+      a _specific_ CS machine remotely over SSH by running the following:
+
+      (Replace "username" with your BYU CS username -- not your BYU NetID.
+      Also, replace "hostname" with the name of the machine to which you are
+      logging on.  For example: "florida".)
+
+      ```bash
+      ssh username@hostname
+      ```
 
     In addition to remote terminal access with the `ssh` command, you can also
     use `scp` (for copying files securely) and VS Code with the SSH Remote
     extension.
+
+    For example:
+
+    ```bash
+    scp some/src/folder/myfile.txt shizo:some/dest/folder
+    ```
