@@ -2,11 +2,11 @@ CC = gcc
 CFLAGS = -Wall -O2 -g -I ../include/
 
 .PHONY: all
-all: echoservere
+all: echoservers
 
-echoservere: echoservere.c ../code/sockhelper.c
-	$(CC) $(CFLAGS) -o echoservere echoservere.c ../code/sockhelper.c
+echoservers: echoservers.c ../code/sockhelper.c
+	$(CC) $(CFLAGS) -o echoservers echoservers.c ../code/sockhelper.c
 
 .PHONY: clean
 clean:
-	rm -f echoservere
+	rm -f echoservers
