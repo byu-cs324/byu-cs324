@@ -90,10 +90,10 @@ int main(int argc, char **argv)
 
 		// Wait for at least one fd to become ready.  Using NULL for
 		// the last (timeout) argument means that it will wait
-		// indefinitely.  While we might are waiting for "read" events
-		// in this program (rfds_ready), in a different scenario, we
-		// might also be waiting for "write" events, in which case the
-		// fourth argument would be non-NULL.
+		// indefinitely.  While we are waiting for "read" events in
+		// this program (rfds_ready), in a different scenario, we might
+		// also be waiting for "write" events, in which case the third
+		// argument (wfds_ready) would be non-NULL.
 		int nready = select(FD_SETSIZE, &rfds_ready, NULL, NULL, NULL);
 
 		for (int i = 0; i < FD_SETSIZE; i++) {
