@@ -60,6 +60,7 @@ class ProxyTestSuite:
         possible_mem_mgmt = 0
         clean_shutdown = 0
         possible_clean_shutdown = 0
+        points_reduced_msg = ''
         points_reduced_msg_possible = 'The concurrency model failed. Some or all credit might be withheld.'
 
         for num, (classes, pts_for_group) in enumerate(self.test_classes):
@@ -87,7 +88,6 @@ class ProxyTestSuite:
                 possible_mem_mgmt += 1
                 possible_clean_shutdown += 1
 
-                points_reduced_msg = ''
                 mem_msg = ''
                 if self.mem_mgmt is not None:
                     mem_msg += '; Mem Mgmt: '
