@@ -32,7 +32,7 @@ WWW_DIR = os.path.join(CURRENT_DIR, 'www')
 STRACE = 'strace'
 VALGRIND = 'valgrind'
 VALGRIND_MEMCHECK_PATTERN = 'memcheck'
-PSELECT_STRACE_RE = re.compile('^(p?select\d*|epoll_p?wait\d*)\(.*\)\s+=\s+(\d+)')
+PSELECT_STRACE_RE = re.compile(r'^(p?select\d*|epoll_p?wait\d*)\(.*\)\s+=\s+(\d+)')
 
 class ProxyTestSuite:
     def __init__(self, mode, test_classes, proxy_host='localhost',
@@ -402,7 +402,7 @@ class ProxyTest:
             if self.valgrind_log_file is not None:
                 msg += '\nValgrind log file: %s' % (self.valgrind_log_file)
             if self.strace_log_file is not None:
-                msg += '\strace log file: %s' % (self.strace_log_file)
+                msg += '\nstrace log file: %s' % (self.strace_log_file)
             self.logger.info(msg)
         else:
             self.cleanup_files()
