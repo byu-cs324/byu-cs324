@@ -32,7 +32,7 @@ WWW_DIR = os.path.join(CURRENT_DIR, 'www')
 STRACE = 'strace'
 VALGRIND = 'valgrind'
 VALGRIND_MEMCHECK_PATTERN = 'memcheck'
-PSELECT_STRACE_RE = re.compile('^(pselect\d*|epoll_pwait\d*)\(.*\)\s+=\s+(\d+)')
+PSELECT_STRACE_RE = re.compile('^(p?select\d*|epoll_p?wait\d*)\(.*\)\s+=\s+(\d+)')
 
 class ProxyTestSuite:
     def __init__(self, mode, test_classes, proxy_host='localhost',
@@ -497,7 +497,7 @@ class ProxyTest:
 
         cmd = [PROXY, str(self.proxy_port)]
         if self.use_strace:
-            cmd = [STRACE, '-e', 'trace=pselect6,epoll_pwait', '-o', self.strace_log_file] + cmd
+            cmd = [STRACE, '-o', self.strace_log_file] + cmd
         if self.use_valgrind:
             cmd = [VALGRIND, '--log-file=%s' % (self.valgrind_log_file), '--leak-check=full', '-v'] + cmd
         kwargs = {}
