@@ -103,7 +103,7 @@ instructions that follow.
 For each of the URLs that follow, run the following command, but replace "host"
 and "port" with the hostname and port on which you are running your server, and
 "url" with the designated URL.  Also replace "output\_a.txt" with a filename
-unique to the URL you are retrieving.  
+unique to the URL you are retrieving.
 
 ```
 curl -s -v url > output_a.txt 2>&1
@@ -136,7 +136,7 @@ curl -s -v -d "username=user&password=pw" "url" > output_e.txt 2>&1
 ```
 
 When the `-d` option is used, the request type used by `curl` is changed from
-"GET" to "POST", and `curl` sends the bytes that follow as a request body. 
+"GET" to "POST", and `curl` sends the bytes that follow as a request body.
 
 URLs:
 
@@ -297,9 +297,44 @@ body back to the HTTP client.  Section 11.5.4 in the book has additional
 information on this.
 
 For this part of the assignment, you will write a CGI program--that is, the one
-that is executed by the HTTP server.  Call your program `myprog1.c`.  It should
-have _mostly_ the same behavior as that you observed in `cgi-bin/myprog`.  See
-the output from running the `curl` command against URL (e) above.
+that is executed by the HTTP server.  You can write your CGI program in any
+language you want!  It could be in C, C++, Python, Ruby, etc.  Write your code
+in a file with base name `myprog1` and whatever extension goes with your
+selected language: `.c`, `.cpp`, `.py`, `.rb`, etc.  If you use C or C++,
+then pass the `-o` option to `gcc` or `g++` to compile the source file to
+binary with name `myprog1`.  For example:
+```
+gcc -o myprog1 myprog1.c
+```
+If you use an interpreted language, like Python, then you may keep the
+extension (e.g., `myprog1.py`).  However, you must include a "shebang" (`#!`)
+and the path to the interpreter at the top of the file.  For example:
+```
+#!/usr/bin/python3
+```
+Also, you should make sure the file is executable by setting the executable
+bits.  For example:
+```
+chmod +x myprog1.py
+```
+Your file will be executed using the original filename -- for interpreted
+files -- or the compiled filename for compiled files.  For example:
+```
+./myprog1
+```
+OR
+```
+./myprog1.py
+```
+
+Please note that while the systems concepts from this class (e.g., file
+descriptors, standard output, environment variables, etc.) will apply to any
+language, there is no expectation of language-specific help (other than C) from
+the TAs or professor.  Also, the helps below are specific to C.
+
+Your CGI program should have _mostly_ the same behavior as that you observed in
+`cgi-bin/myprog`.  See the output from running the `curl` command against URL
+(e) above.
 
  - Retrieve the `CONTENT_LENGTH` and `QUERY_STRING` environment variables,
    which will have been set by the HTTP server using the `Content-Length`
@@ -348,10 +383,11 @@ the output from running the `curl` command against URL (e) above.
 
 Test your program by compiling it and placing the resulting binary in
 `www/cgi-bin`.  Then run the same `curl` command line that you used for URL
-(e) above, substituting "myprog1" for "myprog".  The response headers
-(beginning with the "Content-Type" header) and the response body returned for
-`myprog1` should match those for `myprog`, _byte for byte_, except that "Hello
-world" will be replaced with "Hello CS324" in the body.
+(e) above, substituting "myprog1" (with file extension, as appropriate) for
+"myprog".  The response headers (beginning with the "Content-Type" header) and
+the response body returned for `myprog1` should match those for `myprog`, _byte
+for byte_, except that "Hello world" will be replaced with "Hello CS324" in the
+body.
 
 Try a few different values for the query string and the request body to see
 that it works properly in each case.  Note that for different response body
