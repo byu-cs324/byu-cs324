@@ -327,6 +327,11 @@ OR
 ./myprog1.py
 ```
 
+Please note that while the systems concepts from this class (e.g., file
+descriptors, standard output, environment variables, etc.) will apply to any
+language, there is no expectation of language-specific help (other than C) from
+the TAs or professor.  Also, the helps below are specific to C.
+
 Your CGI program should have _mostly_ the same behavior as that you observed in
 `cgi-bin/myprog`.  See the output from running the `curl` command against URL
 (e) above.
