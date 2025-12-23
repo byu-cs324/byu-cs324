@@ -3,8 +3,8 @@
 Throughout this class, you will be required to log on to a CS lab machine to
 complete an assignment.  You are welcome to log on to a CS lab machine
 directly, by sitting at a workstation in one of the labs.  However, you can
-also access the lab machines remotely, which is often more convenient.  To log on
-remotely, please follow these instructions.
+also access the lab machines remotely, which is often more convenient.  To log
+on remotely, please follow these instructions.
 
 Please note that access to the CS network and individual CS lab machines
 requires that you are currently enrolled in a CS class.  If you are not
@@ -13,8 +13,8 @@ network or individual lab machines.
 
  1. Access the CS network.
 
-    To log on to a CS lab machine remotely, you must access the CS network.
-    There are two ways to access the CS network:
+    To log on to a CS lab machine remotely, you must first gain access the CS
+    network.  There are two ways to access the CS network:
 
     - *If you are in the TMCB*, simply connect to the "eduroam" WiFi.  If you
       are in the TMCB and you are currently enrolled in a CS class, then
@@ -33,8 +33,9 @@ network or individual lab machines.
 
  2. Log on to a CS Lab Machine Using SSH.
 
-    At this point, you can access either an _arbitrary_ or a _specific_ CS lab
-    machine remotely over SSH.
+    Once you have accessed the CS network, either via "eduroam" or the BYU CS
+    VPN, you can access either an _arbitrary_ or a _specific_ CS lab machine
+    remotely over SSH.
 
     - *Arbitrary lab machine.*  You can log on to an _arbitrary_ CS lab machine
       remotely over SSH by running the following from a terminal on your
@@ -45,10 +46,13 @@ network or individual lab machines.
       ```bash
       ssh username@schizo.cs.byu.edu
       ```
+
       or simply:
+
       ```bash
       ssh username@schizo
       ```
+
       (There is some magic that automatically adds the "cs.byu.edu" suffix if
       you are on the CS network.)
 
