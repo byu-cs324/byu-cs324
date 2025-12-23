@@ -1,75 +1,84 @@
 # Mirroring the Class GitHub Repository
 
-Many of the assignments for this class are hosted in a GitHub repository.
-Individual assignments are in subfolders of that repository.  Within the folder
-for every assignment is a `README.md` file that contains the description for
-the assignment.  The `README.md` is best viewed on the GitHub site itself using
-a Web browser.  Alternatively, you can view the `README.md` from within VSCode,
-by right-clicking the file and selecting the "Open Preview" option.  Every
-assignment folder also contains other files that are part of the assignment.
+In this assignment, you will create a private GitHub repository that is a
+_mirror_ of the official GitHub repository for the class.
 
-To download and use the assignment folders and files, you will be creating a
-and managing a _mirror_ of the class repository.  This will help ensure that
-you have _all_ the files for the assignments, keep them up-to-date, and
-simultaneously version your own code by committing it to your own private
-GitHub repository.
+The assignments for this class are hosted in the GitHub repository.  Individual
+assignments are in subfolders of that repository.  The subfolder for each
+assignment consists of the following:
 
-The path of the upstream class repository and the name of your own private
-repository have been given to you in the instructions to this assignment and
-will be referred to in this document as "CLASS\_REPO\_PATH" and
-"PRIVATE\_REPO\_NAME", respectively.  Additionally, "USERNAME" refers to your
-GitHub username.  Thus, the following replacements should be made throughout
-this document:
+  - *A `README.md` file* that contains the description for the assignment.  The
+    `README.md` is best viewed on the GitHub site itself using a Web browser.
+    Alternatively, if you use VS Code, you can view the `README.md` from within
+    VS Code, by right-clicking the file and selecting the "Open Preview"
+    option.
+  - *Other files* that are needed for the assignment.
 
- - "CLASS\_REPO\_PATH": replace with the upstream class repository.
- - "PRIVATE\_REPO\_NAME": replace with the name of your own private repository.
- - "USERNAME": replace with your GitHub username.
-
-These instructions have you first create your mirrored repository on your
-primary development system and then optionally create clones of that repository
-on other systems.
+Creating and managing a _mirror_ of the class repository will help you
+1) ensure that you have _all_ the files you need for an assignment, 2) keep the
+files and documentation up-to-date, and 3) simultaneously version and back up
+your own code.
 
 
-# Preparation
+# Configuration
 
-Your primary development system has been provided to you in the instructions
-for this assignment.  Log on to your primary development system, either
-directly or remotely via SSH.
+The following settings have been given to you in the instructions for this
+assignment.  They will be referred to throughout this document and should be
+replaced appropriately with the settings you have been given.
+
+ - *Primary Development System*: this is the _primary_ system on which you do
+   your work for this class.
+ - *Class Repository ("CLASS\_REPO\_PATH")*: this is the path of the class
+   repository, which will be the "upstream" for your own mirrored repository.
+ - *Private Repository Name ("PRIVATE\_REPO\_NAME")*: this is the name of your
+   own private repository.
+ - *GitHub Username ("USERNAME")*: this is your GitHub username.  If you do not
+   have a GitHub account, then you will need to
+   [create one](https://github.com/signup).
 
 
-# Register an SSH Key for Use with GitHub
+# Step 0: Log on to Primary Development System
 
-These steps are necessary for you to use SSH to fetch and push your updates
-from and to GitHub.  They should be performed on the primary development system
--- and later on any other systems on which you create clones.
+To begin, log on to your Primary Development System, either directly or
+remotely via SSH.  (For remote access to CS lab machines,
+[see here](../REMOTE_ACCESS.md).)
 
-If you already have an SSH key registered with GitHub on your system, then you
-do not need to do this again.
+Subsequent steps should be performed on the Primary Development System, unless
+specified otherwise.
+
+
+# Step 1: Register an SSH Key for Use with GitHub
+
+These steps enable you to interact with GitHub over SSH.  If you already have
+an SSH key registered with GitHub on your system, then you do not need to do
+this again.
 
  1. Find out if you already have an SSH key to use by running the `ls` command
     as follows:
 
-    (The command is everything following the prompt `$` on the first line.)
-
     ```bash
-    $ ls -ltra ~/.ssh/id_*
+    ls -ltra ~/.ssh/id_*
+    ```
+
+    If you do _not_ have an SSH key on your system, then the output will look
+    something like this:
+
+    ```
+    ls: cannot access '/home/user/.ssh/id_*': No such file or directory
+    ```
+
+    Otherwise, it will list the files containing the contents of the key,
+    something like this:
+
+    ```
     -rw-r--r-- 1 user group  564 Jan  7 15:35 /home/user/.ssh/id_rsa.pub
     -rw------- 1 user group 2635 Jan  7 15:35 /home/user/.ssh/id_rsa
     ```
 
-    In the above example, there is a public/private key pair named `id_rsa.pub`
-    and `id_rsa`, respectively.  However, if there are no keys, `ls` will
-    return an error:
+ 2. If you identified an SSH key in the previous step, then you can skip this
+    step and move on to #3.
 
-    ```bash
-    $ ls -ltra ~/.ssh/id_*
-    ls: cannot access '/home/user/.ssh/id_*': No such file or directory
-    ```
-
-    If you have keys, then you can now go to step 3.  Otherwise, continue to
-    step 2.
-
- 2. Run the following from the command line to create an SSH public/private key
+    Run the following from the command line to create an SSH public/private key
     pair:
 
     ```bash
@@ -82,9 +91,9 @@ do not need to do this again.
     Enter file in which to save the key (/home/user/.ssh/id_rsa):
     ```
 
-    Optionally enter a passphrase at the next prompt.  This makes sure that the
-    private key cannot be used without the passphrase.  This is good practice
-    for a shared machine in particular:
+    Optionally enter a passphrase at the next prompt.  Entering a passphrase
+    makes sure that the private key cannot be used without the passphrase.
+    This is good security practice, especially for a shared machine:
 
     ```
     Enter passphrase (empty for no passphrase):
@@ -106,7 +115,7 @@ do not need to do this again.
     to register your SSH key with your GitHub account.
 
 
-# Create a Mirrored Version of the Class Repository
+# Step 2: Create a Mirrored Version of the Class Repository
 
 This is a one-time process to create and configure your own private GitHub
 repository for referencing and committing changes.  Your private repository
@@ -117,9 +126,9 @@ will also be a mirror of the upstream class repository.
     [official documentation](https://docs.github.com/en/get-started/quickstart/create-a-repo#create-a-repository),
     adhering to the following:
 
-    - Create the repository under your GitHub user ("USERNAME"), and name the
-      repository according to PRIVATE\_REPO\_NAME (Step 2).
-    - Make sure the visibility of the repository is _Private_ (Step 4).
+    - Create the repository under your GitHub user (USERNAME), and name the
+      repository using PRIVATE\_REPO\_NAME (Step 2).
+    - Make sure the visibility of the repository is _private_ (Step 4).
     - Do _not_ check the box "Initialize this repository with a README" (Step 5).
 
  2. Double-check that:
@@ -155,7 +164,7 @@ will also be a mirror of the upstream class repository.
     ```
 
 
-# Create a Clone of Your Private Repository
+# Step 3: Create a Clone of Your Private Repository
 
 This is a one-time process to create a clone of the private repository you have
 created.
@@ -190,24 +199,27 @@ created.
     repository ("upstream").
 
 
-# Create Additional Clones of Your Private Repository (Optional)
+# Step 4 (Optional): Create Additional Clones of Your Private Repository
 
 If you would like to create additional clones of your private repository on
-other machines (e.g., a laptop), follow the instructions for both
-[registering SSH keys](#register-an-ssh-key-for-use-with-github) and
-[creating a clone](#create-a-clone-of-your-private-repository)
-on _that_ machine.  Just remember that you will need to keep all clones
+systems other than your Primary Development System, follow the instructions for
+both
+[registering SSH keys](#step-1-register-an-ssh-key-for-use-with-github) and
+[creating a clone](#step-3-create-a-clone-of-your-private-repository) on _that_
+system.  Just remember that you will need to keep all clones
 [up-to-date](#update-your-mirrored-repository-from-the-upstream)!
 
 
-# Update Your Mirrored Repository from the Upstream
+# Ongoing Maintenance
 
-Throughout the semester we will be updating the class repository with changes
+## Update Your Mirrored Repository from the Upstream
+
+Throughout the semester we might update the class repository with changes
 that seem appropriate.  Every time you start an assignment, and as often as you
 like, please run the commands listed below to pull down the changes from the
 upstream class repository and integrate them into your own private repository.
 Remember that you will need to do this for any and all clones
-[that you have made of your repository](#create-a-clone-of-your-private-repository).
+[that you have made of your repository](#step-3-create-a-clone-of-your-private-repository).
 
 
  1. Pull down the latest changes from both your repository and the upstream:
@@ -242,7 +254,7 @@ Remember that you will need to do this for any and all clones
     ```
 
 
-# Commit and Push Local Changes to Your Private Repo
+## Commit and Push Local Changes to Your Private Repo
 
 It is best practice to regularly commit your changes and push them to the
 origin.  Follow the steps below every time you want to commit changes to the
