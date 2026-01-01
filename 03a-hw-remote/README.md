@@ -43,10 +43,22 @@ perform these exercises.)
     displayed alongside one another, disconnect and re-connect to your `tmux`
     instance on the remote machine, and more.
 
+    You can interact with tmux using a special command: `ctrl`+`b`. This is the
+    command prefix, used before every tmux command. Without the `ctrl`+`b`, commands
+    interact with the *contents* of a pane. Note that this is different than normal
+    keyboard shortcuts. You must use the command prefix (`ctrl`+`b`), and then **release**
+    before doing the rest of the command.
+
+    For example: `ctrl`+`b`, **release**, `"` (double quotation mark) is a command
+    to tell tmux to split the window horizontally, as seen in step 5.
+
  4. Type `ctrl`+`b` followed by `"` (double quotation mark).  This will split
     the window in `tmux` horizontally into two panes and create a separate
     shell instance in the lower pane.
 
+    You can use `ctrl`+`b` and an arrow key to move the focus between open panes. The
+    arrow key corresponds to the direction you intuitively wish to move focus.
+    
  5. Run the following command in the newly created pane:
 
     ```bash
@@ -63,31 +75,28 @@ perform these exercises.)
     echo hello from lower-right pane
     ```
 
- 8. Type `ctrl`+`b` followed by the left arrow/cursor key.  This will move the
-    focus back to the lower-left pane.
-
- 9. Run the following command in lower-left pane, where the focus currently is:
+ 8. Move the focus to the lower-left pane, and run the following command:
 
     ```bash
     echo hello again
     ```
 
- 10. Type `ctrl`+`b` followed by the up arrow/cursor key.  This will move
-     focus to the upper pane, i.e., the original/first pane that was
-     created.
+ 9. Move the focus to the upper pane, and run `echo upper` in the upper pane:
 
- 11. Run `echo upper` in the upper pane:
+ 10. ```bash
+     echo upper
+     ```
 
- 12. In the upper pane, run the following to compile and run `hello.c`:
+ 11. In the upper pane, run the following to compile and run `hello.c`:
 
      ```bash
      gcc -o hello hello.c
      ./hello
      ```
 
- 13. Type `ctrl`+`b` followed by `d` to detach from your current tmux instance.
+ 12. Type `ctrl`+`b` followed by `d` to detach from your current tmux instance.
 
- 14. Run the following command:
+ 13. Run the following command:
 
      ```bash
      tmux attach
@@ -96,7 +105,7 @@ perform these exercises.)
      This should reattach you to the tmux instance that you were working on
      earlier, and it should look exactly as it did before you detached.
 
- 15. Type `exit` or `ctrl`+`d` in each of the panes in your `tmux` instance, to
-     close each shell and (when the last one closes) the `tmux` instance
-     itself.  `ctrl`+`d` essentially passes an end-of-file, so the shell knows
-     that its input has finished--its signal to terminate!
+ 14. Type `exit` or `ctrl`+`d` (without the command prefix) in each of the panes
+     in your `tmux` instance, to close each shell and (when the last one closes)
+     the `tmux` instance itself.  `ctrl`+`d` essentially passes an end-of-file,
+     so the shell knows that its input has finished--its signal to terminate!
