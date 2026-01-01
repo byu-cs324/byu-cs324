@@ -52,12 +52,9 @@ manual page for the program `kill`.
  - Navigation: Use the arrow keys to move you up or down.
  - Search:
    - *Forward search:* `/`  For example, typing "/foo" then `Enter` would find
-     the next instance of "foo" in the document.
-   - *Backward search:* `?` For example, typing "?foo" then `Enter` would find
-     the previous instance of "foo" in the document.
-   - *Find last searched term:* `n` If `/` was last used, then it will find the
-     next instance of the last-searched term; otherwise (`?` was used), it will
-     find the previous instance of the last-searched term.
+     the **next** instance of "foo" in the document.
+   - *Find next searched term:* Type `n` if `/` was last used, then it will find the
+     next instance of that same searched term
  - Quit: `q`
 
 Try moving around a bit, go through the following examples while
@@ -67,13 +64,10 @@ still in the man page for `man`:
    probably take you to the first instance of "-SIGKILL" in the text.
  - Type "n" to go to the next instance of "-s".  This one should correspond to
    the "-s" option in the "OPTIONS" section.
- - Find the next (forward) instance of "EXAMP" by typing "/EXAMP" then `Enter`.
-   This will take you to the beginning of the "EXAMPLES" section.
- - Find the previous (backward) instance of "DESCRIP" by typing "?DESCRIP" then
-   `Enter`.  This will take you to the beginning of the "DESCRIPTION" section.
-   Read the first few sentences of the description.
+ - Find the next instance of "EXAMP" by typing "/EXAMP" then `Enter`.
+   This will take you to the beginning of the "EXAMPLES" section. Note that forward
+   search will look from your *current position* and onwards
  - Type "q" to exit the pager.
-
 
 ## Example 2
 
@@ -106,10 +100,7 @@ Here are some of the typical contents of a man page in Section 2 or Section 3.
 ## Questions
 
 Using only the `man` command, answer the following questions.  To answer each
-question, you will need to call `man` with certain arguments and options and
-either inspect the output or read parts of (or search within) the man page that
-is opened.  If you are confused as to where to start, look at the examples in
-the previous section.
+question, you will need open specific man pages, and search or read for key terms.
 
  1. What are the numbers associated with the manual sections for executable
     programs, system calls, and library calls, respectively?  Hint: See the
