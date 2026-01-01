@@ -13,7 +13,7 @@ network or individual lab machines.
 
  1. Access the CS network.
 
-    To log on to a CS lab machine remotely, you must first gain access the CS
+    To log on to a CS lab machine remotely, you must first gain access to the CS
     network.  There are two ways to access the CS network:
 
     - *If you are in the TMCB*, simply connect to the "eduroam" WiFi.  If you
