@@ -1,7 +1,7 @@
 # Strings, I/O, and Environment
 
-The purpose of this assignment is to help you better understand I/O and
-environment in C with a series of hands-on exercises.  You will flesh out
+The purpose of this assignment is to help you better understand I/O, strings, and
+environments in C with a series of hands-on exercises.  You will flesh out
 sections of an existing C program and answer questions about its output.
 
 
@@ -31,7 +31,7 @@ assignment:
 
 ## Overview
 
-This file contains questions divided into three parts, related to character
+This file contains questions divided into three parts: character
 encoding, I/O, and environment variables.  The file `exercises.c` contains a
 function corresponding to each part, in which you will do the specified work
 for each question.
@@ -81,7 +81,7 @@ For example, consider the following array of bytes:
 char s1a[] = { 104, 101, 108, 108, 111, 10 };
 ```
 
-This is equivalent to the following, in which integeral literals are specified
+This is equivalent to the following, in which integer literals are specified
 using hexadecimal notation instead of decimal notation:
 
 ```c
@@ -110,7 +110,7 @@ Here is a bit of bonus information related the limitations of ASCII and how
 they are addressed.
 
 In the examples we have given, a single `char`/byte is used to represent each
-ASCII character.  However, a byte can only represent up to 256 (2<sup>8)
+ASCII character.  However, a byte can only represent up to 256 (2<sup>8</sup>)
 different characters. While that is plenty to represent the Latin character
 set, it is far from sufficient for covering international character sets.
 Thus, character sets other than ASCII have been developed, the most widely used
@@ -163,7 +163,7 @@ some important differences:
    week's worth of groceries instead of going there when you just need a single
    food item.
 
-   The difference between `printf()` and `fprintf()` is that `printf()` always
+   The difference between `printf()` and `fprintf()` is that `printf()` always uses
    `stdout` (standard output) as the file stream, but with `fprintf()` the file
    stream must be specified.  It  might be `stdout`, `stderr` (which you will
    learn about later), or a `FILE *` that refers to an open file.
@@ -184,7 +184,7 @@ some important differences:
    ```
 
    Before the string is written to the terminal, the substring "%d" (i.e., the
-   two characters `'%'` and `'d'`) are replaced with the two byte values that
+   two characters `'%'` and `'d'`) is replaced with the two byte values that
    comprise the string "42": 52 and 50 (decimal), 0x34 and 0x32 (hexadecimal),
    or `'4'` and `'2'` (ASCII).  The resulting string that is printed is:
    "hello 42\n".
