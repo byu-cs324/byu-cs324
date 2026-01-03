@@ -51,23 +51,33 @@ manual page for the program `kill`.
 
  - Navigation: Use the arrow keys to move you up or down.
  - Search:
-   - *Forward search:* `/`  For example, typing "/foo" then `Enter` would find
-     the **next** instance of "foo" in the document.
-   - *Find next searched term:* Type `n` if `/` was last used, then it will find the
-     next instance of that same searched term
+   - *Forward search:* `/`.  For example, typing "/foo" then `Enter` would find
+     the _next_ instance of "foo" in the document, i.e., looking _forward_ from
+     the current position.
+   - *Backward search:* `?`. For example, typing "?foo" then `Enter` would find
+     the _previous_ instance of "foo" in the document, i.e., looking _backward_
+     from the current position.
+   - *Find next or previous instance of most-recently-searched term:* `n`. If
+     `/` was last used, then `n` will find the _next_ instance of the term,
+     looking _forward_ from the current position; otherwise (`?` was used), `n`
+     will find the _previous_ instance, looking _backward_ from the current
+     position.
  - Quit: `q`
 
 Try moving around a bit, go through the following examples while
-still in the man page for `man`:
+still in the man page for `kill`:
 
  - Find the first instance of "-s" by typing "/-s" then `Enter`.  This will
    probably take you to the first instance of "-SIGKILL" in the text.
- - Type "n" to go to the next instance of "-s".  This one should correspond to
-   the "-s" option in the "OPTIONS" section.
- - Find the next instance of "EXAMP" by typing "/EXAMP" then `Enter`.
-   This will take you to the beginning of the "EXAMPLES" section. Note that forward
-   search will look from your *current position* and onwards
+ - Type "n" to go to the next instance of "-s", looking forward  This one
+   should correspond to the "-s" option in the "OPTIONS" section.
+ - Find the next (forward) instance of "EXAMP" by typing "/EXAMP" then `Enter`.
+   This will take you to the beginning of the "EXAMPLES" section.
+ - Find the previous (backward) instance of "DESCRIP" by typing "?DESCRIP" then
+   `Enter`.  This will take you to the beginning of the "DESCRIPTION" section.
+   Read the first few sentences of the description.
  - Type "q" to exit the pager.
+
 
 ## Example 2
 
@@ -100,7 +110,7 @@ Here are some of the typical contents of a man page in Section 2 or Section 3.
 ## Questions
 
 Using only the `man` command, answer the following questions.  To answer each
-question, you will need open specific man pages, and search or read for key terms.
+question, you will need open specific man pages and look for specific content.
 
  1. What are the numbers associated with the manual sections for executable
     programs, system calls, and library calls, respectively?  Hint: See the
