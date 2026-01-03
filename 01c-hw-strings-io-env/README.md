@@ -1,8 +1,9 @@
 # Strings, I/O, and Environment
 
-The purpose of this assignment is to help you better understand I/O, strings, and
-environments in C with a series of hands-on exercises.  You will flesh out
-sections of an existing C program and answer questions about its output.
+The purpose of this assignment is to help you better understand strings, I/O,
+and environment variables in C with a series of hands-on exercises.  You will
+flesh out sections of an existing C program and answer questions about its
+output.
 
 
 ## Preparation
@@ -31,10 +32,10 @@ assignment:
 
 ## Overview
 
-This file contains questions divided into three parts: character
-encoding, I/O, and environment variables.  The file `exercises.c` contains a
-function corresponding to each part, in which you will do the specified work
-for each question.
+This file contains questions divided into three parts: character encoding, I/O,
+and environment variables.  The file `exercises.c` contains a function
+corresponding to each part, in which you will do the specified work for each
+question.
 
 Follow the instructions for and answer each question.  For most questions, you
 will re-compile and re-run the program using the following commands:
@@ -98,6 +99,8 @@ function, you will see them displayed as their ASCII equivalents.
 write(STDOUT_FILENO, s1, 6);
 ```
 
+Compile and run `exercises.c` to see this.
+
 More will be explained about the `write()` system call later on.  For now, just
 know that `write(STDOUT_FILENO, s1, 6)` sends the six bytes at `s1` to standard
 output (shown in the code as `STDOUT_FILENO`, which is defined as the integer
@@ -120,17 +123,19 @@ is a subset of Unicode: if a byte value is 127 or less (most significant bit is
 0), then it is ASCII, but if it is 128 or more (most significant bit is 1),
 then it is encoded for Unicode, and further bytes are used to determine
 character.  Finally, unicode is typically encoding using a byte encoding called
-UTF-8.  For example, the following array of seven bytes comprise the UTF-8
-encoding for the two simplified Chinese characters that mean "Taiwan", followed
-by a newline (`0x0a` or '\n'):
+UTF-8.  For example, the following array of _seven_ bytes comprise the UTF-8
+encoding for the _two_ simplified Chinese characters that mean "Hello",
+followed by a newline (`0x0a` or '\n'):
 
 ```c
-char s2[] = { 0xe5, 0x8f, 0xb0, 0xe7, 0x81, 0xa3, 0x0a };
+char s2[] = { 0xe4, 0xbd, 0xa0, 0xe5, 0xa5, 0xbd, 0x0a };
 ```
 
 Again you can send these bytes to the terminal using the `write()` function,
 and the terminal will decode them from UTF-8 and display them as their
 corresponding unicode characters.
+
+Compile and run `exercises.c`.
 
 ```c
 write(STDOUT_FILENO, s2, 7);
@@ -163,10 +168,10 @@ some important differences:
    week's worth of groceries instead of going there when you just need a single
    food item.
 
-   The difference between `printf()` and `fprintf()` is that `printf()` always uses
-   `stdout` (standard output) as the file stream, but with `fprintf()` the file
-   stream must be specified.  It  might be `stdout`, `stderr` (which you will
-   learn about later), or a `FILE *` that refers to an open file.
+   The difference between `printf()` and `fprintf()` is that `printf()` always
+   uses `stdout` (standard output) as the file stream, but with `fprintf()` the
+   file stream must be specified.  It  might be `stdout`, `stderr` (which you
+   will learn about later), or a `FILE *` that refers to an open file.
  - Second, instead of explicitly setting the number of bytes to send,
    `printf()` and `fprintf()` know when to stop sending bytes when they detect
    a null byte value (integer value 0), which you will see in this assignment.
