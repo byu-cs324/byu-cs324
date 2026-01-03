@@ -19,8 +19,9 @@ the entire assignment before beginning!
 
 # Preparation
 
-NOTE: Throughout this exercise, you _must_ run the `ssh` command on a BYU CS
-lab machine, or you will get unexpected results.
+NOTE: Throughout this exercise, you _must_ run the `ssh` commands **on** a BYU CS
+lab machine, or you will get unexpected results. For example, using `ssh` to login
+remotely to the lab machines, and then calling the `ssh` commands from there.
 
 Using the guidance from the
 [remote access information page](../REMOTE_ACCESS.md), log in to a CS lab
@@ -103,11 +104,11 @@ grep bar somefile.txt | awk '{ print $8 }' | base64 -d
 ```
 
 Note that following the format above is important, as it will allow your
-assignment to be graded automatically.
+assignment to be graded automatically. Do not add extra new lines, spaces, or formatting.
 
 Again, the pipeline for Level 8 does not require any more than what was used to
 _start_ the command; you do not need to include what you did to suspend and
-resume.
+resume, but you must include that command.
 
 
 # Automated Testing
@@ -120,6 +121,8 @@ can use it by simply running the following:
 ./SshTester.py bandit.txt
 ```
 
+Please note this is the same script the TA's use to grade. If it doesn't work
+for you, it won't work for them.
 
 # Helps
 
@@ -169,7 +172,9 @@ grep bar somefile.txt | awk '{ print $8 }' | base64 -d
 ## Other Helps
 
  - Use the man pages to learn about a command, as they are the primary
-   documentation!  You can also find helpful examples on the Web.
+   documentation!  You can find helpful examples on the Web, but note that the
+   man pages on the web might not be the same *version* as the man pages on the
+   lab machines.
  - To suspend the pipeline currently running in the foreground, use `ctrl`+`z`.
    Use `fg` to resume.  For more information, See the sections on
    `REDIRECTION`, `Pipelines` (under `SHELL GRAMMAR`), and `JOB CONTROL` in the
