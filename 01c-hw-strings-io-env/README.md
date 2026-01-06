@@ -248,7 +248,7 @@ The `sizeof()` operator is used in `exercises.c` to get the allocated size for
 given type or variable.  Note that this is a compile-time option, so it can
 only calculate allocations that are made at compile time, not run time.
 
-Call `memprint()` on `s1a` three times, passing `s1_len` as `len` each time.
+Call `memprint()` on `s1a` three times, passing `s1a_len` as `len` each time.
 The first time, show each byte/character value as hexadecimal (i.e., format
 `"%02x"`).  The second time, show each byte/character value as decimal (i.e.,
 format `"%d"`).  Finally, show each byte/character value as its corresponding
@@ -324,9 +324,17 @@ two command-line arguments, then do the following:
  - Use `fprintf()` to print the following statement to the terminal, specifying
    `stderr` (standard error) as the file stream: "Exactly one command-line
    option is required: filename".  Standard error will be discussed more later.
- - Call `exit(6);`.
+ - Call one of the following:
 
-The argument to `exit()` is the _exit status_ for the program.
+   - `exit(6);` or
+   - `return 6;`
+
+   Note that `return` causes a program to return from a _function call_, while
+   `exit()` causes the entire _program_ to terminate, no matter which function
+   it is called from.  Because `return` is called from `main()`, the two calls
+   above result in the same behavior.
+
+   The argument to `exit()` and `return` is the _exit status_ for the program.
 
 Compile `exercises.c`.  Then run the program according to the following:
 
@@ -350,9 +358,18 @@ Compile `exercises.c`.  Then run the program according to the following:
 
  11. What is the output of the _second_ `echo` command?
 
-Convention is for a program that exited _normally_ to exit with status 0 and
-for a program that encountered errors (e.g., wrong number of arguments) to exit
-with non-zero status.
+Convention is for a program that exited _without errors_ to have exit status 0
+and for a program that encountered errors (e.g., wrong number of arguments) to
+exit with non-zero status.  If not `exit()` is not called and `return` is not
+used in the `main()` function, then the return value is 0.
+
+
+### Summary and Main Points
+
+ - The `argc` and `argv` arguments are used to capture the command-line
+   arguments passed to the program at runtime.
+ - Returning from `main()` and calling `exit()` are two ways to terminate a
+   running program and specify an exit status.
 
 
 ## Part 3 - Input/Output
