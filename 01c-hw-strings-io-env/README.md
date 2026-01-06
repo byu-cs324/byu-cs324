@@ -1,9 +1,9 @@
 # Strings, I/O, and Environment
 
 The purpose of this assignment is to help you better understand strings, I/O,
-and environment variables in C with a series of hands-on exercises.  You will
-flesh out sections of an existing C program and answer questions about its
-output.
+command-line arguments, exit status, and environment variables in C with a
+series of hands-on exercises.  You will flesh out sections of an existing C
+program and answer questions about its output.
 
 
 ## Preparation
@@ -32,13 +32,15 @@ assignment:
 
 ## Overview
 
-This file contains questions divided into three parts: character encoding, I/O,
-and environment variables.  The file `exercises.c` contains a function
+This file contains instructions and questions divided into four parts:
+character encoding, command-line arguments and exit status, I/O, and
+environment variables.  The file `exercises.c` contains a function
 corresponding to each part, in which you will do the specified work for each
-question.
+set of questions.
 
-Follow the instructions for and answer each question.  For most questions, you
-will re-compile and re-run the program using the following commands:
+Follow the instructions for and answer each question.  For most sets of
+questions, you will re-compile and re-run the program using the following
+commands:
 
 ```bash
 gcc -Wall -Wno-unused-variable -o exercises exercises.c
@@ -66,8 +68,8 @@ This is very brief lesson on characters, encoding, and presentation.
 ### ASCII
 
 All `char`/byte values in C are simply 8-bit integers, i.e., with values
-between 0 and 255 (0 - 2<sup>8</sup> - 1).  It is the _interpretation_ and
-_presentation_ of those integer values according to some character set that
+between 0 and 255 (0 through 2<sup>8</sup> - 1).  It is the _interpretation_
+and _presentation_ of those integer values according to some character set that
 makes them "readable" characters.  Byte values between 0 and 127 (i.e., without
 the most significant bit set) can be interpreted as part of the American
 Standard Code for Information Interchange (ASCII) character set, which includes
@@ -272,7 +274,8 @@ Add some C code to answer the following questions.  Then re-compile and run
  6. What is the decimal value of the ASCII character `'$'`?
 
  7. How does the terminal render the ASCII character with the decimal value
-    `7`?
+    `7`?  Hint: make sure your volume is up!
+
 
 ### Summary and Main Points
 
@@ -281,7 +284,78 @@ Add some C code to answer the following questions.  Then re-compile and run
  - `printf()` and friends can be used to format text for it to be presented.
 
 
-# Part 2 - Input/Output
+## Part 2 - Command-Line Arguments and Exit Status
+
+In this section you will learn about command-line arguments and exit status.
+
+In C, command-line arguments are available to the `main()` function, which is
+invoked when the program starts:
+
+ - `int argc` indicates the number of command-line arguments passed; and
+ - `char *argv[]` is the actual array of command-line arguments passed, each of
+   type string (`char *`).
+
+Unlike the other sections, for this section you will mostly make changes to the
+`main()` function because this is where the command-line arguments are
+received.
+
+We will experiment more with strings later.  For now, let's just print out the
+contents of the array.  In the `main()` function, under the "Part 2" comment,
+write code for the following:
+
+ - a `printf()` statement that prints out `argc`, the number of command-line
+   arguments.
+ - a `for` loop that iterates from `0` through `argc - 1`, and prints out each
+   argument, one per line.
+
+Compile and run `exercises.c`.  Make sure you are running the command as
+specified above.
+
+ 8. What is the value of `argc`?
+
+ 9. What is the value of `argv[0]`?
+
+It might surprise you to know that first (i.e., index 0) command-line argument
+is always the name of the program being executed.
+
+Now add an `if` statement that tests the following.  If there are not exactly
+two command-line arguments, then do the following:
+
+ - Use `fprintf()` to print the following statement to the terminal, specifying
+   `stderr` (standard error) as the file stream: "Exactly one command-line
+   option is required: filename".  Standard error will be discussed more later.
+ - Call `exit(6);`.
+
+The argument to `exit()` is the _exit status_ for the program.
+
+Compile `exercises.c`.  Then run the program according to the following:
+
+ - Run the program normally.
+ - Run the following from the command line to print out the exit status from
+   the command line:
+
+   ```bash
+   echo $?
+   ```
+
+ - Run the program _without_ specifying the filename argument.
+ - Run the following from the command line to print out the exit status from
+   the command line:
+
+   ```bash
+   echo $?
+   ```
+
+ 10. What is the output of the _first_ `echo` command?
+
+ 11. What is the output of the _second_ `echo` command?
+
+Convention is for a program that exited _normally_ to exit with status 0 and
+for a program that encountered errors (e.g., wrong number of arguments) to exit
+with non-zero status.
+
+
+## Part 3 - Input/Output
 
 In this section you will perform some hands-on exercises to learn about
 file descriptors and reading and writing to files and devices.  File
@@ -296,9 +370,9 @@ Read the entire man pages for `stdin(3)` (which also shows the information for
 functions to find and print out the file descriptor values for the `stdin`,
 `stdout`, and `stderr` file streams, each on its own line.
 
-Re-compile and run `./exercises`.
+Compile and run `exercises.c`.
 
- 8. What are the reported file descriptor values for `stdin`, `stdout`, and
+ 12. What are the reported file descriptor values for `stdin`, `stdout`, and
     `stderr`?
 
 Next we will experiment with strings and I/O.  Specifically, we will see how
@@ -314,9 +388,9 @@ between `write()`, which sends as many characters as you specify, and
 `printf()` which goes until the null character (value `0` or `'\0'`), which
 designates the end of a string.
 
-Re-compile and run `./exercises`.
- 
- 9. Confirm with the `memprint()` output that the array consists of only `'z'`
+Compile and run `exercises.c`.
+
+ 13. Confirm with the `memprint()` output that the array consists of only `'z'`
     characters and a single null value.
 
 With the array having the values that you have set, let us now see how
@@ -332,9 +406,9 @@ print out the contents of `buf` to standard output in two ways:
 After each call, make an additional call to print a newline character (`"\n"`),
 so each printout shows up on its own line.
 
-Re-compile and run `./exercises`.
- 
- 10. Is there a difference between what was printed by `printf()` and what was
+Compile and run `exercises.c`.
+
+ 14. Is there a difference between what was printed by `printf()` and what was
      printed by `write()`?  Why or why not?*  (Hint: See the `s` Conversion
      Specifier in the man page for `printf(3)`.)
 
@@ -356,25 +430,25 @@ anything written to standard output--which normally would have gone to the
 terminal--will now go to `/dev/null`, which is a "pseudo-file" for which
 anything written to it is discarded.
 
-Re-compile `exercises.c`.  Then run `./exercises` according to the following:
+Compile `exercises.c`.  Then run the program according to the following:
 
- - Run `./exercises` normally.
- - Run `./exercises` with "> /dev/null" (no quotes) appended to the end of the
-   command line.  
- - Run `./exercises` with "2> /dev/null" (no quotes) appended to the end of the
+ - Run the program normally.
+ - Run the program with "> /dev/null" (no quotes) appended to the end of the
    command line.
- - Run `./exercises` with "2> /dev/null 2>&1" (no quotes) appended to the
+ - Run the program with "2> /dev/null" (no quotes) appended to the end of the
+   command line.
+ - Run the program with "2> /dev/null 2>&1" (no quotes) appended to the
    end of the command line.
 
- 11. What output do you see when the program is run normally?
+ 15. What output do you see when the program is run normally?
 
- 12. What happens to the output when you the program is run with "> /dev/null"
+ 16. What happens to the output when you the program is run with "> /dev/null"
      appended?
 
- 13. What happens to the output when you the program is run with "2> /dev/null"
+ 17. What happens to the output when you the program is run with "2> /dev/null"
      appended?
 
- 14. What happens to the output when you the program is run with
+ 18. What happens to the output when you the program is run with
      "2> /dev/null 2>&1" appended?
 
 Now let's be hands-on with files beyond standard input, standard output, and
@@ -385,9 +459,9 @@ open the file for reading only).  Save the return value as an integer variable,
 `fd1`.  Now copy that value to another integer variable, `fd2`.  Print out the
 values of `fd1` and `fd2`, each on its own line.
 
-Re-compile and run `./exercises`.
- 
- 15. What is the significance of the value of `fd1`, i.e., the return value of
+Compile and run `exercises.c`.
+
+ 19. What is the significance of the value of `fd1`, i.e., the return value of
      `open()`? (Hint: See the first two paragraphs of the DESCRIPTION for
      `open(2)`.)
 
@@ -404,11 +478,11 @@ some of the values that are currently there.)  Save the return value as
 same).  Finally, call `memprint()` on `buf` using `BUFSIZE` as length, and
 showing each byte/character value as hexadecimal (i.e., format `"%02x"`).
 
-Re-compile and run `./exercises`.
- 
- 16. What was the return value of `read()`?
+Compile and run `exercises.c`.
 
- 17. Did the return value from `read()` match the `count` value passed in?  Why
+ 20. What was the return value of `read()`?
+
+ 21. Did the return value from `read()` match the `count` value passed in?  Why
      or why not? (Hint: See the RETURN VALUE section in the man page for
      `read(2)`.)
 
@@ -429,77 +503,79 @@ Note that you now have two variables of type `int`: `fd1` and `fd2`.  `fd1` and
 You have used both variables, in different calls, to read from the same open
 file.
 
-Re-compile and run `./exercises`.
- 
- 18. Did this new call to `read()` from `fd2` start reading from beginning of
+Compile and run `exercises.c`.
+
+ 22. Did this new call to `read()` from `fd2` start reading from beginning of
      the file or continue where it left off after the last call?  Why? (Hint:
      See the RETURN VALUE section in the man page for `read(2)`.
 
- 19. Based on your answer to the previous question, when reading from an open
+ 23. Based on your answer to the previous question, when reading from an open
      file using a file descriptor, does the _address_ of the variable
      referencing a file descriptor matter, or only its _value_?
 
- 20. What was the return value of `read()`?
+ 24. What was the return value of `read()`?
 
- 21. How many total bytes have been read?
+ 25. How many total bytes have been read?
 
-Repeat the instructions preceding question 18, but this time read up to
+Repeat the instructions preceding question 22, but this time read up to
 `BUFSIZE - totread` bytes (instead of 4).
 
- 22. What was the return value of `read()`?
+ 26. What was the return value of `read()`?
 
- 23. Did the return value from read() match the `count` value passed in?  Why
+ 27. Did the return value from read() match the `count` value passed in?  Why
      or why not? (Hint: See the RETURN VALUE section in the man page for
      `read(2)`.)
 
- 24. How many total bytes have been read?
+ 28. How many total bytes have been read?
 
- 25. How many total bytes are in the file? (Hint: Use the `stat` command-line
+ 29. How many total bytes are in the file? (Hint: Use the `stat` command-line
      program to see the size of the file, in bytes.)
 
- 26. Was a null character (`'\0'` or 0) read from the file?
+ 30. Was a null character (`'\0'` or 0) read from the file?
 
- 27. What would happen if `BUFSIZE` had been specified, instead of
+ 31. What would happen if `BUFSIZE` had been specified, instead of
      `BUFSIZE - totread` and there were still `BUFSIZE` bytes available to
      read?
 
-Repeat the instructions preceding question 22.
+Repeat the instructions preceding question 26.
 
- 27. What is the return value of `read()`?
+ 32. What is the return value of `read()`?
      (Hint: See the RETURN VALUE section in the man page for `read(2)`.)
 
- 28. What is the significance of the return value of `read()`?
+ 33. What is the significance of the return value of `read()`?
      (Hint: See the RETURN VALUE section in the man page for `read(2)`.)
 
 Use `printf()` to print the contents of `buf` to standard output using the
 `"%s\n"` format string.
 
- 29. How does the output compare to the actual contents of the file?  Briefly
-     explain your response. (Hint: See questions 9, 23, and 26 for context.)
+Compile and run `exercises.c`.
+
+ 34. How does the output compare to the actual contents of the file?  Briefly
+     explain your response. (Hint: See questions 13, 27, and 30 for context.)
 
 Assign the value of `buf` at index `totread` to the null character (`'\0'` or
-`0`).  Then repeat the instructions preceding question 29.
+`0`).  Then repeat the instructions preceding question 34.
 
- 30. How does the output compare to the actual contents of the file?  Briefly
-     explain your response. (Hint: See questions 9, 23, and 26 for context.)
+ 35. How does the output compare to the actual contents of the file?  Briefly
+     explain your response. (Hint: See questions 13, 27, and 30 for context.)
 
 Now that we have had opened and read from the file, let's close the file to
 better understand the semantics of the `close()` system call.  Call `close()`
 on `fd1`, and use `printf()` to print the return value on a line by itself.
 
-Re-compile and run `./exercises`.
+Compile and run `exercises.c`.
 
- 31. What is the return value of `close()`?  What does this mean? (Hint: See
+ 36. What is the return value of `close()`?  What does this mean? (Hint: See
      the RETURN VALUE section in the man page for `close(2)`.)
 
 Call `close()` on `fd2` (not `fd1`!) , and use `printf()` to print the return
 value on a line by itself.
 
-Re-compile and run `./exercises`.
+Compile and run `exercises.c`.
 
- 32. What is the return value of this second instance of `close()`?  What does
+ 37. What is the return value of this second instance of `close()`?  What does
      this mean, and what is the likely cause? (Hint: See the RETURN VALUE
-     section in the man page for `close(2)`. See also question 19.)
+     section in the man page for `close(2)`. See also question 23.)
 
 We referred to buffering earlier in this assignment.  Let's briefly return to
 that by comparing buffered output with unbuffered output.  First, as mentioned
@@ -516,33 +592,33 @@ Using that knowledge, add the following code to experiment with buffering.  Use
 
 Based on the explanation above, what do you expect the output to be?
 
-Re-compile and run `./exercises`.
+Compile and run `exercises.c`.
 
- 33. What is the order of the letters? (Exclude the newline.)
+ 38. What is the order of the letters? (Exclude the newline.)
 
 Now use `write()` to print the same three strings to the same locations, again.
 
-Re-compile and run `./exercises`.
+Compile and run `exercises.c`.
 
- 34. What is the order of the letters? (Exclude the newline.)
+ 39. What is the order of the letters? (Exclude the newline.)
 
- 35. What differences do you observe in the output of the strings using
+ 40. What differences do you observe in the output of the strings using
      `fprintf()` vs. using `write()` and why?*  (Hint: See
      [intro](#printf-and-friends) and the "NOTES" section of the man page for
      `stdout(3)`.)
 
 The `fflush()` function will immediately flush any buffered output of the
-specified file stream.  Repeat the instructions preceding question 33.
+specified file stream.  Repeat the instructions preceding question 38.
 However, this time, use the `fflush()` function to flush standard output
 immediately after printing `"abc"`.
 
- 36. What differences do you observe in the output of the strings using
+Compile and run `exercises.c`.
+
+ 41. What differences do you observe in the output of the strings using
      `fprintf()` vs. using `write()` and why?
 
-Re-compile and run `./exercises`.
 
-
-## Summary and Main Points
+### Summary and Main Points
 
  - A file descriptor is allocated for every file-like object opened during a
    program execution.  This descriptor is simply an integer that is passed to
@@ -554,7 +630,7 @@ Re-compile and run `./exercises`.
  - File streams offer a higher-level interface for I/O, including buffering.
 
 
-# Part 3 - Getting and Setting Environment Variables
+## Part 4 - Getting and Setting Environment Variables
 
 In this section, you will write code that looks for the presence of an
 environment variable and then practice getting and setting it.
@@ -572,7 +648,7 @@ add the environment variable `CS324_VAR` to the environment used to execute
 environment of the running shell, and then run `./exercises` with the modified
 environment of the running shell.
 
-Re-compile `exercises.c`.  Then run `./exercises` according to the following:
+Compile `exercises.c`.  Then run the program according to the following:
 
 ```bash
 # Use default environment
@@ -588,13 +664,13 @@ export CS324_VAR=foo
 ./exercises test.txt
 ```
 
- 37. What is the difference between running the three commands?  Briefly
+ 42. What is the difference between running the three commands?  Briefly
      explain.
 
- 38. (Upload your edited `exercises.c` file to LearningSuite.)
+ 43. (Upload your edited `exercises.c` file to LearningSuite.)
 
 
-## Summary and Main Points
+### Summary and Main Points
 
  - Environment variables can be set on the command line (or with `setenv()`).
  - Environment variables can be retrieved by a C program using `getenv()`.

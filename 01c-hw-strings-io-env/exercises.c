@@ -10,13 +10,20 @@
 void memprint(char *, char *, int);
 
 void part1();
-void part2();
-void part3();
+void part3(char *);
+void part4();
 
 int main(int argc, char *argv[]) {
 	part1();
-	part2();
-	part3();
+
+	/* Part 2 (below this comment) */
+	printf("\n===== Part 2 =====\n");
+	printf("-- Questions 8 and 9\n");
+
+	printf("-- Questions 10 and 11\n");
+
+	part3(argv[1]);
+	part4();
 }
 
 void memprint(char *s, char *fmt, int len) {
@@ -33,7 +40,7 @@ void memprint(char *s, char *fmt, int len) {
 }
 
 void part1() {
-	printf("===== Part 1 =====\n");
+	printf("\n===== Part 1 =====\n");
 
 	// Note: STDOUT_FILENO is defined in /usr/include/unistd.h:
 	//
@@ -56,54 +63,58 @@ void part1() {
 
 	int s1a_len = sizeof(s1a);
 
-	printf("===== Questions 1 through 4 =====\n");
+	printf("-- Questions 1 through 4\n");
 
-	printf("===== Questions 5 through 7 =====\n");
+	printf("-- Questions 5 through 7\n");
 
 }
 
-void part2(char *filename) {
-	printf("===== Question 8 =====\n");
+void part3(char *filename) {
+	printf("\n===== Part 3 =====\n");
 
-	printf("===== Question 9 =====\n");
+	printf("-- Question 12\n");
+
+	printf("-- Question 13\n");
 	char buf[BUFSIZE];
 
-	printf("===== Question 10 =====\n");
+	printf("-- Question 14\n");
 
-	fprintf(stderr, "===== Questions 11 through 14 (stderr) =====\n");
-	fprintf(stdout, "===== Questions 11 through 14 (stdout) =====\n");
+	fprintf(stderr, "-- Questions 15 through 18 (stderr)\n");
+	fprintf(stdout, "-- Questions 15 through 18 (stdout)\n");
 
-	printf("===== Question 15 =====\n");
+	printf("-- Question 19\n");
 	int fd1, fd2;
 
-	printf("===== Questions 16 and 17 =====\n");
+	printf("-- Questions 20 and 21\n");
 	size_t numread = 0;
 	size_t totread = 0;
 
-	printf("===== Question 18 through 21 =====\n");
+	printf("-- Questions 22 through 25\n");
 
-	printf("===== Question 22 through 27 =====\n");
+	printf("-- Questions 26 through 31\n");
 
-	printf("===== Question 22 through 28 =====\n");
+	printf("-- Questions 32 and 33\n");
 
-	printf("===== Question 29 =====\n");
+	printf("-- Question 34\n");
 
-	printf("===== Question 30 =====\n");
+	printf("-- Question 35\n");
 	int ret = 0;
 
-	printf("===== Question 31 =====\n");
+	printf("-- Question 36\n");
 
-	printf("===== Question 32 =====\n");
+	printf("-- Question 37\n");
 
-	printf("===== Question 33 =====\n");
+	printf("-- Question 38\n");
 
-	printf("===== Questions 34 through 35 =====\n");
+	printf("-- Questions 39 and 40\n");
 
-	printf("===== Question 36 =====\n");
+	printf("-- Question 41\n");
 }
 
-void part3() {
-	printf("===== Questions 37 through 38 =====\n");
+void part4() {
+	printf("\n===== Part 4 =====\n");
+
+	printf("-- Questions 42 and 43\n");
 	char *s1;
 
 }
