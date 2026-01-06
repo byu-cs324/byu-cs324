@@ -509,8 +509,19 @@ using `buf` as the starting point at which the read data should be copied, use
 the offset into `buf` corresponding to the total bytes read.  The two ways to
 do that are:
 
- - `buf + totread`; or
+ - `buf + totread`
+
+   (This is pointer arithmetic; adding an integer to a pointer returns a new
+   pointer that is offset from the original pointer by the value of the
+   integer -- in multiples of the size of the type pointed to by the integer.
+   So `buf + totread` yields a pointer that refers to the `char` `totread`
+   beyond the first `char` at `buf`.)
+
  - `&buf[totread]`
+
+   (This notation does two things: `buf[totread]` yields the `char` at index
+   `totread` of `buf`; and prefixing it with `&` yields the _address_ of that
+   byte, effectively a pointer to `buf[totread]`.)
 
 Save the return value as `numread`. Add the value of `numread` to `totread`.
 Then print the values of `numread` and `totread`, each on its own line.
