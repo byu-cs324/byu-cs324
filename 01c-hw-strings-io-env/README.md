@@ -503,13 +503,15 @@ Compile and run `exercises.c`.
      or why not? (Hint: See the RETURN VALUE section in the man page for
      `read(2)`.)
 
-Let's continue reading from `text.txt` using the open file descriptor.  Use the
+Let's continue reading from `test.txt` using the open file descriptor.  Use the
 `read()` system call to read up to 4 bytes from `fd2` (not `fd1`!).  Instead of
 using `buf` as the starting point at which the read data should be copied, use
 the offset into `buf` corresponding to the total bytes read.  The two ways to
 do that are:
+
  - `buf + totread`; or
  - `&buf[totread]`
+
 Save the return value as `numread`. Add the value of `numread` to `totread`.
 Then print the values of `numread` and `totread`, each on its own line.
 Finally, call `memprint()` on `buf` using `BUFSIZE` as length, and showing each
