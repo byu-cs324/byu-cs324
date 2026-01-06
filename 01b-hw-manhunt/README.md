@@ -90,8 +90,8 @@ man 2 kill
 Specifying "2" on the command line means that you are looking for `kill` in
 Section 2 of the man pages.  You can verify that by observing the following in
 the upper left-hand corner: "kill(2)".  Section 2 contains documentation for
-_system calls_, so this page contains the information for the system call
-`kill()` -- as opposed to the program `kill`.  (A system call is like a
+_system calls_, so this page contains the information for the _system call_
+`kill()` -- as opposed to the _program_ `kill`.  (A system call is like a
 function, but when invoked, it runs kernel code instead of user code.)
 man pages corresponding to functions from installed libraries (user code) are
 found in Section 3.
