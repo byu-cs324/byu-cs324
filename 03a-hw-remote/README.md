@@ -50,7 +50,7 @@ perform these exercises.)
     before doing the rest of the command.
 
     For example: `ctrl`+`b`, **release**, `"` (double quotation mark) is a command
-    to tell tmux to split the window horizontally, as seen in step 5.
+    to tell tmux to split the window horizontally, as seen in step 4.
 
  4. Type `ctrl`+`b` followed by `"` (double quotation mark).  This will split
     the window in `tmux` horizontally into two panes and create a separate
