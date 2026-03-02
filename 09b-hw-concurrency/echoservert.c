@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
 		unsigned short remote_port;
 
 		// NOTE: addrlen needs to be initialized before every call to
-		// recvfrom().  See the man page for recvfrom().
+		// accept().  See the man page for accept().
 		socklen_t addr_len = sizeof(struct sockaddr_storage);
 		int *connfdp = malloc(sizeof(int));
 		*connfdp = accept(sfd, remote_addr, &addr_len);
