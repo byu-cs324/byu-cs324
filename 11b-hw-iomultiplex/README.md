@@ -253,7 +253,9 @@ listening.)
 nc localhost randomport
 ```
 
-Note that the above command is supposed to fail!
+Note that the above command is supposed to fail!  Contrast the behavior
+observed in the second client pane to that observed in the third client pane to
+answer the following question.
 
  10. Referring back to the client in the _second_ "client" pane, what happened
      to the connection request initiated by the second client?
