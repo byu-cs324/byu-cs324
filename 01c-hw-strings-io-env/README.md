@@ -202,24 +202,24 @@ some important differences:
 The following snippets all yield equivalent results:
 
 ```c
-# Use an integer literal
+// Use an integer literal
 printf("hello %d\n", 42);
 ```
 
 ```c
-# Use an int variable
+// Use an int variable
 int val = 42;
 printf("hello %d\n", val);
 ```
 
 ```c
-# Specify the stdout file stream explicitly
+// Specify the stdout file stream explicitly
 fprintf(stdout, "hello %d\n", 42);
 ```
 
 ```c
-# Use the write() system call directly instead of calling printf().
-# write() does not have buffering like printf() does.
+// Use the write() system call directly instead of calling printf().
+// write() does not have buffering like printf() does.
 write(STDOUT_FILENO, "hello 42\n", 9);
 ```
 
@@ -257,14 +257,15 @@ ASCII character (i.e., format `"%c"`).
 Compile and run `exercises.c`.  Use the output to answer the following
 questions.
 
- 1. What is the integer value of the ASCII letter `'o'`, in decimal notation?
+ 1. What is the integer value of the ASCII letter `'o'` (lower-case letter
+    "o"), in _decimal_ notation?
 
- 2. What is the integer value of the ASCII letter `'o'`, in hexadecimal
-    notation?
+ 3. What is the integer value of the ASCII letter `'o'` (lower-case letter
+    "o"), in _hexadecimal_ notation?
 
- 3. What is the ASCII character associated with the (hexadecimal) value 0x6c?
+ 5. What is the ASCII character associated with the (hexadecimal) value 0x6c?
 
- 4. What is the decimal representation of the (hexadecimal) value 0x6c?
+ 6. What is the decimal representation of the (hexadecimal) value 0x6c?
 
 Add some C code to answer the following questions.  Then re-compile and run
 `./exercises`.  See also the man page for `ascii(7)`.
@@ -426,7 +427,7 @@ so each printout shows up on its own line.
 Compile and run `exercises.c`.
 
  14. Is there a difference between what was printed by `printf()` and what was
-     printed by `write()`?  Why or why not?*  (Hint: See the `s` Conversion
+     printed by `write()`?  Why or why not?  (Hint: See the `s` Conversion
      Specifier in the man page for `printf(3)`.)
 
 Now print out the contents of `buf` to standard _error_ (not standard
@@ -454,7 +455,7 @@ Compile `exercises.c`.  Then run the program according to the following:
    command line.
  - Run the program with "2> /dev/null" (no quotes) appended to the end of the
    command line.
- - Run the program with "2> /dev/null 2>&1" (no quotes) appended to the
+ - Run the program with "> /dev/null 2>&1" (no quotes) appended to the
    end of the command line.
 
  15. What output do you see when the program is run normally?
@@ -466,7 +467,7 @@ Compile `exercises.c`.  Then run the program according to the following:
      appended?
 
  18. What happens to the output when you the program is run with
-     "2> /dev/null 2>&1" appended?
+     "> /dev/null 2>&1" appended?
 
 Now let's be hands-on with files beyond standard input, standard output, and
 standard error.  Let's start by opening a file with the `open()` system call.
@@ -552,7 +553,7 @@ Repeat the instructions preceding question 22, but this time read up to
 
  26. What was the return value of `read()`?
 
- 27. Did the return value from read() match the `count` value passed in?  Why
+ 27. Did the return value from `read()` match the `count` value passed in?  Why
      or why not? (Hint: See the RETURN VALUE section in the man page for
      `read(2)`.)
 
@@ -565,7 +566,7 @@ Repeat the instructions preceding question 22, but this time read up to
 
  31. What would happen if `BUFSIZE` had been specified, instead of
      `BUFSIZE - totread` and there were still `BUFSIZE` bytes available to
-     read?
+     read?  Hint: experiment with it!
 
 Repeat the instructions preceding question 26.
 
@@ -616,9 +617,9 @@ earlier, output associated with `write()` is not buffered.  File streams
 Using that knowledge, add the following code to experiment with buffering.  Use
 `fprintf()` to print the following, in order:
 
- a. `"abc"` (no newline) to standard output (`stdout`)
- b. `"def"` (no newline) to standard error (`stderr`)
- c. `"ghi\n"` to standard output (`stdout`)
+ - `"abc"` (no newline) to standard output (`stdout`)
+ - `"def"` (no newline) to standard error (`stderr`)
+ - `"ghi\n"` to standard output (`stdout`)
 
 Based on the explanation above, what do you expect the output to be?
 
@@ -632,10 +633,9 @@ Compile and run `exercises.c`.
 
  39. What is the order of the letters? (Exclude the newline.)
 
- 40. What differences do you observe in the output of the strings using
-     `fprintf()` vs. using `write()` and why?*  (Hint: See
-     [intro](#printf-and-friends) and the "NOTES" section of the man page for
-     `stdout(3)`.)
+ 40. What do you observe about buffering with `fprintf()` and `write()`?
+     (Hint: See [intro](#printf-and-friends) and the "NOTES" section of the
+     man page for `stdout(3)`.)
 
 The `fflush()` function will immediately flush any buffered output of the
 specified file stream.  Repeat the instructions preceding question 38.
@@ -644,8 +644,8 @@ immediately after printing `"abc"`.
 
 Compile and run `exercises.c`.
 
- 41. What differences do you observe in the output of the strings using
-     `fprintf()` vs. using `write()` and why?
+ 41. What is the order of the letters? (Exclude the newline.)  Why has it
+     changed?
 
 
 ### Summary and Main Points
@@ -681,23 +681,26 @@ environment of the running shell.
 Compile `exercises.c`.  Then run the program according to the following:
 
 ```bash
-# Use default environment
+# 1. Use default environment
 ./exercises test.txt
 
 # Set environment var for One-time use
 CS324_VAR=foo ./exercises test.txt
 
-# Add variable to environment of running shell
+# 2. Add variable to environment of running shell
 export CS324_VAR=foo
 
-# Use modified environment
+# 3. Use modified environment
 ./exercises test.txt
 ```
 
- 42. What is the difference between running the three commands?  Briefly
-     explain.
+ 42. Which of the three commands above resulted in:
+     "CS324\_VAR is \_\_\_\_" being output?
 
- 43. (Upload your edited `exercises.c` file to LearningSuite.)
+ 43. If command 3 were executed again, what would be the output?  Briefly explain
+     your answer.
+
+ 45. (Upload your edited `exercises.c` file to LearningSuite.)
 
 
 ### Summary and Main Points

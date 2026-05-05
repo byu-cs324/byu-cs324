@@ -554,8 +554,10 @@ using the client-to-proxy socket until one of the following happens:
 
  - you have written the entire HTTP response to the client socket.  If this is
    the case:
-   - Free the memory associated with the current `struct request_info *`.
+   - Clear the bit corresponding to the file descriptor for the client-to-proxy
+     socket in `writefds`.
    - Close your client-to-proxy socket.
+   - Free the memory associated with the current `struct request_info *`.
    - You are done!
  - `write()` (or `send()`) returns a value less than 0.
    - If `errno` is `EAGAIN` or `EWOULDBLOCK`, it just means that there is

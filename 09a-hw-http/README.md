@@ -372,7 +372,13 @@ Your CGI program should have _mostly_ the same behavior as that you observed in
    blank line; that is, this character sequence should follow the last header:
    `"\r\n\r\n"`.
 
-   Note that your CGI program is not responible for sending the first line of
+   Note that the Python HTTP server you started in the
+   [preparation section](#preparation) _incorrectly_ uses "Content-type" (note
+   that "type" is not capitalized).  Please use "Content-Type" (both "Content"
+   and "Type" are capitalized") with your CGI program.  We apologize for the
+   confusion.
+
+   Note that your CGI program is not responsible for sending the first line of
    the response (e.g., the protocol, response code, etc.).  That line, along
    with any other initial headers, will have been sent by the server before it
    called `fork()` and `execve()`.
@@ -383,7 +389,7 @@ Your CGI program should have _mostly_ the same behavior as that you observed in
 
 Test your program by compiling it and placing the resulting binary in
 `www/cgi-bin`.  Then run the same `curl` command line that you used for URL
-(e) above, substituting "myprog1" (with file extension, as appropriate) for
+(e) above, replacing "myprog1" (with file extension, as appropriate) with
 "myprog".  The response headers (beginning with the "Content-Type" header) and
 the response body returned for `myprog1` should match those for `myprog`, _byte
 for byte_, except that "Hello world" will be replaced with "Hello CS324" in the
@@ -456,7 +462,8 @@ SHA1SUM of the CGI program output.
 
  26. What is the SHA1SUM of the output of the CGI program when run with the
      above inputs (query string and request body)?  Hint: it should start with
-     `c0140d`.
+     `c0140d`.  Note that if you accidentally used "Content-type" (i.e.,
+     without capitalizing "type"), then the SHA1SUM will start with `a635b0`.
 
  28. What is the command pipeline you used to run the CGI program with the
      above inputs and produce the SHA1SUM in the previous question?

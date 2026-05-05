@@ -93,17 +93,21 @@ Finally, open `pic.png` in a Web browser or image viewer to see it.
 
 Use OpenMP to parallelize the outer `for` loop in which the computations are
 made.  You will need to apply the `parallel` and `for` directives to make it
-work properly.  See the
+work properly.  Note that `parallel` and `for` can be combined into a single
+line.  See the
 [OpenMP Tutorial](https://hpc-tutorials.llnl.gov/openmp/do_for_directive/) for
 more information.  Note that proper use of the `private()` clause is essential
 for correct output and timing.  Think carefully about which variables (if any)
 should be shared across threads and which need only be used locally.
 
-Compile your program with `-fopenmp`:
+Compile your program using the following:
 
 ```bash
 gcc -o mandelbrot mandelbrot.c -fopenmp
 ```
+
+(Note the addition of `-fopenmp`, which allows the inclusion of the
+OpenMP-related code.)
 
 Now use the
 [`OMP_NUM_THREADS` environment variable](https://hpc-tutorials.llnl.gov/openmp/env_vars/)
